@@ -6,6 +6,8 @@
     <title>Login - BranchWise</title>
     <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Assests CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Font Awesome for social icons -->
@@ -72,52 +74,111 @@
         
         /* Footer Styles */
         .page-footer {
-            padding-top: 20px;
-            background-color: #0d47a1;
+            padding-top: 40px;
+            background-color: #0d47a1 !important;
         }
-        
+
         .footer-content {
-            padding-bottom: 20px;
+            padding-bottom: 30px;
         }
-        
+
+        .footer-section {
+            margin-bottom: 20px;
+        }
+
         .footer-section h5 {
-            font-size: 16px;
-            margin-bottom: 15px;
-            font-weight: 500;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+            color: white;
         }
-        
+
+        .footer-section h5:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: #64b5f6;
+        }
+
         .footer-section ul {
             margin: 0;
             padding: 0;
+            list-style-type: none;
         }
-        
+
         .footer-section li {
-            margin-bottom: 8px;
-            line-height: 1.5;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
         }
-        
+
+        .footer-section li i {
+            margin-right: 8px;
+            font-size: 16px;
+            color: #bbdefb;
+        }
+
+        .footer-section a {
+            color: #e3f2fd !important;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-section a:hover {
+            color: #bbdefb !important;
+            transform: translateX(5px);
+            text-decoration: none;
+        }
+
         .social-icons {
             display: flex;
             gap: 15px;
-            margin-top: 10px;
+            margin-top: 15px;
         }
-        
+
         .social-icon {
+            position: relative; /* Tambahkan ini */
             font-size: 20px;
             color: white;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
+
+        /* Perbaikan untuk perataan ikon di tengah lingkaran */
+        .social-icon i {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Geser ikon kembali setengah dari lebar/tingginya */
+            font-size: 20px; /* Pertahankan ukuran font */
+            color: white; /* Pertahankan warna */
+        }
+
         .social-icon:hover {
-            color: #b3e5fc;
+            color: #bbdefb;
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
         }
-        
+
         .footer-copyright {
-            background-color: #0a3a8a !important;
-            padding: 10px 0;
+            background-color: rgba(0,0,0,0.2) !important;
+            padding: 15px 0;
+            font-size: 14px;
         }
-        
-        .copyright-content {
+
+        .footer-copyright .container {
             display: flex;
             justify-content: center;
         }
@@ -161,8 +222,9 @@
                     <div class="footer-section">
                         <h5 class="white-text">HUBUNGI KAMI</h5>
                         <ul>
-                            <li class="grey-text text-lighten-4">+62-21-888-2424</li>
-                            <li class="grey-text text-lighten-4">contact@branchwise.com</li>
+                            <li><i class="material-icons tiny">phone</i><a class="grey-text text-lighten-3" href="#!">+62-21-888-2424</a></li>
+                            <li><i class="material-icons tiny">email</i><a class="grey-text text-lighten-3" href="#!">contact@branchwise.com</a></li>
+                            <li><i class="material-icons tiny">location_on</i><a class="grey-text text-lighten-3" href="#!">Jakarta, Indonesia</a></li>
                         </ul>
                     </div>
                 </div>
@@ -186,21 +248,27 @@
                 <div class="col s12 m4">
                     <div class="footer-section">
                         <h5 class="white-text">SOCIAL MEDIA</h5>
+                        <p class="grey-text text-lighten-4">Ikuti kami di media sosial untuk update terbaru</p>
                         <div class="social-icons">
                             <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
                             <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
                             <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
                             <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    
+
         <!-- Footer Copyright -->
         <div class="footer-copyright">
-            <div class="container copyright-content">
-                <span class="white-text">Copyright © 2025 BranchWise. All rights reserved.</span>
+            <div class="container">
+                <div class="row">
+                    <div class="col s12 center">
+                        <span class="white-text">Copyright © 2025 BranchWise. All rights reserved.</span>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>

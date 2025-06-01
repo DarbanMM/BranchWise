@@ -202,6 +202,7 @@
         }
 
         .social-icon {
+            position: relative; /* Tambahkan ini */
             font-size: 20px;
             color: white;
             transition: all 0.3s ease;
@@ -212,6 +213,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* Perbaikan untuk perataan ikon di tengah lingkaran */
+        .social-icon i {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Geser ikon kembali setengah dari lebar/tingginya */
+            font-size: 20px; /* Pertahankan ukuran font */
+            color: white; /* Pertahankan warna */
         }
 
         .social-icon:hover {
