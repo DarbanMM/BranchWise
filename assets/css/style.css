@@ -1,0 +1,628 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+nav ul a,
+nav .brand-logo {
+  color: #444;
+}
+
+p {
+  line-height: 2rem;
+}
+
+.button-collapse {
+  color: #26a69a;
+}
+
+.parallax-container {
+  min-height: 10px;
+  line-height: 0;
+  color: rgba(255,255,255,.9);
+}
+  .parallax-container .section {
+    width: 100%;
+  }
+
+.parallax2-container {
+  min-height: 10px;
+  line-height: 0;
+  color: rgba(255,255,255,.9);
+  height: 310px;
+}
+.parallax2-container .section {
+  width: 100%;
+}
+
+@media only screen and (max-width : 992px) {
+  .parallax-container .section {
+    position: absolute;
+    top: 40%;
+  }
+  .parallax2-container .section {
+    position: absolute;
+    top: 40%;
+  }
+  #index-banner .section {
+    top: 10%;
+  }
+}
+
+@media only screen and (max-width : 600px) {
+  #index-banner .section {
+    top: 0;
+  }
+}
+
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+  font-size: inherit;
+}
+
+footer.page-footer {
+  margin: 0;
+}
+
+.jarak{
+  margin-top: 10%;
+  margin-bottom: 0px;
+}
+
+.jarak-button{
+  margin-bottom: 10%;
+}
+
+.jarak3{
+  margin-top: 25px;
+}
+
+.jarak4{
+  padding-right: 40%;
+}
+
+.section-card {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+/* Input Group ================================= */
+.input-group {
+  width: 100%;
+  margin-bottom: 20px; }
+  .input-group .form-line {
+    display: inline-block;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+    position: relative; }
+    .input-group .form-line:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+      bottom: -2px;
+      -moz-transform: scaleX(0);
+      -ms-transform: scaleX(0);
+      -o-transform: scaleX(0);
+      -webkit-transform: scaleX(0);
+      transform: scaleX(0);
+      -moz-transition: 0.25s ease-in;
+      -o-transition: 0.25s ease-in;
+      -webkit-transition: 0.25s ease-in;
+      transition: 0.25s ease-in;
+      border-bottom: 2px solid #1f91f3; }
+    .input-group .form-line + .input-group-addon {
+      padding-right: 0;
+      padding-left: 10px; }
+  .input-group .help-info {
+    float: right;
+    font-size: 12px;
+    margin-top: 5px;
+    color: #999; }
+  .input-group label.error {
+    font-size: 12px;
+    display: block;
+    margin-top: 5px;
+    font-weight: normal;
+    color: #F44336; }
+  .input-group .form-line.error:after {
+    border-bottom: 2px solid #F44336; }
+  .input-group .form-line.success:after {
+    border-bottom: 2px solid #4CAF50; }
+  .input-group .form-line.warning:after {
+    border-bottom: 2px solid #FFC107; }
+  .input-group .form-line.focused:after {
+    -moz-transform: scaleX(1);
+    -ms-transform: scaleX(1);
+    -o-transform: scaleX(1);
+    -webkit-transform: scaleX(1);
+    transform: scaleX(1); }
+  .input-group .form-line.focused .form-label {
+    bottom: 25px;
+    left: 0;
+    font-size: 12px; }
+  .input-group .input-group-addon {
+    border: none;
+    background-color: transparent;
+    padding-left: 0;
+    font-weight: bold; }
+    .input-group .input-group-addon .material-icons {
+      font-size: 18px;
+      color: #555; }
+  .input-group input[type="text"],
+  .input-group .form-control {
+    border: none;
+    box-shadow: none;
+    padding-left: 0; }
+  .input-group .form-control:focus {
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -ms-box-shadow: none !important;
+    box-shadow: none !important; }
+
+.input-group.input-group-sm .input-group-addon i {
+  font-size: 14px; }
+
+.input-group.input-group-sm .form-control {
+  font-size: 12px; }
+
+.input-group.input-group-lg .input-group-addon i {
+  font-size: 26px; }
+
+.input-group.input-group-lg .form-control {
+  font-size: 18px; }
+
+.form-control-label {
+  text-align: right; }
+  .form-control-label label {
+    margin-top: 8px; }
+
+.form-horizontal .form-group {
+  margin-bottom: 0; }
+
+.form-group {
+  width: 100%;
+  margin-bottom: 25px; }
+  .form-group .form-control {
+    width: 100%;
+    border: none;
+    box-shadow: none;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    border-radius: 0;
+    padding-left: 0; }
+  .form-group .help-info {
+    float: right;
+    font-size: 12px;
+    margin-top: 5px;
+    color: #999; }
+  .form-group label.error {
+    font-size: 12px;
+    display: block;
+    margin-top: 5px;
+    font-weight: normal;
+    color: #F44336; }
+  .form-group .form-line {
+    width: 100%;
+    position: relative;
+    border-bottom: 1px solid #ddd; }
+    .form-group .form-line:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 0;
+      bottom: -1px;
+      -moz-transform: scaleX(0);
+      -ms-transform: scaleX(0);
+      -o-transform: scaleX(0);
+      -webkit-transform: scaleX(0);
+      transform: scaleX(0);
+      -moz-transition: 0.25s ease-in;
+      -o-transition: 0.25s ease-in;
+      -webkit-transition: 0.25s ease-in;
+      transition: 0.25s ease-in;
+      border-bottom: 2px solid #1f91f3; }
+    .form-group .form-line .form-label {
+      font-weight: normal;
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      left: 0;
+      cursor: text;
+      -moz-transition: 0.2s;
+      -o-transition: 0.2s;
+      -webkit-transition: 0.2s;
+      transition: 0.2s; }
+  .form-group .form-line.error:after {
+    border-bottom: 2px solid #F44336; }
+  .form-group .form-line.success:after {
+    border-bottom: 2px solid #4CAF50; }
+  .form-group .form-line.warning:after {
+    border-bottom: 2px solid #FFC107; }
+  .form-group .form-line.focused:after {
+    -moz-transform: scaleX(1);
+    -ms-transform: scaleX(1);
+    -o-transform: scaleX(1);
+    -webkit-transform: scaleX(1);
+    transform: scaleX(1); }
+  .form-group .form-line.focused .form-label {
+    top: -10px;
+    left: 0;
+    font-size: 12px; }
+
+.form-group-sm .form-label {
+  font-size: 12px; }
+
+.form-group-sm .form-line.focused .form-label {
+  bottom: 20px;
+  font-size: 10px; }
+
+.form-group-lg .form-label {
+  font-size: 18px; }
+
+.form-group-lg .form-line.focused .form-label {
+  bottom: 35px;
+  font-size: 12px; }
+
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control {
+  background-color: transparent; }
+
+.btn-float-custom{
+  margin-top: -46px;
+  margin-right: 48%;
+  float: right;
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
+/* Import Poppins font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Basic Body Styling */
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background-color: #f5f5f5; /* Light gray background */
+    font-family: 'Poppins', sans-serif; /* Use Poppins font for the entire body */
+    color: #333; /* Dark gray for general text */
+}
+
+/* Ensure main content takes available space (useful if you have a <main> tag) */
+main {
+    flex: 1 0 auto;
+}
+
+/* Navbar Styling */
+nav .brand-logo {
+    font-size: 1.8rem; /* Size for the logo text */
+    font-weight: 700; /* Bold font weight */
+    padding-left: 10px; /* Slight padding to the left */
+    /* Materialize's blue-text text-darken-4 class handles the color */
+}
+
+nav ul a {
+    font-weight: 500; /* Medium font weight for nav links */
+    font-size: 1rem; /* Standard font size for nav links */
+}
+
+nav .btn {
+    margin-top: 10px; /* Adjust vertical position of the button */
+    margin-left: 20px; /* Space from the last link */
+}
+
+/* Hero Section (Parallax Container) */
+.parallax-container {
+    height: 600px; /* Taller hero section height */
+    display: flex;
+    align-items: center; /* Vertically center content */
+    justify-content: flex-start; /* Align content to the left */
+    position: relative; /* Ensure proper stacking context */
+}
+
+.parallax-container .section {
+    width: 100%;
+    position: relative;
+    z-index: 10; /* Ensure text is above the parallax image */
+}
+
+/* Flexbox utility for hero content alignment */
+.hero-content-center {
+    display: flex;
+    align-items: center;
+    min-height: 550px; /* Should be slightly less than parallax-container height */
+}
+
+/* Parallax image styling */
+.parallax img {
+    filter: brightness(50%); /* Darken the background image for better text contrast */
+    object-fit: cover; /* Ensure the image covers the entire area */
+}
+
+/* Hero Title (H1) */
+.hero-title {
+    font-size: 3.5rem; /* Larger font size for the main hero title */
+    line-height: 1.2;
+    margin-bottom: 20px;
+    font-weight: 700; /* Bold font weight */
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.4); /* Subtle text shadow for readability */
+}
+
+/* Hero Subtitle (Paragraph) */
+.hero-subtitle {
+    font-size: 1.3rem; /* Larger font size for the subtitle */
+    line-height: 1.6;
+    margin-bottom: 40px; /* More space below the subtitle before the button */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3); /* Subtle text shadow */
+}
+
+/* Hero Button */
+.hero-button {
+    font-size: 1.1rem; /* Font size for the hero button text */
+    padding: 0 30px; /* Horizontal padding for the button */
+    height: 50px; /* Button height */
+    line-height: 50px; /* Vertically align text in the button */
+}
+
+/* Materialize button overrides for consistent blue color */
+.btn-large {
+    background-color: #0d47a1 !important; /* Deep blue for large buttons */
+}
+
+.btn-large:hover {
+    background-color: #1a56b4 !important; /* Slightly lighter blue on hover */
+}
+
+/* Common Section Title */
+.section-title {
+    font-size: 2.5rem; /* Larger font size for section headings */
+    font-weight: 600; /* Semi-bold */
+    margin-bottom: 40px; /* More space below the section title */
+}
+
+/* Section Gaps (Padding for content sections) */
+.section-gap {
+    padding-top: 80px; /* Generous top padding for sections */
+    padding-bottom: 80px; /* Generous bottom padding for sections */
+}
+
+/* Branch Section Card Styling */
+.branch-card .card-image {
+    position: relative;
+    height: 250px; /* Taller image height for cards */
+    overflow: hidden;
+    border-radius: 8px; /* Slightly rounded corners for cards */
+    display: flex; /* Use flexbox for content inside the card image */
+    flex-direction: column; /* Stack content vertically */
+    justify-content: flex-end; /* Align content to the bottom */
+    padding: 0 20px 20px 20px; /* Padding for text inside the card image */
+}
+
+.branch-card .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure image covers the area */
+    filter: brightness(75%); /* Slightly darken the image */
+    transition: transform 0.3s ease; /* Smooth hover effect */
+    position: absolute; /* Position image behind flex content */
+    top: 0;
+    left: 0;
+    z-index: 1; /* Ensure image is behind text */
+}
+
+.branch-card .card-image img:hover {
+    transform: scale(1.08); /* More pronounced zoom effect on hover */
+}
+
+.branch-card .card-image .card-title {
+    position: relative; /* Make it stack on top of image */
+    z-index: 2; /* Ensure it's above the image */
+    font-size: 1.8rem; /* Larger font size for city name */
+    font-weight: 700; /* Bold font weight */
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.7); /* Stronger text shadow for readability */
+    margin-bottom: 5px; /* Space between city name and subtitle */
+}
+
+.branch-card .card-image .card-subtitle {
+    position: relative; /* Make it stack on top of image */
+    z-index: 2; /* Ensure it's above the image */
+    font-size: 0.95rem; /* Smaller font size for subtitle */
+    color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.6); /* Text shadow for readability */
+    line-height: 1.3;
+    margin-top: 0;
+}
+
+
+/* Small Building Image Section */
+.small-building-section {
+    padding: 60px 0; /* Padding around the section */
+    background-color: #fcfcfc; /* Light background for this section */
+    margin-bottom: -60px; /* Pulls it up to overlap the footer slightly, similar to image */
+    position: relative; /* For z-index control */
+    z-index: 5; /* Ensure it's above the footer for the overlap effect */
+}
+
+.small-building-img {
+    width: 350px; /* Fixed width for the image */
+    max-width: 80%; /* Ensures responsiveness on smaller screens */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Remove extra space below image */
+    margin: 0 auto; /* Center the image horizontally */
+    border-radius: 50% / 30%; /* Oval shape (horizontal / vertical radii) */
+    opacity: 0.9; /* Slightly less opaque */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* Subtle shadow */
+    transform: translateY(30px); /* Lift the image slightly upwards for overlap effect */
+}
+
+/* Custom button style for white background and blue text */
+.btn-white-blue-text {
+    background-color: white !important; /* Pastikan ada !important */
+    color: #1565C0 !important; /* Pastikan ada !important, gunakan warna biru yang lebih gelap */
+}
+
+.btn-white-blue-text:hover {
+    background-color: #e0e0e0 !important; /* Sedikit lebih gelap saat hover */
+    color: #0d47a1 !important; /* Warna biru Materialize darken-4 untuk hover */
+}
+
+/* FAQ Section (Collapsible) */
+.collapsible {
+    border: none; /* Remove default Materialize border */
+    box-shadow: none; /* Remove default Materialize shadow */
+}
+
+.collapsible.popout { /* Adjust Materialize popout style for better appearance */
+    box-shadow: none; /* Remove outer shadow if popout adds one */
+}
+
+.collapsible li {
+    margin-bottom: 10px; /* Space between FAQ items */
+}
+
+.collapsible-header {
+    background-color: white !important; /* White background for headers */
+    border-bottom: 1px solid #e0e0e0 !important; /* Light border below */
+    font-weight: 600; /* Semi-bold font weight */
+    font-size: 1.1rem; /* Font size for FAQ headers */
+    color: #333; /* Dark text color */
+    padding: 18px 20px; /* Consistent padding */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Subtle shadow for each item */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.collapsible-header:hover {
+    background-color: #f9f9f9 !important; /* Light hover effect */
+}
+
+.collapsible-header i {
+    margin-right: 15px; /* Space between icon and text */
+    color: #0d47a1; /* Blue icon color */
+}
+
+.collapsible-body {
+    background-color: #fafafa !important; /* Lighter background for body content */
+    border-top: none !important; /* No top border, blends with header */
+    padding: 15px 20px; /* Consistent padding */
+    border-radius: 0 0 8px 8px; /* Only bottom corners rounded */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Subtle shadow */
+}
+
+.collapsible-body p {
+    color: #555; /* Slightly lighter text for body */
+    line-height: 1.6;
+}
+
+/* Footer Styling */
+footer.page-footer {
+    background-color: #0d47a1 !important; /* Deep blue background for footer */
+    padding-top: 60px; /* More padding at the top of the footer */
+}
+
+footer.page-footer .footer-copyright {
+    background-color: rgba(0,0,0,0.2) !important; /* Darker background for copyright bar */
+    padding: 20px 0; /* Padding for copyright bar */
+    font-size: 0.9rem; /* Smaller font size for copyright text */
+}
+
+footer.page-footer a {
+    color: rgba(255,255,255,0.7); /* Slightly transparent white links */
+    transition: color 0.3s ease; /* Smooth hover effect for links */
+}
+
+footer.page-footer a:hover {
+    color: white; /* Solid white on hover */
+}
+
+footer.page-footer h5 {
+    font-weight: 600; /* Semi-bold for footer headings */
+    font-size: 1.4rem; /* Size for footer headings */
+    margin-bottom: 15px; /* Space below headings */
+}
+
+footer.page-footer ul li {
+    margin-bottom: 8px; /* Space between list items in footer */
+}
+
+footer.page-footer .fa {
+    margin-right: 8px; /* Space between Font Awesome icon and text */
+    font-size: 1.1em; /* Slightly larger social media icons */
+}
+
+/* Media Queries for Responsiveness (fine-tuning Materialize defaults) */
+@media only screen and (max-width : 992px) { /* Medium devices (tablets) */
+    .hero-title {
+        font-size: 2.8rem; /* Adjust hero title for tablets */
+    }
+    .hero-subtitle {
+        font-size: 1.1rem; /* Adjust hero subtitle for tablets */
+    }
+    .section-title {
+        font-size: 2rem; /* Adjust section titles for tablets */
+    }
+    .branch-card .card-image {
+        height: 200px; /* Adjust card image height for tablets */
+    }
+    .branch-card .card-image .card-title {
+        font-size: 1.5rem; /* Adjust card title font size for tablets */
+    }
+    .branch-card .card-image .card-subtitle {
+        font-size: 0.85rem; /* Adjust card subtitle font size for tablets */
+    }
+}
+
+@media only screen and (max-width : 600px) { /* Small devices (phones) */
+    .parallax-container {
+        min-height: 450px; /* Adjust hero section height for phones */
+    }
+    .hero-title {
+        font-size: 2rem; /* Smaller hero title for phones */
+        text-align: center; /* Center align text on phones */
+        margin-top: 0; /* Remove top margin that might push content down */
+    }
+    .hero-subtitle {
+        font-size: 1rem; /* Smaller hero subtitle for phones */
+        text-align: center; /* Center align text on phones */
+    }
+    .hero-button {
+        display: block; /* Make button full width */
+        width: 100%; /* Full width */
+        margin: 0 auto; /* Center button */
+    }
+    .section-title {
+        font-size: 1.8rem; /* Smaller section title for phones */
+        text-align: center; /* Center align section title */
+    }
+    /* Adjust grid for cards on phones to ensure proper spacing */
+    .col.s12.m6.l4 { /* Target columns directly if necessary, though m6 should work */
+        margin-bottom: 20px; /* Add space between cards vertically */
+    }
+    .branch-card .card-image {
+        height: 180px; /* Smaller card image height for phones */
+        padding: 0 15px 15px 15px; /* Adjust padding for cards on phones */
+    }
+    .branch-card .card-image .card-title {
+        font-size: 1.3rem; /* Smaller card title for phones */
+    }
+    .branch-card .card-image .card-subtitle {
+        font-size: 0.75rem; /* Smaller card subtitle for phones */
+    }
+    .small-building-img {
+        width: 200px; /* Smaller building image for phones */
+    }
+    .collapsible-header, .collapsible-body {
+        padding: 15px 15px; /* Adjust padding for FAQ items on phones */
+        font-size: 1rem; /* Smaller font size for FAQ text on phones */
+    }
+}
