@@ -257,7 +257,7 @@
         </li>
         <li><a class="active" href="accounts.html"><i class="material-icons">people</i>Manajemen Akun</a></li>
         <li><div class="divider"></div></li>
-        <li><a href="logout.html"><i class="material-icons">exit_to_app</i>Keluar</a></li>
+        <li><a href="index.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
     </ul>
 
     <!-- Main Content -->
@@ -313,7 +313,7 @@
                                                 <tr>
                                                     <th>No</th>
                                                     <th>Nama</th>
-                                                    <th>Email</th>
+                                                    <th>Username</th>
                                                     <th>Role</th>
                                                     <th>Status</th>
                                                     <th>Aksi</th>
@@ -323,8 +323,8 @@
                                                 <tr>
                                                     <td>1</td>
                                                     <td>Admin Utama</td>
-                                                    <td>admin@branchwise.com</td>
-                                                    <td>Super Admin</td>
+                                                    <td>AdminUtama</td>
+                                                    <td>Admin</td>
                                                     <td><span class="badge active">Aktif</span></td>
                                                     <td>
                                                         <a href="#edit-account-modal" class="btn-flat action-btn blue-text modal-trigger">
@@ -338,8 +338,8 @@
                                                 <tr>
                                                     <td>2</td>
                                                     <td>Manager Cabang</td>
-                                                    <td>manager@branchwise.com</td>
-                                                    <td>Manager</td>
+                                                    <td>ManagerCabang</td>
+                                                    <td>User</td>
                                                     <td><span class="badge active">Aktif</span></td>
                                                     <td>
                                                         <a href="#edit-account-modal" class="btn-flat action-btn blue-text modal-trigger">
@@ -353,8 +353,8 @@
                                                 <tr>
                                                     <td>3</td>
                                                     <td>Analis Data</td>
-                                                    <td>analyst@branchwise.com</td>
-                                                    <td>Analyst</td>
+                                                    <td>AnalisisData</td>
+                                                    <td>User</td>
                                                     <td><span class="badge inactive">Nonaktif</span></td>
                                                     <td>
                                                         <a href="#edit-account-modal" class="btn-flat action-btn blue-text modal-trigger">
@@ -375,8 +375,6 @@
                                         <ul class="pagination">
                                             <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
                                             <li class="active"><a href="#!">1</a></li>
-                                            <li class="waves-effect"><a href="#!">2</a></li>
-                                            <li class="waves-effect"><a href="#!">3</a></li>
                                             <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
                                         </ul>
                                     </div>
@@ -413,8 +411,8 @@
                                                     <label for="full_name">Nama Lengkap</label>
                                                 </div>
                                                 <div class="input-field col s12 m6">
-                                                    <input id="email" type="email" class="validate" required>
-                                                    <label for="email">Email</label>
+                                                    <input id="username" type="text" class="validate" required>
+                                                    <label for="username">username</label>
                                                 </div>
                                             </div>
                                             
@@ -433,9 +431,8 @@
                                                 <div class="input-field col s12 m6">
                                                     <select id="role" required>
                                                         <option value="" disabled selected>Pilih Role</option>
-                                                        <option value="admin">Admin</option>
-                                                        <option value="manager">Manager</option>
-                                                        <option value="analyst">Analyst</option>
+                                                        <option value="Admin">Admin</option>
+                                                        <option value="User">User</option>
                                                     </select>
                                                     <label>Role</label>
                                                 </div>
@@ -477,8 +474,8 @@
                         <label for="edit_full_name">Nama Lengkap</label>
                     </div>
                     <div class="input-field col s12 m6">
-                        <input id="edit_email" type="email" class="validate" value="manager@branchwise.com" required>
-                        <label for="edit_email">Email</label>
+                        <input id="edit_username" type="text" class="validate" value="ManagerCabang" required>
+                        <label for="edit_username">Username</label>
                     </div>
                 </div>
                 
@@ -497,8 +494,7 @@
                     <div class="input-field col s12 m6">
                         <select id="edit_role" required>
                             <option value="admin">Admin</option>
-                            <option value="manager" selected>Manager</option>
-                            <option value="analyst">Analyst</option>
+                            <option value="User" selected>User</option>
                         </select>
                         <label>Role</label>
                     </div>

@@ -230,7 +230,7 @@
         <li><a href="matriks.php"><i class="material-icons">grid_on</i>Matriks</a></li>
         <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
         <li><div class="divider"></div></li>
-        <li><a href="logout.html"><i class="material-icons">exit_to_app</i>Keluar</a></li>
+        <li><a href="index.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
     </ul>
 
     <!-- Main Content -->

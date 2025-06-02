@@ -359,9 +359,7 @@
                         <div class="col s12 m8 l7"> 
                             <h1 class="header white-text text-lighten-2 hero-title">A smart decision support system to grow your retail business</h1>
                             <p class="flow-text white-text text-lighten-3 hero-subtitle">Temukan lokasi strategis untuk cabang toko Anda berikutnya dengan lebih cepat dan tepat. Sistem kami membantu menganalisis berbagai faktor penting, seperti kepadatan penduduk, kompetitor, aksesibilitas hingga potensi pasar lokal</p>
-                            <div class="row">
-                                <a href="login.php" id="download-button" class="btn-large waves-effect waves-light blue darken-3 hero-button btn-hover-grow pulse login-btn">Mulai</a>
-                            </div>
+                            <a href="login.php" id="download-button" class="btn-large waves-effect waves-light blue darken-3 hero-button btn-hover-grow pulse login-btn">Mulai <i class="material-icons right">arrow_forward</i></a>
                         </div>
                         <div class="col s12 m4 l5">
                         </div>

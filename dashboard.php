@@ -264,7 +264,7 @@
         <li><a href="matriks.php"><i class="material-icons">grid_on</i>Matriks</a></li>
         <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
         <li><div class="divider"></div></li>
-        <li><a href="logout.html"><i class="material-icons">exit_to_app</i>Keluar</a></li>
+        <li><a href="index.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
     </ul>
 
     <!-- Main Content -->
@@ -274,7 +274,7 @@
             <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
                 <div class="col s6">
                     <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
-                    <h1 class="page-title">Dashboard Tugas</h1>
+                    <h1 class="page-title">Dashboard Proyek</h1>
                 </div>
                 <div class="col s6 right-align">
                     <span class="btn-flat dropdown-trigger" data-target="profile-dropdown">
@@ -457,14 +457,14 @@
                 <div class="row">
                     <div class="input-field col s12">
                         <input id="task_name" type="text" class="validate" required>
-                        <label for="task_name">Judul Tugas</label>
+                        <label for="task_name">Nama Proyek</label>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="input-field col s12">
                         <textarea id="task_description" class="materialize-textarea"></textarea>
-                        <label for="task_description">Deskripsi Tugas</label>
+                        <label for="task_description">Deskripsi Proyek</label>
                     </div>
                 </div>
                 
@@ -502,7 +502,7 @@
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-red btn-flat">Batal</a>
-            <a href="#!" class="modal-close waves-effect waves-green btn blue">Simpan Tugas</a>
+            <a href="#!" class="modal-close waves-effect waves-green btn blue">Simpan</a>
         </div>
     </div>
 
@@ -546,7 +546,7 @@
             $('.edit-btn').click(function() {
                 const taskCard = $(this).closest('.task-card');
                 const taskTitle = taskCard.find('.task-title').text();
-                $('#add-task-modal h4').text(`Edit Tugas: ${taskTitle}`);
+                $('#add-task-modal h4').text(`Edit Proyek: ${taskTitle}`);
                 $('#add-task-modal').modal('open');
             });
         });

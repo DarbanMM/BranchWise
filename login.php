@@ -200,7 +200,7 @@
             <div class="input-field">
                 <label for="password">Password</label>
                 <input type="password" id="password" class="validate">
-                <a href="#" style="font-size: 13px; color: #3498db; display: block; margin-top: 5px;">Lupa Password?</a>
+                <a href="https://wa.me/qr/ZAB5NJRTIWNBE1" style="font-size: 13px; color: #3498db; display: block; margin-top: 5px;">Lupa Password?</a>
             </div>
             
             <div class="password-hint">

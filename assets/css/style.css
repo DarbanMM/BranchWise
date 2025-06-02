@@ -367,10 +367,21 @@ nav .btn {
 
 /* Hero Button */
 .hero-button {
-    font-size: 1.1rem; /* Font size for the hero button text */
-    padding: 0 30px; /* Horizontal padding for the button */
-    height: 50px; /* Button height */
-    line-height: 50px; /* Vertically align text in the button */
+  font-size: 1.1rem; /* Font size for the hero button text */
+  padding: 0 30px; /* Horizontal padding for the button */
+  height: 50px; /* Button height */
+  line-height: 50px; /* Vertically align text in the button */
+  border-radius: 50px !important; /* Membuat tombol sangat melengkung seperti kapsul */
+  display: inline-flex; /* Menggunakan flexbox untuk perataan konten (teks dan ikon) */
+  align-items: center; /* Pusatkan item secara vertikal dalam tombol */
+  justify-content: center; /* Pusatkan item secara horizontal dalam tombol */
+}
+
+/* Tambahkan aturan baru untuk ikon di dalam tombol hero */
+.hero-button i.material-icons {
+  margin-left: 8px; /* Memberi jarak antara teks "Mulai" dan ikon panah */
+  font-size: 20px; /* Sesuaikan ukuran ikon jika perlu */
+  line-height: inherit; /* Pastikan line-height ikon mengikuti parent */
 }
 
 /* Materialize button overrides for consistent blue color */
