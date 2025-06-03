@@ -5,19 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kriteria & Bobot - BranchWise</title>
     
-    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Custom CSS -->
     <style>
         :root {
             --primary-color: #1565c0;
@@ -215,7 +210,6 @@
     </style>
 </head>
 <body>
-    <!-- Side Navigation -->
     <ul id="slide-out" class="sidenav sidenav-fixed">
         <li>
             <div class="user-view">
@@ -233,9 +227,7 @@
         <li><a href="index.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
     </ul>
 
-    <!-- Main Content -->
     <main>
-        <!-- Header -->
         <div class="header">
             <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
                 <div class="col s6">
@@ -243,25 +235,28 @@
                     <h1 class="page-title">Kriteria & Bobot</h1>
                 </div>
                 <div class="col s6 right-align">
-                    <span class="btn-flat dropdown-trigger" data-target="profile-dropdown">
+                    <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
                         <i class="material-icons left">account_circle</i>
                         Username
                     </span>
                 </div>
-            </div>
+                </div>
         </div>
 
-        <!-- Content -->
         <div class="content-wrapper">
             <div class="card">
-            <div class="card-header">
-                <div class="row" style="margin-bottom: 0; width: 100%;"> <div class="col s12 m6"> <h2 class="card-title">Daftar Kriteria</h2>
-                    </div>
-                    <div class="col s12 m6 right-align"> <a href="#add-criteria-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
-                            <i class="material-icons left">add</i>Tambah Kriteria
-                        </a>
-                    </div>
-                </div> </div>
+                <div class="card-header">
+                    <div class="row" style="margin-bottom: 0; width: 100%;"> 
+                        <div class="col s12 m6"> 
+                            <h2 class="card-title">Daftar Kriteria</h2>
+                        </div>
+                        <div class="col s12 m6 right-align"> 
+                            <a href="#add-criteria-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
+                                <i class="material-icons left">add</i>Tambah Kriteria
+                            </a>
+                        </div>
+                    </div> 
+                </div>
                 
                 <div class="table-responsive">
                     <table>
@@ -272,17 +267,17 @@
                                 <th>Nama Kriteria</th>
                                 <th>Bobot</th>
                                 <th>Jenis</th>
-                                <th>Aksi</th>
+                                <th>Nilai Kriteria</th> <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>1</td>
                                 <td>C1</td>
-                                <td>Harga</td>
+                                <td>Biaya Sewa</td>
                                 <td>30%</td>
                                 <td><span class="badge badge-cost">Cost</span></td>
-                                <td>
+                                <td>0-10</td> <td>
                                     <button class="action-btn edit-btn" title="Edit">
                                         <i class="material-icons">edit</i>
                                     </button>
@@ -294,10 +289,10 @@
                             <tr>
                                 <td>2</td>
                                 <td>C2</td>
-                                <td>Kualitas</td>
+                                <td>Jumlah Penduduk</td>
                                 <td>25%</td>
                                 <td><span class="badge badge-benefit">Benefit</span></td>
-                                <td>
+                                <td>0-10</td> <td>
                                     <button class="action-btn edit-btn" title="Edit">
                                         <i class="material-icons">edit</i>
                                     </button>
@@ -309,10 +304,10 @@
                             <tr>
                                 <td>3</td>
                                 <td>C3</td>
-                                <td>Pelayanan</td>
+                                <td>Aksesibilitas</td>
                                 <td>20%</td>
                                 <td><span class="badge badge-benefit">Benefit</span></td>
-                                <td>
+                                <td>0-10</td> <td>
                                     <button class="action-btn edit-btn" title="Edit">
                                         <i class="material-icons">edit</i>
                                     </button>
@@ -324,10 +319,10 @@
                             <tr>
                                 <td>4</td>
                                 <td>C4</td>
-                                <td>Lokasi</td>
+                                <td>Daya Beli</td>
                                 <td>15%</td>
                                 <td><span class="badge badge-benefit">Benefit</span></td>
-                                <td>
+                                <td>0-10</td> <td>
                                     <button class="action-btn edit-btn" title="Edit">
                                         <i class="material-icons">edit</i>
                                     </button>
@@ -339,10 +334,10 @@
                             <tr>
                                 <td>5</td>
                                 <td>C5</td>
-                                <td>Waktu Pengiriman</td>
+                                <td>Pesaing</td>
                                 <td>10%</td>
                                 <td><span class="badge badge-cost">Cost</span></td>
-                                <td>
+                                <td>0-10</td> <td>
                                     <button class="action-btn edit-btn" title="Edit">
                                         <i class="material-icons">edit</i>
                                     </button>
@@ -362,7 +357,6 @@
         </div>
     </main>
 
-    <!-- Add Criteria Modal -->
     <div id="add-criteria-modal" class="modal">
         <div class="modal-content">
             <h4>Tambah Kriteria Baru</h4>
@@ -392,7 +386,14 @@
                         <label>Jenis Kriteria</label>
                     </div>
                 </div>
-            </form>
+                
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="criteria_value_unit" type="text" class="validate">
+                        <label for="criteria_value_unit">Nilai Kriteria (misal: 0-10, juta jiwa, ribu)</label>
+                    </div>
+                </div>
+                </form>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-red btn-flat">Batal</a>
@@ -400,18 +401,16 @@
         </div>
     </div>
 
-    <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     
-    <!-- Custom JavaScript -->
     <script>
         $(document).ready(function(){
             // Initialize sidenav
             $('.sidenav').sidenav();
             
-            // Initialize dropdown
-            $('.dropdown-trigger').dropdown();
+            // Perubahan: Menghapus inisialisasi dropdown karena elemennya telah dihapus dari HTML
+            // $('.dropdown-trigger').dropdown(); 
             
             // Initialize modal
             $('.modal').modal();
@@ -434,15 +433,24 @@
             // Edit button functionality
             $('.edit-btn').click(function() {
                 const criteriaRow = $(this).closest('tr');
+                const criteriaCode = criteriaRow.find('td:nth-child(2)').text(); 
                 const criteriaName = criteriaRow.find('td:nth-child(3)').text();
+                const criteriaWeight = criteriaRow.find('td:nth-child(4)').text().replace('%', '');
+                const criteriaType = criteriaRow.find('td:nth-child(5) span').text().toLowerCase();
+                const criteriaValueUnit = criteriaRow.find('td:nth-child(6)').text(); // Perubahan: Ambil nilai kriteria
+
+                // Set modal title
                 $('#add-criteria-modal h4').text(`Edit Kriteria: ${criteriaName}`);
                 
                 // Fill form with existing data
-                $('#criteria_code').val(criteriaRow.find('td:nth-child(2)').text());
+                $('#criteria_code').val(criteriaCode);
                 $('#criteria_name').val(criteriaName);
-                $('#criteria_weight').val(criteriaRow.find('td:nth-child(4)').text().replace('%', ''));
-                $('#criteria_type').val(criteriaRow.find('td:nth-child(5) span').text().toLowerCase());
-                $('select').formSelect();
+                $('#criteria_weight').val(criteriaWeight);
+                $('#criteria_type').val(criteriaType);
+                $('#criteria_value_unit').val(criteriaValueUnit); // Perubahan: Isi input Nilai Kriteria
+
+                $('select').formSelect();     
+                M.updateTextFields();         
                 
                 $('#add-criteria-modal').modal('open');
             });

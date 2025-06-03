@@ -267,7 +267,7 @@
                 <div class="card-header">
                     <h2 class="card-title">Matriks Keputusan</h2>
                     <a href="#!" class="btn waves-effect waves-light blue darken-2">
-                        <i class="material-icons left">save</i>Simpan Perubahan
+                        <i class="material-icons left">percent</i>Memperbarui Perhitugan
                     </a>
                 </div>
                 
@@ -280,17 +280,17 @@
                                 <th colspan="5" class="criteria-header">Kriteria</th>
                             </tr>
                             <tr>
-                                <th class="criteria-subheader">C1<br>Harga (30%)</th>
-                                <th class="criteria-subheader">C2<br>Kualitas (25%)</th>
-                                <th class="criteria-subheader">C3<br>Pelayanan (20%)</th>
-                                <th class="criteria-subheader">C4<br>Lokasi (15%)</th>
-                                <th class="criteria-subheader">C5<br>Waktu Pengiriman (10%)</th>
+                                <th class="criteria-subheader">C1<br>Biaya Sewa (0-10)</th>
+                                <th class="criteria-subheader">C2<br>Jumlah Penduduk (0-10)</th>
+                                <th class="criteria-subheader">C3<br>Aksesibilitas (0-10)</th>
+                                <th class="criteria-subheader">C4<br>Daya Beli (0-10)</th>
+                                <th class="criteria-subheader">C5<br>Pesaing (0-10)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>1</td>
-                                <td class="alternatif-cell">Alternatif A</td>
+                                <td class="alternatif-cell">Senyan Baru</td>
                                 <td class="value-cell">4.5</td>
                                 <td class="value-cell">3.8</td>
                                 <td class="value-cell">4.2</td>
@@ -299,7 +299,7 @@
                             </tr>
                             <tr>
                                 <td>2</td>
-                                <td class="alternatif-cell">Alternatif B</td>
+                                <td class="alternatif-cell">Grand Hotel</td>
                                 <td class="value-cell">3.2</td>
                                 <td class="value-cell">4.5</td>
                                 <td class="value-cell">4.0</td>
@@ -308,7 +308,7 @@
                             </tr>
                             <tr>
                                 <td>3</td>
-                                <td class="alternatif-cell">Alternatif C</td>
+                                <td class="alternatif-cell">Tunjungan Plaza</td>
                                 <td class="value-cell">4.0</td>
                                 <td class="value-cell">4.2</td>
                                 <td class="value-cell">3.5</td>
@@ -317,7 +317,7 @@
                             </tr>
                             <tr>
                                 <td>4</td>
-                                <td class="alternatif-cell">Alternatif D</td>
+                                <td class="alternatif-cell">Bandung Timur</td>
                                 <td class="value-cell">3.8</td>
                                 <td class="value-cell">3.5</td>
                                 <td class="value-cell">4.5</td>
@@ -326,7 +326,7 @@
                             </tr>
                             <tr>
                                 <td>5</td>
-                                <td class="alternatif-cell">Alternatif E</td>
+                                <td class="alternatif-cell">Mall Bali Galeria</td>
                                 <td class="value-cell">4.2</td>
                                 <td class="value-cell">4.0</td>
                                 <td class="value-cell">3.8</td>
@@ -353,17 +353,17 @@
                                 <th colspan="5" class="criteria-header">Kriteria</th>
                             </tr>
                             <tr>
-                                <th class="criteria-subheader">C1<br>Harga (30%)</th>
-                                <th class="criteria-subheader">C2<br>Kualitas (25%)</th>
-                                <th class="criteria-subheader">C3<br>Pelayanan (20%)</th>
-                                <th class="criteria-subheader">C4<br>Lokasi (15%)</th>
-                                <th class="criteria-subheader">C5<br>Waktu Pengiriman (10%)</th>
+                                <th class="criteria-subheader">C1<br>Biaya Sewa (0-10)</th>
+                                <th class="criteria-subheader">C2<br>Jumlah Penduduk (0-10)</th>
+                                <th class="criteria-subheader">C3<br>Aksesibilitas (0-10)</th>
+                                <th class="criteria-subheader">C4<br>Daya Beli (0-10)</th>
+                                <th class="criteria-subheader">C5<br>Pesaing (0-10)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>1</td>
-                                <td class="alternatif-cell">Alternatif A</td>
+                                <td class="alternatif-cell">Senyan Baru</td>
                                 <td class="value-cell">0.80</td>
                                 <td class="value-cell">0.84</td>
                                 <td class="value-cell">0.93</td>
@@ -372,7 +372,7 @@
                             </tr>
                             <tr>
                                 <td>2</td>
-                                <td class="alternatif-cell">Alternatif B</td>
+                                <td class="alternatif-cell">Grand Hotel</td>
                                 <td class="value-cell">0.71</td>
                                 <td class="value-cell">1.00</td>
                                 <td class="value-cell">0.89</td>
@@ -381,7 +381,7 @@
                             </tr>
                             <tr>
                                 <td>3</td>
-                                <td class="alternatif-cell">Alternatif C</td>
+                                <td class="alternatif-cell">Tunjungan Plaza</td>
                                 <td class="value-cell">0.89</td>
                                 <td class="value-cell">0.93</td>
                                 <td class="value-cell">0.78</td>
@@ -390,7 +390,7 @@
                             </tr>
                             <tr>
                                 <td>4</td>
-                                <td class="alternatif-cell">Alternatif D</td>
+                                <td class="alternatif-cell">Bandung Timur</td>
                                 <td class="value-cell">0.84</td>
                                 <td class="value-cell">0.78</td>
                                 <td class="value-cell">1.00</td>
@@ -399,7 +399,7 @@
                             </tr>
                             <tr>
                                 <td>5</td>
-                                <td class="alternatif-cell">Alternatif E</td>
+                                <td class="alternatif-cell">Mall Bali Galeria</td>
                                 <td class="value-cell">0.93</td>
                                 <td class="value-cell">0.89</td>
                                 <td class="value-cell">0.84</td>

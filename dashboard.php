@@ -5,19 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Manajemen Tugas</title>
     
-    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Custom CSS -->
     <style>
         :root {
             --primary-color: #1565c0;
@@ -249,7 +244,6 @@
     </style>
 </head>
 <body>
-    <!-- Side Navigation -->
     <ul id="slide-out" class="sidenav sidenav-fixed">
         <li>
             <div class="user-view">
@@ -267,9 +261,7 @@
         <li><a href="index.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
     </ul>
 
-    <!-- Main Content -->
     <main>
-        <!-- Header -->
         <div class="header">
             <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
                 <div class="col s6">
@@ -277,29 +269,26 @@
                     <h1 class="page-title">Dashboard Proyek</h1>
                 </div>
                 <div class="col s6 right-align">
-                    <span class="btn-flat dropdown-trigger" data-target="profile-dropdown">
+                    <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
                         <i class="material-icons left">account_circle</i>
-                        Username
+                        USERNAME
                     </span>
                 </div>
-            </div>
+                </div>
         </div>
 
-        <!-- Add Task Button -->
         <div class="add-task-btn">
             <a href="#add-task-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
-                <i class="material-icons left">add</i>Tambah Tugas Baru
+                <i class="material-icons left">add</i>Tambah Proyek Baru
             </a>
         </div>
 
-        <!-- Task Grid -->
         <div class="task-grid">
-            <!-- Tugas 1 -->
             <div class="task-card">
                 <div class="task-header">
-                    <h2 class="task-title">Cabang Baru Mertoyudan</h2>
+                    <h2 class="task-title" data-task-title="Cabang Baru Mertoyudan">Cabang Baru Mertoyudan</h2>
                     <div class="task-actions">
-                        <button class="action-btn edit-btn" title="Edit">
+                        <button class="action-btn edit-btn modal-trigger" href="#edit-task-modal" title="Edit">
                             <i class="material-icons">edit</i>
                         </button>
                         <button class="action-btn delete-btn" title="Hapus">
@@ -311,31 +300,30 @@
                 <div class="task-info">
                     <div class="info-row">
                         <span class="info-label">Prioritas:</span>
-                        <span class="info-value priority-high">Tinggi</span>
+                        <span class="info-value priority-high" data-task-priority="high">Tinggi</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Deadline:</span>
-                        <span class="info-value">15 Juni 2023</span>
+                        <span class="info-value" data-task-deadline="15 Jun 2023">15 Juni 2023</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Penanggung Jawab:</span>
-                        <span class="info-value">Andi</span>
+                        <span class="info-value" data-task-assignee="Andi">Andi</span>
                     </div>
                 </div>
                 
-                <span class="status-badge status-progress">Dalam Pengerjaan</span>
+                <span class="status-badge status-progress" data-task-status="progress">Dalam Pengerjaan</span>
                 
-                <div class="task-description">
+                <div class="task-description" data-task-description="Di pilihan cabang Mertoyudan ada beberapa kendala, terutama perizinan karena berada di daerah dekat wisata.">
                     Di pilihan cabang Mertoyudan ada beberapa kendala, terutama perizinan karena berada di daerah dekat wisata.
                 </div>
             </div>
             
-            <!-- Tugas 2 -->
             <div class="task-card">
                 <div class="task-header">
-                    <h2 class="task-title">Cabang Baru di Blondo</h2>
+                    <h2 class="task-title" data-task-title="Cabang Baru di Blondo">Cabang Baru di Blondo</h2>
                     <div class="task-actions">
-                        <button class="action-btn edit-btn" title="Edit">
+                        <button class="action-btn edit-btn modal-trigger" href="#edit-task-modal" title="Edit">
                             <i class="material-icons">edit</i>
                         </button>
                         <button class="action-btn delete-btn" title="Hapus">
@@ -347,31 +335,30 @@
                 <div class="task-info">
                     <div class="info-row">
                         <span class="info-label">Prioritas:</span>
-                        <span class="info-value priority-medium">Sedang</span>
+                        <span class="info-value priority-medium" data-task-priority="medium">Sedang</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Deadline:</span>
-                        <span class="info-value">20 Juni 2023</span>
+                        <span class="info-value" data-task-deadline="20 Jun 2023">20 Juni 2023</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Penanggung Jawab:</span>
-                        <span class="info-value">Budi</span>
+                        <span class="info-value" data-task-assignee="Budi">Budi</span>
                     </div>
                 </div>
                 
-                <span class="status-badge status-todo">Belum Dimulai</span>
+                <span class="status-badge status-todo" data-task-status="todo">Belum Dimulai</span>
                 
-                <div class="task-description">
+                <div class="task-description" data-task-description="Pastikan bahwa spot belum dibeli oleh pihak lain karena sangat strategis.">
                     Pastikan bahwa spot belum dibeli oleh pihak lain karena sangat strategis.
                 </div>
             </div>
             
-            <!-- Tugas 3 -->
             <div class="task-card">
                 <div class="task-header">
-                    <h2 class="task-title">Perkiraan Cabang Potensial di Muntilan</h2>
+                    <h2 class="task-title" data-task-title="Perkiraan Cabang Potensial di Muntilan">Perkiraan Cabang Potensial di Muntilan</h2>
                     <div class="task-actions">
-                        <button class="action-btn edit-btn" title="Edit">
+                        <button class="action-btn edit-btn modal-trigger" href="#edit-task-modal" title="Edit">
                             <i class="material-icons">edit</i>
                         </button>
                         <button class="action-btn delete-btn" title="Hapus">
@@ -383,31 +370,30 @@
                 <div class="task-info">
                     <div class="info-row">
                         <span class="info-label">Prioritas:</span>
-                        <span class="info-value priority-high">Tinggi</span>
+                        <span class="info-value priority-high" data-task-priority="high">Tinggi</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Deadline:</span>
-                        <span class="info-value">10 Juni 2023</span>
+                        <span class="info-value" data-task-deadline="10 Jun 2023">10 Juni 2023</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Penanggung Jawab:</span>
-                        <span class="info-value">Citra</span>
+                        <span class="info-value" data-task-assignee="Citra">Citra</span>
                     </div>
                 </div>
                 
-                <span class="status-badge status-completed">Selesai</span>
+                <span class="status-badge status-completed" data-task-status="completed">Selesai</span>
                 
-                <div class="task-description">
+                <div class="task-description" data-task-description="Hasil dari pendirian cabang di Muntilan berdasarkan rekomendasi cukup memuaskan.">
                     Hasil dari pendirian cabang di Muntilan berdasarkan rekomendasi cukup memuaskan.
                 </div>
             </div>
             
-            <!-- Tugas 4 -->
             <div class="task-card">
                 <div class="task-header">
-                    <h2 class="task-title">Cabang Tambahan di Secang</h2>
+                    <h2 class="task-title" data-task-title="Cabang Tambahan di Secang">Cabang Tambahan di Secang</h2>
                     <div class="task-actions">
-                        <button class="action-btn edit-btn" title="Edit">
+                        <button class="action-btn edit-btn modal-trigger" href="#edit-task-modal" title="Edit">
                             <i class="material-icons">edit</i>
                         </button>
                         <button class="action-btn delete-btn" title="Hapus">
@@ -419,32 +405,30 @@
                 <div class="task-info">
                     <div class="info-row">
                         <span class="info-label">Prioritas:</span>
-                        <span class="info-value priority-low">Rendah</span>
+                        <span class="info-value priority-low" data-task-priority="low">Rendah</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Deadline:</span>
-                        <span class="info-value">25 Juni 2023</span>
+                        <span class="info-value" data-task-deadline="25 Jun 2023">25 Juni 2023</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Penanggung Jawab:</span>
-                        <span class="info-value">Doni</span>
+                        <span class="info-value" data-task-assignee="Doni">Doni</span>
                     </div>
                 </div>
                 
-                <span class="status-badge status-progress">Dalam Pengerjaan</span>
+                <span class="status-badge status-progress" data-task-status="progress">Dalam Pengerjaan</span>
                 
-                <div class="task-description">
+                <div class="task-description" data-task-description="MEndapatkan potongan untuk biaya bahan baku.">
                     MEndapatkan potongan untuk biaya bahan baku.
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Add Task Modal -->
     <div id="add-task-modal" class="modal">
         <div class="modal-content">
-            <h4>Tambah Tugas Baru</h4>
-            <form>
+            <h4>Tambah Proyek Baru</h4> <form>
                 <div class="row">
                     <div class="input-field col s12">
                         <input id="task_name" type="text" class="validate" required>
@@ -497,28 +481,80 @@
         </div>
     </div>
 
-    <!-- JavaScript Libraries -->
+    <div id="edit-task-modal" class="modal">
+        <div class="modal-content">
+            <h4>Edit Proyek</h4> <form>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="edit_task_name" type="text" class="validate" required>
+                        <label for="edit_task_name">Nama Proyek</label>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea id="edit_task_description" class="materialize-textarea"></textarea>
+                        <label for="edit_task_description">Deskripsi Proyek</label>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="input-field col s12 m6">
+                        <select id="edit_task_priority" required>
+                            <option value="" disabled selected>Pilih prioritas</option>
+                            <option value="high">Tinggi</option>
+                            <option value="medium">Sedang</option>
+                            <option value="low">Rendah</option>
+                        </select>
+                        <label>Prioritas</label>
+                    </div>
+                    <div class="input-field col s12 m6">
+                        <select id="edit_task_status" required>
+                            <option value="todo" selected>Belum Dimulai</option>
+                            <option value="progress">Dalam Pengerjaan</option>
+                            <option value="completed">Selesai</option>
+                        </select>
+                        <label>Status</label>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="input-field col s12 m6">
+                        <input id="edit_task_deadline" type="text" class="datepicker">
+                        <label for="edit_task_deadline">Deadline</label>
+                    </div>
+                    <div class="input-field col s12 m6">
+                        <input id="edit_task_assignee" type="text">
+                        <label for="edit_task_assignee">Penanggung Jawab</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Batal</a>
+            <a href="#!" class="modal-close waves-effect waves-green btn blue">Simpan Perubahan</a> </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     
-    <!-- Custom JavaScript -->
     <script>
         $(document).ready(function(){
             // Initialize sidenav
             $('.sidenav').sidenav();
             
-            // Initialize dropdown
-            $('.dropdown-trigger').dropdown();
+            // Perubahan: Menghapus inisialisasi dropdown karena elemennya telah dihapus dari HTML
+            // $('.dropdown-trigger').dropdown(); 
             
-            // Initialize modal
-            $('.modal').modal();
+            // Initialize modal (keduanya sekarang diinisialisasi)
+            $('#add-task-modal').modal(); // Inisialisasi modal Tambah Proyek
+            $('#edit-task-modal').modal(); // Inisialisasi modal Edit Proyek yang baru
             
-            // Initialize select
+            // Initialize select (penting untuk modal)
             $('select').formSelect();
             
-            // Initialize datepicker
+            // Initialize datepicker (penting untuk modal)
             $('.datepicker').datepicker({
-                format: 'dd mmm yyyy',
+                format: 'dd mmm yyyy', // Format tanggal
                 autoClose: true
             });
             
@@ -533,13 +569,40 @@
                 }
             });
             
-            // Edit button functionality
+            // Perubahan: Edit button functionality
             $('.edit-btn').click(function() {
                 const taskCard = $(this).closest('.task-card');
-                const taskTitle = taskCard.find('.task-title').text();
-                $('#add-task-modal h4').text(`Edit Proyek: ${taskTitle}`);
-                $('#add-task-modal').modal('open');
+                const taskTitle = taskCard.find('.task-title').attr('data-task-title'); // Ambil dari data attribute
+                const taskDescription = taskCard.find('.task-description').attr('data-task-description');
+                const taskPriority = taskCard.find('.priority-high, .priority-medium, .priority-low').attr('data-task-priority');
+                const taskDeadline = taskCard.find('.info-row:contains("Deadline:") .info-value').attr('data-task-deadline'); // Ambil dari data attribute
+                const taskAssignee = taskCard.find('.info-row:contains("Penanggung Jawab:") .info-value').attr('data-task-assignee');
+                const taskStatus = taskCard.find('.status-badge').attr('data-task-status');
+
+                // Isi formulir di modal edit
+                $('#edit-task-modal #edit_task_name').val(taskTitle);
+                $('#edit-task-modal #edit_task_description').val(taskDescription);
+                M.textareaAutoResize($('#edit-task-modal #edit_task_description')); // Penting untuk textarea materialize
+
+                // Set nilai select dan update display Materialize
+                $('#edit-task-modal #edit_task_priority').val(taskPriority);
+                $('#edit-task-modal #edit_task_status').val(taskStatus);
+                $('select').formSelect(); // Re-initialize selects after setting value
+
+                // Set deadline dan update datepicker
+                const deadlineDate = new Date(taskDeadline); // Convert string to Date object
+                $('#edit-task-modal #edit_task_deadline').datepicker('setDate', deadlineDate); // Set datepicker value
+                $('#edit-task-modal #edit_task_deadline').val(taskDeadline); // Set input value
+
+                $('#edit-task-modal #edit_task_assignee').val(taskAssignee);
+                
+                // Panggil label.active untuk memastikan label naik
+                M.updateTextFields(); // Memastikan label input Materialize aktif jika input terisi
+
+                // Buka modal edit
+                $('#edit-task-modal').modal('open');
             });
+            // Akhir Perubahan: Edit button functionality
         });
     </script>
 </body>

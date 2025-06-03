@@ -111,8 +111,8 @@
         
         .card .card-title { 
             font-weight: 600;
-            font-size: 1.25rem; /* Diubah dari 1.3rem menjadi 1.25rem */
-            line-height: 1.2;   /* Ditambahkan untuk mengontrol tinggi baris */
+            font-size: 1.25rem; 
+            line-height: 1.2;   
             margin: 0; 
             display: block;
         }
@@ -126,20 +126,19 @@
         }
         
         /* Table Wrapper Styles */
-        .table-responsive { /* Ini adalah div wrapper baru untuk tabel */
+        .table-responsive { 
             overflow-x: auto;
-            border-radius: 0 0 8px 8px; /* Sudut bawah yang melengkung */
+            border-radius: 0 0 8px 8px; 
             border: 1px solid rgba(0,0,0,0.1);
-            border-top: none; /* Menghapus border atas agar menyatu dengan card-header */
+            border-top: none; 
             overflow: hidden;
-            margin-bottom: 24px; /* Memberi jarak ke elemen di bawahnya (pagination) */
+            margin-bottom: 24px; 
         }
 
         /* Table Styles (hanya untuk <table> itu sendiri) */
         .responsive-table {
             width: 100%;
-            border-collapse: collapse; /* Pastikan sel tabel tidak memiliki spasi */
-            /* Properti seperti border-radius, overflow, border dipindahkan ke .table-responsive */
+            border-collapse: collapse; 
         }
         
         .responsive-table th {
@@ -156,7 +155,7 @@
         }
 
         .responsive-table td {
-            border-bottom: 1px solid #eee; /* Border bawah untuk setiap sel */
+            border-bottom: 1px solid #eee; 
         }
         
         /* Button Styles */
@@ -222,19 +221,28 @@
         
         /* Action Buttons */
         .action-btn {
-            padding: 0 8px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            background: none; 
+            border: none; 
+            cursor: pointer;
+            color: #7f8c8d; 
+            font-size: 16px; 
+            transition: color 0.2s, background-color 0.2s; 
+            padding: 5px; 
+            border-radius: 50%; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
         }
         
         .action-btn:hover {
-            background-color: rgba(0,0,0,0.05);
+            background-color: rgba(0,0,0,0.05); 
+            color: var(--primary-color); 
         }
         
+        .delete-btn:hover { 
+            color: #e74c3c; 
+        }
+
         /* Modal Styles */
         .modal {
             border-radius: 8px;
@@ -298,12 +306,12 @@
                     <h1 class="page-title">Lokasi Cabang</h1>
                 </div>
                 <div class="col s6 right-align">
-                    <span class="btn-flat dropdown-trigger" data-target="profile-dropdown">
+                    <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
                         <i class="material-icons left">account_circle</i>
                         Username
                     </span>
                 </div>
-            </div>
+                </div>
         </div>
 
         <div class="content-wrapper">
@@ -323,7 +331,8 @@
                             </div>
                         </div>
                         
-                        <div class="table-responsive"> <table class="responsive-table highlight">
+                        <div class="table-responsive"> 
+                            <table class="responsive-table highlight">
                                 <thead>
                                     <tr>
                                         <th>No</th>
@@ -344,13 +353,13 @@
                                         <td><span class="badge active">Aktif</span></td>
                                         <td>350</td>
                                         <td>
-                                            <a href="#view-branch-modal" class="btn-flat action-btn blue-text modal-trigger">
+                                            <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
                                                 <i class="material-icons">visibility</i>
                                             </a>
-                                            <a href="#edit-branch-modal" class="btn-flat action-btn blue-text modal-trigger">
+                                            <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
                                                 <i class="material-icons">edit</i>
                                             </a>
-                                            <a href="#!" class="btn-flat action-btn red-text">
+                                            <a href="#!" class="btn-flat action-btn delete-btn">
                                                 <i class="material-icons">delete</i>
                                             </a>
                                         </td>
@@ -363,13 +372,13 @@
                                         <td><span class="badge active">Aktif</span></td>
                                         <td>420</td>
                                         <td>
-                                            <a href="#view-branch-modal" class="btn-flat action-btn blue-text modal-trigger">
+                                            <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
                                                 <i class="material-icons">visibility</i>
                                             </a>
-                                            <a href="#edit-branch-modal" class="btn-flat action-btn blue-text modal-trigger">
+                                            <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
                                                 <i class="material-icons">edit</i>
                                             </a>
-                                            <a href="#!" class="btn-flat action-btn red-text">
+                                            <a href="#!" class="btn-flat action-btn delete-btn">
                                                 <i class="material-icons">delete</i>
                                             </a>
                                         </td>
@@ -382,13 +391,13 @@
                                         <td><span class="badge active">Aktif</span></td>
                                         <td>380</td>
                                         <td>
-                                            <a href="#view-branch-modal" class="btn-flat action-btn blue-text modal-trigger">
+                                            <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
                                                 <i class="material-icons">visibility</i>
                                             </a>
-                                            <a href="#edit-branch-modal" class="btn-flat action-btn blue-text modal-trigger">
+                                            <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
                                                 <i class="material-icons">edit</i>
                                             </a>
-                                            <a href="#!" class="btn-flat action-btn red-text">
+                                            <a href="#!" class="btn-flat action-btn delete-btn">
                                                 <i class="material-icons">delete</i>
                                             </a>
                                         </td>
@@ -401,13 +410,13 @@
                                         <td><span class="badge active">Aktif</span></td>
                                         <td>310</td>
                                         <td>
-                                            <a href="#view-branch-modal" class="btn-flat action-btn blue-text modal-trigger">
+                                            <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
                                                 <i class="material-icons">visibility</i>
                                             </a>
-                                            <a href="#edit-branch-modal" class="btn-flat action-btn blue-text modal-trigger">
+                                            <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
                                                 <i class="material-icons">edit</i>
                                             </a>
-                                            <a href="#!" class="btn-flat action-btn red-text">
+                                            <a href="#!" class="btn-flat action-btn delete-btn">
                                                 <i class="material-icons">delete</i>
                                             </a>
                                         </td>
@@ -420,13 +429,13 @@
                                         <td><span class="badge inactive">Renovasi</span></td>
                                         <td>290</td>
                                         <td>
-                                            <a href="#view-branch-modal" class="btn-flat action-btn blue-text modal-trigger">
+                                            <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
                                                 <i class="material-icons">visibility</i>
                                             </a>
-                                            <a href="#edit-branch-modal" class="btn-flat action-btn blue-text modal-trigger">
+                                            <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
                                                 <i class="material-icons">edit</i>
                                             </a>
-                                            <a href="#!" class="btn-flat action-btn red-text">
+                                            <a href="#!" class="btn-flat action-btn delete-btn">
                                                 <i class="material-icons">delete</i>
                                             </a>
                                         </td>
@@ -456,25 +465,16 @@
             <div class="row">
                 <div class="col s12 m6">
                     <div class="map-container">
-                        <iframe src="https://maps.google.com/maps?q=jakarta&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen></iframe>
+                        <iframe id="view_branch_map_iframe" src="https://maps.google.com/maps?q=jakarta&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen></iframe>
                     </div>
                 </div>
-                <div class="col s12 m6">
-                    <h5>Tunjungan Plaza</h5>
-                    <p><i class="material-icons left">location_on</i>Jl. Asia Afrika No.8, Jakarta</p>
-                    <p><i class="material-icons left">phone</i>(021) 12345678</p>
-                    <p><i class="material-icons left">email</i>senayan@branchwise.com</p>
-                    <p><i class="material-icons left">access_time</i>10:00 - 22:00</p>
-                    <p><i class="material-icons left">straighten</i>350 m²</p>
-                    <p><i class="material-icons left">people</i>15 Karyawan</p>
-                    <p><i class="material-icons left">date_range</i>Berdiri sejak: 15 Jan 2018</p>
-                </div>
+                <div class="col s12 m6"> 
+                    <h5 id="view_branch_name">Tunjungan Plaza</h5> <p><i class="material-icons left">location_on</i><span id="view_branch_address">Jl. Asia Afrika No.8, Jakarta</span></p> <p><i class="material-icons left">phone</i><span id="view_branch_phone">(021) 12345678</span></p> <p><i class="material-icons left">email</i><span id="view_branch_email">senayan@branchwise.com</span></p> <p><i class="material-icons left">straighten</i><span id="view_branch_size">350</span> m²</p> </div>
             </div>
             <div class="row">
                 <div class="col s12">
                     <h5>Informasi Tambahan</h5>
-                    <p>Cabang utama yang terletak di pusat perbelanjaan elit dengan traffic pengunjung tinggi. Memiliki fasilitas lengkap termasuk ruang fitting dan lounge VIP.</p>
-                </div>
+                    <p id="view_branch_notes">Terletak di pusat perbelanjaan elit dengan traffic pengunjung tinggi.</p> </div>
             </div>
         </div>
         <div class="modal-footer">
@@ -516,22 +516,11 @@
                 </div>
                 
                 <div class="row">
-                    <div class="input-field col s12 m4">
+                    <div class="input-field col s12 m6"> 
                         <input id="branch_size" type="number" class="validate">
                         <label for="branch_size">Luas (m²)</label>
                     </div>
-                    <div class="input-field col s12 m4">
-                        <input id="branch_employees" type="number" class="validate">
-                        <label for="branch_employees">Jumlah Karyawan</label>
-                    </div>
-                    <div class="input-field col s12 m4">
-                        <input id="branch_opening" type="text" class="datepicker">
-                        <label for="branch_opening">Tanggal Berdiri</label>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="input-field col s12 m6">
+                    <div class="input-field col s12 m6"> 
                         <select id="branch_status" required>
                             <option value="active" selected>Aktif</option>
                             <option value="inactive">Nonaktif</option>
@@ -539,12 +528,14 @@
                         </select>
                         <label>Status Cabang</label>
                     </div>
-                    <div class="input-field col s12 m6">
-                        <input id="branch_hours" type="text" class="validate">
-                        <label for="branch_hours">Jam Operasional</label>
-                    </div>
                 </div>
                 
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="branch_gmaps_link" type="url" class="validate">
+                        <label for="branch_gmaps_link">Link Google Maps</label>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="input-field col s12">
                         <textarea id="branch_notes" class="materialize-textarea"></textarea>
@@ -593,22 +584,11 @@
                 </div>
                 
                 <div class="row">
-                    <div class="input-field col s12 m4">
+                    <div class="input-field col s12 m6"> 
                         <input id="edit_branch_size" type="number" class="validate" value="350">
                         <label for="edit_branch_size">Luas (m²)</label>
                     </div>
-                    <div class="input-field col s12 m4">
-                        <input id="edit_branch_employees" type="number" class="validate" value="15">
-                        <label for="edit_branch_employees">Jumlah Karyawan</label>
-                    </div>
-                    <div class="input-field col s12 m4">
-                        <input id="edit_branch_opening" type="text" class="datepicker" value="15 Jan 2018">
-                        <label for="edit_branch_opening">Tanggal Berdiri</label>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="input-field col s12 m6">
+                    <div class="input-field col s12 m6"> 
                         <select id="edit_branch_status" required>
                             <option value="active" selected>Aktif</option>
                             <option value="inactive">Nonaktif</option>
@@ -616,15 +596,16 @@
                         </select>
                         <label>Status Cabang</label>
                     </div>
-                    <div class="input-field col s12 m6">
-                        <input id="edit_branch_hours" type="text" class="validate" value="10:00 - 22:00">
-                        <label for="edit_branch_hours">Jam Operasional</label>
-                    </div>
                 </div>
                 
                 <div class="row">
                     <div class="input-field col s12">
-                        <textarea id="edit_branch_notes" class="materialize-textarea">Cabang utama yang terletak di pusat perbelanjaan elit dengan traffic pengunjung tinggi. Memiliki fasilitas lengkap termasuk ruang fitting dan lounge VIP.</textarea>
+                        <input id="edit_branch_gmaps_link" type="url" class="validate" value="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid"> <label for="edit_branch_gmaps_link">Link Google Maps</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea id="edit_branch_notes" class="materialize-textarea">Terletak di pusat perbelanjaan elit dengan traffic pengunjung tinggi.</textarea>
                         <label for="edit_branch_notes">Catatan Tambahan</label>
                     </div>
                 </div>
@@ -644,9 +625,6 @@
             // Initialize sidenav
             $('.sidenav').sidenav();
             
-            // Initialize dropdown
-            $('.dropdown-trigger').dropdown();
-            
             // Initialize modal
             $('.modal').modal();
             
@@ -655,10 +633,81 @@
             
             // Initialize datepicker
             $('.datepicker').datepicker({
-                format: 'dd mmm yyyy',
+                format: 'dd mmmYYYY',
                 yearRange: [2000, new Date().getFullYear()],
                 autoClose: true
             });
+
+            // Perubahan: Implementasi fungsi untuk tombol edit tabel
+            $('.action-btn.modal-trigger[href="#edit-branch-modal"]').click(function() {
+                const branchRow = $(this).closest('tr');
+                
+                // Ambil data dari baris tabel (sesuaikan index td jika diperlukan)
+                const branchName = branchRow.find('td:nth-child(2)').text(); // Nama Alternatif
+                const branchAddress = branchRow.find('td:nth-child(3)').text(); // Lokasi
+                const branchCity = branchRow.find('td:nth-child(4)').text(); // Kota
+                const branchStatus = branchRow.find('td:nth-child(5) .badge').text().toLowerCase().trim(); // Status
+                const branchSize = branchRow.find('td:nth-child(6)').text().replace(' m²', '').trim(); // Luas (m²)
+                // Perubahan: Ambil link gmaps dari data attribute tombol edit
+                const branchGmapsLink = $(this).attr('data-gmaps-link'); 
+                // Perubahan: Ambil informasi tambahan dari view modal atau hardcode untuk contoh
+                const branchNotes = "Terletak di pusat perbelanjaan elit dengan traffic pengunjung tinggi."; 
+                // Anda perlu menambahkan kolom tersembunyi di tabel atau data attribute jika ini data dinamis
+
+                // Isi formulir di modal edit
+                $('#edit_branch_name').val(branchName);
+                $('#edit_branch_address').val(branchAddress);
+                $('#edit_branch_city').val(branchCity);
+                $('#edit_branch_size').val(branchSize);
+                $('#edit_branch_status').val(branchStatus);
+                $('#edit_branch_notes').val(branchNotes); // Mengisi catatan tambahan
+                $('#edit_branch_gmaps_link').val(branchGmapsLink); // Mengisi link gmaps
+
+                // Materialize specific updates untuk label dan select
+                M.updateTextFields(); // Memastikan label input Materialize naik (float)
+                $('select').formSelect(); // Re-initialize selects untuk menampilkan nilai yang benar
+
+                // Optional: Untuk modal view, jika Anda ingin memuat peta berdasarkan link gmaps saat view dibuka
+                // $('#view-branch-modal').modal({
+                //     onOpenEnd: function(modal, trigger) {
+                //         const viewGmapsLink = $(trigger).attr('data-gmaps-link');
+                //         if(viewGmapsLink) {
+                //             $('#view_branch_map_iframe').attr('src', viewGmapsLink);
+                //         }
+                //         // Mengisi data lain di modal view
+                //         $('#view_branch_name').text(branchName);
+                //         $('#view_branch_address').text(branchAddress + ', ' + branchCity); // Sesuaikan format
+                //         $('#view_branch_size').text(branchSize);
+                //         $('#view_branch_notes').text(branchNotes);
+                //         // Tambahkan pengisian data lain seperti telepon, email di sini
+                //     }
+                // });
+            });
+
+            // Perubahan: Implementasi fungsi untuk tombol view tabel
+            $('.action-btn.modal-trigger[href="#view-branch-modal"]').click(function() {
+                const branchRow = $(this).closest('tr');
+                const branchName = branchRow.find('td:nth-child(2)').text(); // Nama Alternatif
+                const branchAddress = branchRow.find('td:nth-child(3)').text(); // Lokasi
+                const branchCity = branchRow.find('td:nth-child(4)').text(); // Kota
+                const branchSize = branchRow.find('td:nth-child(6)').text().replace(' m²', '').trim(); // Luas (m²)
+                const branchGmapsLink = $(this).attr('data-gmaps-link'); // Ambil dari data attribute tombol view
+
+                // Mengisi data ke modal view
+                $('#view_branch_name').text(branchName);
+                $('#view_branch_address').text(branchAddress + ', ' + branchCity); 
+                $('#view_branch_size').text(branchSize);
+                // Karena data telepon/email tidak ada di tabel, bisa hardcode atau dari sumber lain
+                $('#view_branch_phone').text('(021) 12345678'); 
+                $('#view_branch_email').text('contact@branchwise.com');
+                $('#view_branch_notes').text('Cabang utama yang terletak di pusat perbelanjaan elit dengan traffic pengunjung tinggi. Memiliki fasilitas lengkap termasuk ruang fitting dan lounge VIP.'); 
+                
+                // Set src iframe untuk peta
+                if(branchGmapsLink) {
+                    $('#view_branch_map_iframe').attr('src', branchGmapsLink); // Mengisi iframe peta
+                }
+            });
+            // Akhir Perubahan: Implementasi fungsi untuk tombol view dan edit tabel
         });
     </script>
 </body>

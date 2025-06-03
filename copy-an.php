@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - BranchWise</title>
+    
+    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    
+    <!-- Custom CSS -->
     <style>
         :root {
             --primary-color: #1565c0;
@@ -238,6 +246,7 @@
     </style>
 </head>
 <body>
+    <!-- Side Navigation -->
     <ul id="slide-out" class="sidenav sidenav-fixed">
         <li>
             <div class="user-view">
@@ -250,18 +259,28 @@
         <li><div class="divider"></div></li>
         <li><a href="index.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
     </ul>
-    
+
+    <!-- Main Content -->
     <main>
+        <!-- Header -->
         <div class="header">
             <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
                 <div class="col s6">
                     <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
                     <h1 class="page-title">Manajemen Akun</h1>
                 </div>
+                <div class="col s6 right-align">
+                    <span class="btn-flat dropdown-trigger" data-target="profile-dropdown">
+                        <i class="material-icons left">account_circle</i>
+                        Admin
+                        </span>
                 </div>
+            </div>
         </div>
 
+        <!-- Content Wrapper -->
         <div class="content-wrapper">
+            <!-- List Akun Section (Default View) -->
             <div id="account-list">
                 <div class="row">
                     <div class="col s12">
@@ -272,7 +291,7 @@
                                         <span class="card-title">Daftar Akun</span>
                                     </div>
                                     <div class="col s12 m6 right-align">
-                                        <a href="#add-account-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
+                                        <a id="add-account-btn" class="btn waves-effect waves-light blue darken-2">
                                             <i class="material-icons left">add</i>Tambah Akun
                                         </a>
                                     </div>
@@ -357,9 +376,85 @@
                 </div>
             </div>
 
+            <!-- Tambah Akun Section (Hidden by default) -->
+            <div id="add-account" style="display: none;">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="card white">
+                            <div class="card-content">
+                                <div class="row" style="margin-bottom: 0;">
+                                    <div class="col s12 m6">
+                                        <span class="card-title">Tambah Akun Baru</span>
+                                    </div>
+                                    <div class="col s12 m6 right-align">
+                                        <a id="back-to-list" class="btn-flat waves-effect">
+                                            <i class="material-icons left">arrow_back</i>Kembali
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col s12">
+                                        <form>
+                                            <div class="row">
+                                                <div class="input-field col s12 m6">
+                                                    <input id="full_name" type="text" class="validate" required>
+                                                    <label for="full_name">Nama Lengkap</label>
+                                                </div>
+                                                <div class="input-field col s12 m6">
+                                                    <input id="username" type="text" class="validate" required>
+                                                    <label for="username">username</label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="input-field col s12 m6">
+                                                    <input id="password" type="password" class="validate" required>
+                                                    <label for="password">Password</label>
+                                                </div>
+                                                <div class="input-field col s12 m6">
+                                                    <input id="confirm_password" type="password" class="validate" required>
+                                                    <label for="confirm_password">Konfirmasi Password</label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="input-field col s12 m6">
+                                                    <select id="role" required>
+                                                        <option value="" disabled selected>Pilih Role</option>
+                                                        <option value="Admin">Admin</option>
+                                                        <option value="User">User</option>
+                                                    </select>
+                                                    <label>Role</label>
+                                                </div>
+                                                <div class="input-field col s12 m6">
+                                                    <select id="status" required>
+                                                        <option value="active" selected>Aktif</option>
+                                                        <option value="inactive">Nonaktif</option>
+                                                    </select>
+                                                    <label>Status</label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col s12 right-align">
+                                                    <button class="btn waves-effect waves-light blue darken-2" type="submit">
+                                                        <i class="material-icons left">save</i>Simpan
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
     </main>
 
+    <!-- Edit Account Modal -->
     <div id="edit-account-modal" class="modal modal-fixed-footer">
         <div class="modal-content">
             <h4>Edit Akun</h4>
@@ -410,70 +505,35 @@
         </div>
     </div>
 
-    <div id="add-account-modal" class="modal modal-fixed-footer">
-        <div class="modal-content">
-            <h4>Tambah Akun Baru</h4>
-            <form>
-                <div class="row">
-                    <div class="input-field col s12 m6">
-                        <input id="full_name" type="text" class="validate" required>
-                        <label for="full_name">Nama Lengkap</label>
-                    </div>
-                    <div class="input-field col s12 m6">
-                        <input id="username" type="text" class="validate" required>
-                        <label for="username">Username</label>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="input-field col s12 m6">
-                        <input id="password" type="password" class="validate" required>
-                        <label for="password">Password</label>
-                    </div>
-                    <div class="input-field col s12 m6">
-                        <input id="confirm_password" type="password" class="validate" required>
-                        <label for="confirm_password">Konfirmasi Password</label>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="input-field col s12 m6">
-                        <select id="role" required>
-                            <option value="" disabled selected>Pilih Role</option>
-                            <option value="Admin">Admin</option>
-                            <option value="User">User</option>
-                        </select>
-                        <label>Role</label>
-                    </div>
-                    <div class="input-field col s12 m6">
-                        <select id="status" required>
-                            <option value="active" selected>Aktif</option>
-                            <option value="inactive">Nonaktif</option>
-                        </select>
-                        <label>Status</label>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Batal</a>
-            <a href="#!" class="modal-close waves-effect waves-green btn blue">Simpan</a>
-        </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     
+    <!-- Custom JavaScript -->
     <script>
         $(document).ready(function(){
             // Initialize sidenav
             $('.sidenav').sidenav();
             
+            // Initialize dropdown
+            $('.dropdown-trigger').dropdown();
+            
             // Initialize modal
-            $('#add-account-modal').modal(); // Inisialisasi modal Tambah Akun secara spesifik
-            $('#edit-account-modal').modal(); // Inisialisasi modal Edit Akun secara spesifik
+            $('.modal').modal();
             
             // Initialize select
             $('select').formSelect();
+            
+            // Toggle between list and add account views
+            $('#add-account-btn').click(function() {
+                $('#account-list').hide();
+                $('#add-account').show();
+            });
+            
+            $('#back-to-list').click(function() {
+                $('#add-account').hide();
+                $('#account-list').show();
+            });
         });
     </script>
 </body>

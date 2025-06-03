@@ -256,17 +256,17 @@
                                 <th rowspan="2" class="criteria-header">Ranking</th>
                             </tr>
                             <tr>
-                                <th class="criteria-subheader">C1<br>Harga (30%)</th>
-                                <th class="criteria-subheader">C2<br>Kualitas (25%)</th>
-                                <th class="criteria-subheader">C3<br>Pelayanan (20%)</th>
-                                <th class="criteria-subheader">C4<br>Lokasi (15%)</th>
-                                <th class="criteria-subheader">C5<br>Waktu Pengiriman (10%)</th>
+                                <th class="criteria-subheader">C1<br>Biaya Sewa (0-10)</th>
+                                <th class="criteria-subheader">C2<br>Jumlah Penduduk (0-10)</th>
+                                <th class="criteria-subheader">C3<br>Aksesibilitas (0-10)</th>
+                                <th class="criteria-subheader">C4<br>Daya Beli (0-10)</th>
+                                <th class="criteria-subheader">C5<br>Pesaing (0-10)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>1</td>
-                                <td class="alternatif-cell">Alternatif A</td>
+                                <td class="alternatif-cell">Senyan Baru</td>
                                 <td class="value-cell">0.80</td>
                                 <td class="value-cell">0.84</td>
                                 <td class="value-cell">0.93</td>
@@ -278,7 +278,7 @@
                             </tr>
                             <tr class="highlight-row">
                                 <td>2</td>
-                                <td class="alternatif-cell">Alternatif B</td>
+                                <td class="alternatif-cell">Grand Hotel</td>
                                 <td class="value-cell">0.71</td>
                                 <td class="value-cell">1.00</td>
                                 <td class="value-cell">0.89</td>
@@ -290,7 +290,7 @@
                             </tr>
                             <tr>
                                 <td>3</td>
-                                <td class="alternatif-cell">Alternatif C</td>
+                                <td class="alternatif-cell">Tunjungan Plaza</td>
                                 <td class="value-cell">0.89</td>
                                 <td class="value-cell">0.93</td>
                                 <td class="value-cell">0.78</td>
@@ -302,7 +302,7 @@
                             </tr>
                             <tr>
                                 <td>4</td>
-                                <td class="alternatif-cell">Alternatif D</td>
+                                <td class="alternatif-cell">Bandung Timur</td>
                                 <td class="value-cell">0.84</td>
                                 <td class="value-cell">0.78</td>
                                 <td class="value-cell">1.00</td>
@@ -314,7 +314,7 @@
                             </tr>
                             <tr>
                                 <td>5</td>
-                                <td class="alternatif-cell">Alternatif E</td>
+                                <td class="alternatif-cell">Mall Bali Galeria</td>
                                 <td class="value-cell">0.93</td>
                                 <td class="value-cell">0.89</td>
                                 <td class="value-cell">0.84</td>
@@ -340,19 +340,19 @@
                             <div class="card-panel blue lighten-5">
                                 <h5 style="margin-top: 0;">Hasil Akhir Ranking:</h5>
                                 <ol>
-                                    <li><strong>Alternatif B</strong> (V<sub>i</sub> = 0.22)</li>
-                                    <li><strong>Alternatif C</strong> (V<sub>i</sub> = 0.22)</li>
-                                    <li><strong>Alternatif A</strong> (V<sub>i</sub> = 0.21)</li>
-                                    <li><strong>Alternatif E</strong> (V<sub>i</sub> = 0.22)</li>
-                                    <li><strong>Alternatif D</strong> (V<sub>i</sub> = 0.21)</li>
+                                    <li><strong>Grand Hotel</strong> (V<sub>i</sub> = 0.22)</li>
+                                    <li><strong>Tunjungan Plaza</strong> (V<sub>i</sub> = 0.22)</li>
+                                    <li><strong>Senyan Baru</strong> (V<sub>i</sub> = 0.21)</li>
+                                    <li><strong>Mall Bali Galeria</strong> (V<sub>i</sub> = 0.22)</li>
+                                    <li><strong>Bandung Timur</strong> (V<sub>i</sub> = 0.21)</li>
                                 </ol>
                             </div>
                         </div>
                         <div class="col s12 m6">
                             <div class="card-panel teal lighten-5">
                                 <h5 style="margin-top: 0;">Rekomendasi:</h5>
-                                <p>Berdasarkan perhitungan Weighted Product Model (WPM), <strong>Alternatif B</strong> merupakan pilihan terbaik dengan nilai preferensi tertinggi.</p>
-                                <p>Faktor penentu utama adalah performa yang baik pada kriteria <strong>Kualitas (C2)</strong> dan <strong>Waktu Pengiriman (C5)</strong>.</p>
+                                <p>Berdasarkan perhitungan Weighted Product Model (WPM), <strong>Grand Hotel</strong> merupakan pilihan terbaik dengan nilai preferensi tertinggi.</p>
+                                <p>Faktor penentu utama adalah performa yang baik pada kriteria <strong>Jumlah Penduduk (C2)</strong> dan <strong>Pesaing (C5)</strong>.</p>
                             </div>
                         </div>
                     </div>
