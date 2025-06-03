@@ -280,16 +280,7 @@
                     <span class="btn-flat dropdown-trigger" data-target="profile-dropdown">
                         <i class="material-icons left">account_circle</i>
                         Username
-                        <i class="material-icons right">arrow_drop_down</i>
                     </span>
-                    
-                    <!-- Profile Dropdown -->
-                    <ul id="profile-dropdown" class="dropdown-content">
-                        <li><a href="#!"><i class="material-icons">person</i>Profil</a></li>
-                        <li><a href="#!"><i class="material-icons">settings</i>Pengaturan</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#!"><i class="material-icons">exit_to_app</i>Keluar</a></li>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -306,7 +297,7 @@
             <!-- Tugas 1 -->
             <div class="task-card">
                 <div class="task-header">
-                    <h2 class="task-title">Perbaikan Bug Login</h2>
+                    <h2 class="task-title">Cabang Baru Mertoyudan</h2>
                     <div class="task-actions">
                         <button class="action-btn edit-btn" title="Edit">
                             <i class="material-icons">edit</i>
@@ -335,14 +326,14 @@
                 <span class="status-badge status-progress">Dalam Pengerjaan</span>
                 
                 <div class="task-description">
-                    Memperbaiki bug yang terjadi saat user mencoba login dengan akun Google. Error muncul setelah update terakhir.
+                    Di pilihan cabang Mertoyudan ada beberapa kendala, terutama perizinan karena berada di daerah dekat wisata.
                 </div>
             </div>
             
             <!-- Tugas 2 -->
             <div class="task-card">
                 <div class="task-header">
-                    <h2 class="task-title">Desain UI Dashboard</h2>
+                    <h2 class="task-title">Cabang Baru di Blondo</h2>
                     <div class="task-actions">
                         <button class="action-btn edit-btn" title="Edit">
                             <i class="material-icons">edit</i>
@@ -371,14 +362,14 @@
                 <span class="status-badge status-todo">Belum Dimulai</span>
                 
                 <div class="task-description">
-                    Membuat desain UI untuk dashboard admin baru dengan tampilan yang lebih modern dan user friendly.
+                    Pastikan bahwa spot belum dibeli oleh pihak lain karena sangat strategis.
                 </div>
             </div>
             
             <!-- Tugas 3 -->
             <div class="task-card">
                 <div class="task-header">
-                    <h2 class="task-title">Testing Fitur Pembayaran</h2>
+                    <h2 class="task-title">Perkiraan Cabang Potensial di Muntilan</h2>
                     <div class="task-actions">
                         <button class="action-btn edit-btn" title="Edit">
                             <i class="material-icons">edit</i>
@@ -407,14 +398,14 @@
                 <span class="status-badge status-completed">Selesai</span>
                 
                 <div class="task-description">
-                    Melakukan testing menyeluruh untuk fitur pembayaran baru sebelum diluncurkan ke production. Pastikan semua skenario berjalan lancar.
+                    Hasil dari pendirian cabang di Muntilan berdasarkan rekomendasi cukup memuaskan.
                 </div>
             </div>
             
             <!-- Tugas 4 -->
             <div class="task-card">
                 <div class="task-header">
-                    <h2 class="task-title">Update Dokumentasi API</h2>
+                    <h2 class="task-title">Cabang Tambahan di Secang</h2>
                     <div class="task-actions">
                         <button class="action-btn edit-btn" title="Edit">
                             <i class="material-icons">edit</i>
@@ -443,7 +434,7 @@
                 <span class="status-badge status-progress">Dalam Pengerjaan</span>
                 
                 <div class="task-description">
-                    Memperbarui dokumentasi API untuk mencakup semua endpoint terbaru dan memberikan contoh request/response yang lebih jelas.
+                    MEndapatkan potongan untuk biaya bahan baku.
                 </div>
             </div>
         </div>

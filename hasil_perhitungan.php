@@ -228,16 +228,7 @@
                     <span class="btn-flat dropdown-trigger" data-target="profile-dropdown">
                         <i class="material-icons left">account_circle</i>
                         Username
-                        <i class="material-icons right">arrow_drop_down</i>
                     </span>
-                    
-                    <!-- Profile Dropdown -->
-                    <ul id="profile-dropdown" class="dropdown-content">
-                        <li><a href="#!"><i class="material-icons">person</i>Profil</a></li>
-                        <li><a href="#!"><i class="material-icons">settings</i>Pengaturan</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#!"><i class="material-icons">exit_to_app</i>Keluar</a></li>
-                    </ul>
                 </div>
             </div>
         </div>

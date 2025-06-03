@@ -301,15 +301,7 @@
                     <span class="btn-flat dropdown-trigger" data-target="profile-dropdown">
                         <i class="material-icons left">account_circle</i>
                         Username
-                        <i class="material-icons right">arrow_drop_down</i>
                     </span>
-                    
-                    <ul id="profile-dropdown" class="dropdown-content">
-                        <li><a href="#!"><i class="material-icons">person</i>Profil</a></li>
-                        <li><a href="#!"><i class="material-icons">settings</i>Pengaturan</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#!"><i class="material-icons">exit_to_app</i>Keluar</a></li>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -335,7 +327,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Nama Cabang</th>
+                                        <th>Alternatif</th>
                                         <th>Lokasi</th>
                                         <th>Kota</th>
                                         <th>Status</th>
@@ -346,7 +338,7 @@
                                 <tbody>
                                     <tr>
                                         <td>1</td>
-                                        <td>BranchWise Plaza Senayan</td>
+                                        <td>Senyan Baru</td>
                                         <td>Jl. Asia Afrika No.8</td>
                                         <td>Jakarta</td>
                                         <td><span class="badge active">Aktif</span></td>
@@ -365,7 +357,7 @@
                                     </tr>
                                     <tr>
                                         <td>2</td>
-                                        <td>BranchWise Grand Indonesia</td>
+                                        <td>Grand Hotel</td>
                                         <td>Jl. M.H. Thamrin No.1</td>
                                         <td>Jakarta</td>
                                         <td><span class="badge active">Aktif</span></td>
@@ -384,7 +376,7 @@
                                     </tr>
                                     <tr>
                                         <td>3</td>
-                                        <td>BranchWise Tunjungan Plaza</td>
+                                        <td>Tunjungan Plaza</td>
                                         <td>Jl. Basuki Rahmat No.8-12</td>
                                         <td>Surabaya</td>
                                         <td><span class="badge active">Aktif</span></td>
@@ -403,7 +395,7 @@
                                     </tr>
                                     <tr>
                                         <td>4</td>
-                                        <td>BranchWise Paris Van Java</td>
+                                        <td>Bandung Timur</td>
                                         <td>Jl. Sukajadi No.131-139</td>
                                         <td>Bandung</td>
                                         <td><span class="badge active">Aktif</span></td>
@@ -422,7 +414,7 @@
                                     </tr>
                                     <tr>
                                         <td>5</td>
-                                        <td>BranchWise Mall Bali Galeria</td>
+                                        <td>Mall Bali Galeria</td>
                                         <td>Jl. Bypass Ngurah Rai No.35</td>
                                         <td>Denpasar</td>
                                         <td><span class="badge inactive">Renovasi</span></td>
@@ -468,7 +460,7 @@
                     </div>
                 </div>
                 <div class="col s12 m6">
-                    <h5>BranchWise Plaza Senayan</h5>
+                    <h5>Tunjungan Plaza</h5>
                     <p><i class="material-icons left">location_on</i>Jl. Asia Afrika No.8, Jakarta</p>
                     <p><i class="material-icons left">phone</i>(021) 12345678</p>
                     <p><i class="material-icons left">email</i>senayan@branchwise.com</p>
