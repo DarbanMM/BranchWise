@@ -1,16 +1,73 @@
+<?php
+session_start(); // Perubahan: [1] Memulai sesi PHP di awal script. Penting untuk manajemen login.
+
+// Perubahan: [2] Sertakan file koneksi database Anda
+include 'db_connect.php'; 
+
+$login_error = ""; // Variabel untuk menyimpan pesan kesalahan login
+
+// Perubahan: [3] Tangani submit form ketika metode adalah POST
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST['username']; // Ambil username dari form
+    $password = $_POST['password']; // Ambil password dari form
+
+    // Validasi dasar: pastikan username dan password tidak kosong
+    if (empty($username) || empty($password)) {
+        $login_error = "Username dan password harus diisi.";
+    } else {
+        // Perubahan: [4] Gunakan prepared statement untuk keamanan (mencegah SQL Injection)
+        // Perhatian: Sesuai penjelasan aplikasi, password TIDAK di-hash di database.
+        // Ini SANGAT TIDAK direkomendasikan untuk aplikasi produksi karena risiko keamanan.
+        $stmt = $conn->prepare("SELECT id, full_name, username, password, role, status FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username); // 's' berarti parameter adalah string
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows == 1) {
+            $user = $result->fetch_assoc();
+
+            // Verifikasi password (perbandingan langsung karena tidak di-hash)
+            if ($password === $user['password']) { //
+                // Perubahan: [5] Periksa status akun
+                if ($user['status'] == 'active') { //
+                    // Login berhasil, set variabel sesi
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $user['username'];
+                    $_SESSION['full_name'] = $user['full_name'];
+                    $_SESSION['role'] = $user['role'];
+
+                    // Perubahan: [6] Redirect pengguna berdasarkan role-nya
+                    if ($user['role'] == 'admin') { //
+                        header("Location: admin.php"); // Redirect ke halaman admin [cite: 5]
+                        exit(); // Penting untuk menghentikan eksekusi script setelah redirect
+                    } else if ($user['role'] == 'user') { //
+                        header("Location: dashboard.php"); // Redirect ke halaman dashboard [cite: 12]
+                        exit(); // Penting untuk menghentikan eksekusi script setelah redirect
+                    }
+                } else {
+                    $login_error = "Akun Anda tidak aktif. Silakan hubungi administrator."; // Akun nonaktif [cite: 10]
+                }
+            } else {
+                $login_error = "Username atau password salah."; // Password tidak cocok
+            }
+        } else {
+            $login_error = "Username atau password salah."; // Username tidak ditemukan
+        }
+        $stmt->close(); // Tutup prepared statement
+    }
+}
+
+$conn->close(); // Tutup koneksi database setelah selesai digunakan
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - BranchWise</title>
-    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!-- Assests CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
-    <!-- Material Icons -->
+    <link rel="stylesheet" href="assets/css/style.css"> 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Font Awesome for social icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -26,6 +83,7 @@
             justify-content: center;
             align-items: center;
             padding: 40px 0;
+            margin-top: 64px; /* Perubahan: Tambahkan margin-top setinggi navbar */
         }
         
         .login-card {
@@ -143,7 +201,7 @@
         }
 
         .social-icon {
-            position: relative; /* Tambahkan ini */
+            position: relative; 
             font-size: 20px;
             color: white;
             transition: all 0.3s ease;
@@ -161,9 +219,9 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* Geser ikon kembali setengah dari lebar/tingginya */
-            font-size: 20px; /* Pertahankan ukuran font */
-            color: white; /* Pertahankan warna */
+            transform: translate(-50%, -50%); 
+            font-size: 20px; 
+            color: white; 
         }
 
         .social-icon:hover {
@@ -182,88 +240,156 @@
             display: flex;
             justify-content: center;
         }
+
+        /* Perubahan: Gaya baru untuk navbar full width */
+        .navbar-fixed {
+            position: fixed;
+            z-index: 999; /* Pastikan navbar di atas elemen lain */
+            width: 100%;
+        }
+
+        nav {
+            background-color: white; /* Latar belakang navbar */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Bayangan navbar */
+        }
+
+        /* Nav wrapper tanpa kelas container untuk full width, tapi dengan padding manual */
+        .nav-wrapper-full-width {
+            padding: 0 15px; /* Padding kiri kanan agar konten tidak menempel tepi */
+            /* Pastikan brand-logo dan ul.right tetap diatur di dalam Materialize */
+        }
+
+        nav .brand-logo {
+            font-size: 1.8rem;
+            color: #1565c0; /* Warna logo */
+            font-weight: bold;
+            /* padding-left: 20px; /* Jika ada padding default dari index.php, sesuaikan */ */
+        }
+
+        nav ul a {
+            color: #444; /* Warna link default */
+        }
+
+        /* Gaya tombol login di navbar */
+        nav .btn-login {
+            border-radius: 50px !important; /* Membuat tombol melengkung */
+            height: 36px; /* Tinggi tombol */
+            line-height: 36px; /* Perataan vertikal teks */
+            padding: 0 20px; /* Padding horizontal */
+            background-color: #0d47a1 !important; /* Warna biru tombol */
+            color: white !important; /* Warna teks tombol */
+        }
+
+        nav .btn-login:hover {
+            background-color: #1a56b4 !important; /* Warna hover */
+        }
+
+        /* Media queries untuk responsivitas navbar */
+        @media only screen and (max-width : 992px) {
+            nav .brand-logo {
+                padding-left: 10px; /* Padding logo untuk mobile */
+            }
+            .nav-wrapper-full-width {
+                padding: 0 10px; /* Padding untuk mobile */
+            }
+        }
+        /* Akhir Perubahan: Gaya navbar full width */
     </style>
 </head>
 <body>
-    <!-- Login Form -->
+    <div class="navbar-fixed">
+        <nav class="white" role="navigation">
+            <div class="nav-wrapper nav-wrapper-full-width">
+                <a id="logo-container" href="index.php" class="brand-logo blue-text text-darken-4"><i class="sets material-icons left">settings</i>BranchWise</a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="index.php" class="waves-effect waves-light btn btn-login">Home</a></li>
+                </ul>
+
+                <ul id="nav-mobile" class="sidenav">
+                    <li><a href="login.php" class="btn btn-login">Login</a></li>
+                </ul>
+                <a href="#" data-target="nav-mobile" class="sidenav-trigger blue-text text-darken-4"><i class="material-icons">menu</i></a>
+            </div>
+        </nav>
+    </div>
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
                 <h1>Masuk ke BranchWise</h1>
+                <?php if (!empty($login_error)): ?>
+                    <p class="red-text text-darken-2" style="font-size: 0.9rem; margin-top: 10px;"><?php echo $login_error; ?></p>
+                <?php endif; ?>
             </div>
             
-            <div class="input-field">
-                <label for="username">Username</label>
-                <input type="text" id="username" class="validate">
-            </div>
-            
-            <div class="input-field">
-                <label for="password">Password</label>
-                <input type="password" id="password" class="validate">
-                <a href="https://wa.me/qr/ZAB5NJRTIWNBE1" style="font-size: 13px; color: #3498db; display: block; margin-top: 5px;">Lupa Password?</a>
-            </div>
-            
-            <div class="password-hint">
-                Gunakan minimum 8 karakter dengan kombinasi huruf dan angka
-            </div>
-            
-            <button class="btn waves-effect waves-light login-button">Masuk</button>
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <div class="input-field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="validate" required>
+                </div>
+                
+                <div class="input-field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="validate" required>
+                    <a href="https://wa.me/qr/ZAB5NJRTIWNBE1" style="font-size: 13px; color: #3498db; display: block; margin-top: 5px;">Lupa Password?</a>
+                </div>
+                
+                <div class="password-hint">
+                    Gunakan minimum 8 karakter dengan kombinasi huruf dan angka
+                </div>
+                
+                <button class="btn waves-effect waves-light login-button" type="submit">Masuk</button>
+            </form>
             
             <div class="divider"></div>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="page-footer">
-        <div class="container">
+        <div class="container-full-width-padding"> 
             <div class="row footer-content">
-                <!-- Hubungi Kami -->
                 <div class="col s12 m4">
                     <div class="footer-section">
                         <h5 class="white-text">HUBUNGI KAMI</h5>
                         <ul>
-                            <li><i class="material-icons tiny">phone</i><a class="grey-text text-lighten-3" href="#!">+62-21-888-2424</a></li>
-                            <li><i class="material-icons tiny">email</i><a class="grey-text text-lighten-3" href="#!">contact@branchwise.com</a></li>
-                            <li><i class="material-icons tiny">location_on</i><a class="grey-text text-lighten-3" href="#!">Jakarta, Indonesia</a></li>
+                            <li><i class="material-icons tiny">phone</i><a class="grey-text text-lighten-3" >+62-21-888-2424</a></li>
+                            <li><i class="material-icons tiny">email</i><a class="grey-text text-lighten-3" >contact@branchwise.com</a></li>
+                            <li><i class="material-icons tiny">location_on</i><a class="grey-text text-lighten-3" >Jakarta, Indonesia</a></li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- Menu BranchWise -->
                 <div class="col s12 m4">
                     <div class="footer-section">
                         <h5 class="white-text">BRANCHWISE</h5>
                         <ul>
-                            <li><a class="grey-text text-lighten-3" href="#!">Dashboard</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Alternatif</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Kriteria</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Bobot</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Matriks</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Hasil</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Dashboard</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Alternatif</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Kriteria</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Bobot</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Matriks</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Hasil</a></li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- Social Media -->
                 <div class="col s12 m4">
                     <div class="footer-section">
                         <h5 class="white-text">SOCIAL MEDIA</h5>
                         <p class="grey-text text-lighten-4">Ikuti kami di media sosial untuk update terbaru</p>
                         <div class="social-icons">
-                            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                            <a class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                            <a class="social-icon"><i class="fab fa-twitter"></i></a>
+                            <a class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="social-icon"><i class="fab fa-instagram"></i></a>
+                            <a class="social-icon"><i class="fab fa-youtube"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Footer Copyright -->
         <div class="footer-copyright">
-            <div class="container">
+            <div class="container-full-width-padding">
                 <div class="row">
                     <div class="col s12 center">
                         <span class="white-text">Copyright © 2025 BranchWise. All rights reserved.</span>
@@ -273,7 +399,18 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            // Inisialisasi Sidenav untuk mobile
+            $('.sidenav').sidenav();
+            
+            // Perubahan: Memastikan Materialize JS diinisialisasi setelah jQuery
+            // Ini akan memastikan komponen seperti select atau modal bekerja jika ada di halaman login
+            // (Tidak ada modal atau select yang aktif di halaman login ini, tapi ini praktik yang baik)
+            // Materialize.updateTextFields(); // Jika perlu untuk label input setelah PHP mengisi form
+        });
+    </script>
 </body>
 </html>

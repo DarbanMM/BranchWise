@@ -1,3 +1,72 @@
+<?php
+session_start(); // Perubahan: [1] Memulai sesi PHP
+
+// Perubahan: [2] Sertakan file koneksi database
+include 'db_connect.php';
+
+// Perubahan: [3] Autentikasi dan Otorisasi
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+    header("Location: login.php"); // Redirect jika belum login
+    exit();
+}
+if ($_SESSION['role'] === 'admin') {
+    header("Location: admin.php"); // Redirect admin ke halaman admin
+    exit();
+}
+
+// Perubahan: [4] Pastikan project_id diterima dari URL (setelah user memilih proyek di dashboard)
+$project_id = $_GET['project_id'] ?? null;
+
+if (!$project_id || !is_numeric($project_id)) {
+    // Jika project_id tidak ada atau tidak valid, redirect kembali ke dashboard
+    header("Location: dashboard.php");
+    exit();
+}
+
+// Perubahan: [5] Periksa apakah project_id ini milik user yang sedang login
+// Atau jika admin, mereka punya akses ke semua project
+$current_user_id = $_SESSION['user_id'];
+$project_name_display = "Proyek Tidak Ditemukan"; // Default
+
+$stmt_check_project = $conn->prepare("SELECT project_name, user_id FROM projects WHERE id = ?");
+$stmt_check_project->bind_param("i", $project_id);
+$stmt_check_project->execute();
+$result_check_project = $stmt_check_project->get_result();
+
+if ($result_check_project->num_rows == 0) {
+    header("Location: dashboard.php"); // Proyek tidak ditemukan
+    exit();
+}
+
+$project_info = $result_check_project->fetch_assoc();
+$project_owner_id = $project_info['user_id'];
+$project_name_display = htmlspecialchars($project_info['project_name']);
+$stmt_check_project->close();
+
+if ($_SESSION['role'] !== 'admin' && $project_owner_id !== $current_user_id) {
+    header("Location: dashboard.php"); // Redirect jika bukan pemilik dan bukan admin
+    exit();
+}
+
+
+$current_username = $_SESSION['username'];
+
+// Perubahan: [6] Ambil data lokasi untuk project_id ini
+$locations_data = [];
+$stmt_locations = $conn->prepare("SELECT id, branch_name, address, city, phone, email, status, size_sqm, gmaps_link, notes FROM locations WHERE project_id = ? ORDER BY id ASC");
+$stmt_locations->bind_param("i", $project_id);
+$stmt_locations->execute();
+$result_locations = $stmt_locations->get_result();
+
+if ($result_locations->num_rows > 0) {
+    while($row = $result_locations->fetch_assoc()) {
+        $locations_data[] = $row;
+    }
+}
+$stmt_locations->close();
+
+$conn->close(); // Tutup koneksi setelah ambil data
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -256,7 +325,7 @@
         }
         
         .modal .modal-footer {
-            padding: 16px 24px;
+            padding: 2px 24px; /* Perubahan: Padding footer modal disamakan */
             background-color: var(--light-gray);
         }
         
@@ -278,6 +347,23 @@
                 padding: 16px;
             }
         }
+
+        .sets{
+           margin: 13px 10px 0px 0px; 
+        }
+
+        /* Pagination */
+        .pagination li a {
+            color: var(--primary-color); /* Warna teks link paginasi */
+        }
+        
+        .pagination li.active {
+            background-color: #1565c0; /* Perubahan: Mengatur warna latar belakang menjadi biru gelap (sesuai primary-color) */
+        }
+
+        .sets{
+           margin: 13px 10px 0px 0px; 
+        }
     </style>
 </head>
 <body>
@@ -285,17 +371,17 @@
         <li>
             <div class="user-view">
                 <div class="logo">
-                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;">BranchWise</span>
+                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;"><i class="sets material-icons left">settings</i>BranchWise</span>
                 </div>
             </div>
         </li>
         <li><a href="dashboard.php"><i class="material-icons">dashboard</i>Dashboard</a></li>
-        <li><a class="active" href="lokasi.php"><i class="material-icons">location_on</i>Lokasi Cabang</a></li>
-        <li><a href="kriteria.php"><i class="material-icons">assessment</i>Kriteria & Bobot</a></li>
-        <li><a href="matriks.php"><i class="material-icons">grid_on</i>Matriks</a></li>
-        <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
+        <li><a class="active" href="lokasi.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">location_on</i>Lokasi Cabang</a></li>
+        <li><a href="kriteria.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">assessment</i>Kriteria & Bobot</a></li>
+        <li><a href="matriks.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">grid_on</i>Matriks</a></li>
+        <li><a href="hasil_perhitungan.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
         <li><div class="divider"></div></li>
-        <li><a href="index.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
+        <li><a href="logout.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
     </ul>
 
     <main>
@@ -303,12 +389,12 @@
             <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
                 <div class="col s6">
                     <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
-                    <h1 class="page-title">Lokasi Cabang</h1>
+                    <h1 class="page-title">Lokasi Cabang: <?php echo $project_name_display; ?></h1>
                 </div>
                 <div class="col s6 right-align">
                     <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
                         <i class="material-icons left">account_circle</i>
-                        Username
+                        <?php echo htmlspecialchars($current_username); ?>
                     </span>
                 </div>
                 </div>
@@ -345,101 +431,55 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Senyan Baru</td>
-                                        <td>Jl. Asia Afrika No.8</td>
-                                        <td>Jakarta</td>
-                                        <td><span class="badge active">Aktif</span></td>
-                                        <td>350</td>
-                                        <td>
-                                            <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
-                                                <i class="material-icons">visibility</i>
-                                            </a>
-                                            <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
-                                                <i class="material-icons">edit</i>
-                                            </a>
-                                            <a href="#!" class="btn-flat action-btn delete-btn">
-                                                <i class="material-icons">delete</i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Grand Hotel</td>
-                                        <td>Jl. M.H. Thamrin No.1</td>
-                                        <td>Jakarta</td>
-                                        <td><span class="badge active">Aktif</span></td>
-                                        <td>420</td>
-                                        <td>
-                                            <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
-                                                <i class="material-icons">visibility</i>
-                                            </a>
-                                            <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
-                                                <i class="material-icons">edit</i>
-                                            </a>
-                                            <a href="#!" class="btn-flat action-btn delete-btn">
-                                                <i class="material-icons">delete</i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>Tunjungan Plaza</td>
-                                        <td>Jl. Basuki Rahmat No.8-12</td>
-                                        <td>Surabaya</td>
-                                        <td><span class="badge active">Aktif</span></td>
-                                        <td>380</td>
-                                        <td>
-                                            <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
-                                                <i class="material-icons">visibility</i>
-                                            </a>
-                                            <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
-                                                <i class="material-icons">edit</i>
-                                            </a>
-                                            <a href="#!" class="btn-flat action-btn delete-btn">
-                                                <i class="material-icons">delete</i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td>Bandung Timur</td>
-                                        <td>Jl. Sukajadi No.131-139</td>
-                                        <td>Bandung</td>
-                                        <td><span class="badge active">Aktif</span></td>
-                                        <td>310</td>
-                                        <td>
-                                            <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
-                                                <i class="material-icons">visibility</i>
-                                            </a>
-                                            <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
-                                                <i class="material-icons">edit</i>
-                                            </a>
-                                            <a href="#!" class="btn-flat action-btn delete-btn">
-                                                <i class="material-icons">delete</i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>5</td>
-                                        <td>Mall Bali Galeria</td>
-                                        <td>Jl. Bypass Ngurah Rai No.35</td>
-                                        <td>Denpasar</td>
-                                        <td><span class="badge inactive">Renovasi</span></td>
-                                        <td>290</td>
-                                        <td>
-                                            <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
-                                                <i class="material-icons">visibility</i>
-                                            </a>
-                                            <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" data-gmaps-link="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid">
-                                                <i class="material-icons">edit</i>
-                                            </a>
-                                            <a href="#!" class="btn-flat action-btn delete-btn">
-                                                <i class="material-icons">delete</i>
-                                            </a>
-                                        </td>
-                                    </tr>
+                                    <?php if (!empty($locations_data)): ?>
+                                        <?php $no = 1; foreach ($locations_data as $location): ?>
+                                        <tr>
+                                            <td><?php echo $no++; ?></td>
+                                            <td><?php echo htmlspecialchars($location['branch_name']); ?></td>
+                                            <td><?php echo htmlspecialchars($location['address']); ?></td>
+                                            <td><?php echo htmlspecialchars($location['city']); ?></td>
+                                            <td><span class="badge <?php echo ($location['status'] == 'aktif') ? 'active' : 'inactive'; ?>"><?php echo htmlspecialchars(ucfirst($location['status'])); ?></span></td>
+                                            <td><?php echo htmlspecialchars($location['size_sqm']); ?></td>
+                                            <td>
+                                                <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" 
+                                                   data-location-id="<?php echo $location['id']; ?>"
+                                                   data-branch-name="<?php echo htmlspecialchars($location['branch_name']); ?>"
+                                                   data-address="<?php echo htmlspecialchars($location['address']); ?>"
+                                                   data-city="<?php echo htmlspecialchars($location['city']); ?>"
+                                                   data-phone="<?php echo htmlspecialchars($location['phone']); ?>"
+                                                   data-email="<?php echo htmlspecialchars($location['email']); ?>"
+                                                   data-size="<?php echo htmlspecialchars($location['size_sqm']); ?>"
+                                                   data-status="<?php echo htmlspecialchars($location['status']); ?>"
+                                                   data-gmaps-link="<?php echo htmlspecialchars($location['gmaps_link']); ?>"
+                                                   data-notes="<?php echo htmlspecialchars($location['notes']); ?>">
+                                                    <i class="material-icons">visibility</i>
+                                                </a>
+                                                <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" 
+                                                   data-location-id="<?php echo $location['id']; ?>"
+                                                   data-branch-name="<?php echo htmlspecialchars($location['branch_name']); ?>"
+                                                   data-address="<?php echo htmlspecialchars($location['address']); ?>"
+                                                   data-city="<?php echo htmlspecialchars($location['city']); ?>"
+                                                   data-phone="<?php echo htmlspecialchars($location['phone']); ?>"
+                                                   data-email="<?php echo htmlspecialchars($location['email']); ?>"
+                                                   data-size="<?php echo htmlspecialchars($location['size_sqm']); ?>"
+                                                   data-status="<?php echo htmlspecialchars($location['status']); ?>"
+                                                   data-gmaps-link="<?php echo htmlspecialchars($location['gmaps_link']); ?>"
+                                                   data-notes="<?php echo htmlspecialchars($location['notes']); ?>">
+                                                    <i class="material-icons">edit</i>
+                                                </a>
+                                                <a href="#!" class="btn-flat action-btn delete-btn"
+                                                   data-location-id="<?php echo $location['id']; ?>"
+                                                   data-branch-name="<?php echo htmlspecialchars($location['branch_name']); ?>">
+                                                    <i class="material-icons">delete</i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="7" class="center-align">Belum ada lokasi cabang ditambahkan untuk proyek ini.</td>
+                                        </tr>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -465,16 +505,15 @@
             <div class="row">
                 <div class="col s12 m6">
                     <div class="map-container">
-                        <iframe id="view_branch_map_iframe" src="https://maps.google.com/maps?q=jakarta&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen></iframe>
-                    </div>
+                        <iframe id="view_branch_map_iframe" src="" allowfullscreen></iframe> </div>
                 </div>
                 <div class="col s12 m6"> 
-                    <h5 id="view_branch_name">Tunjungan Plaza</h5> <p><i class="material-icons left">location_on</i><span id="view_branch_address">Jl. Asia Afrika No.8, Jakarta</span></p> <p><i class="material-icons left">phone</i><span id="view_branch_phone">(021) 12345678</span></p> <p><i class="material-icons left">email</i><span id="view_branch_email">senayan@branchwise.com</span></p> <p><i class="material-icons left">straighten</i><span id="view_branch_size">350</span> m²</p> </div>
+                    <h5 id="view_branch_name"></h5> <p><i class="material-icons left">location_on</i><span id="view_branch_address_city"></span></p> <p><i class="material-icons left">phone</i><span id="view_branch_phone"></span></p> <p><i class="material-icons left">email</i><span id="view_branch_email"></span></p> <p><i class="material-icons left">straighten</i><span id="view_branch_size"></span> m²</p> </div>
             </div>
             <div class="row">
                 <div class="col s12">
                     <h5>Informasi Tambahan</h5>
-                    <p id="view_branch_notes">Terletak di pusat perbelanjaan elit dengan traffic pengunjung tinggi.</p> </div>
+                    <p id="view_branch_notes"></p> </div>
             </div>
         </div>
         <div class="modal-footer">
@@ -485,46 +524,45 @@
     <div id="add-branch-modal" class="modal modal-fixed-footer">
         <div class="modal-content">
             <h4>Tambah Cabang Baru</h4>
-            <form>
-                <div class="row">
+            <form id="add-branch-form"> <input type="hidden" name="project_id" value="<?php echo htmlspecialchars($project_id); ?>"> <div class="row">
                     <div class="input-field col s12">
-                        <input id="branch_name" type="text" class="validate" required>
+                        <input id="branch_name" name="branch_name" type="text" class="validate" required>
                         <label for="branch_name">Nama Cabang</label>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="input-field col s12 m6">
-                        <input id="branch_address" type="text" class="validate" required>
+                        <input id="branch_address" name="address" type="text" class="validate" required>
                         <label for="branch_address">Alamat</label>
                     </div>
                     <div class="input-field col s12 m6">
-                        <input id="branch_city" type="text" class="validate" required>
+                        <input id="branch_city" name="city" type="text" class="validate" required>
                         <label for="branch_city">Kota</label>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="input-field col s12 m6">
-                        <input id="branch_phone" type="tel" class="validate">
+                        <input id="branch_phone" name="phone" type="tel" class="validate">
                         <label for="branch_phone">Telepon</label>
                     </div>
                     <div class="input-field col s12 m6">
-                        <input id="branch_email" type="email" class="validate">
+                        <input id="branch_email" name="email" type="email" class="validate">
                         <label for="branch_email">Email</label>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="input-field col s12 m6"> 
-                        <input id="branch_size" type="number" class="validate">
+                        <input id="branch_size" name="size_sqm" type="number" class="validate">
                         <label for="branch_size">Luas (m²)</label>
                     </div>
                     <div class="input-field col s12 m6"> 
-                        <select id="branch_status" required>
-                            <option value="active" selected>Aktif</option>
-                            <option value="inactive">Nonaktif</option>
-                            <option value="renovation">Renovasi</option>
+                        <select id="branch_status" name="status" required>
+                            <option value="aktif">Aktif</option>
+                            <option value="nonaktif">Nonaktif</option>
+                            <option value="renovasi">Renovasi</option>
                         </select>
                         <label>Status Cabang</label>
                     </div>
@@ -532,67 +570,67 @@
                 
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="branch_gmaps_link" type="url" class="validate">
+                        <input id="branch_gmaps_link" name="gmaps_link" type="url" class="validate">
                         <label for="branch_gmaps_link">Link Google Maps</label>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="input-field col s12">
-                        <textarea id="branch_notes" class="materialize-textarea"></textarea>
-                        <label for="branch_notes">Catatan Tambahan</label>
+                        <textarea id="branch_notes" name="notes" class="materialize-textarea"></textarea>
+                        <label for="branch_notes">Informasi Tambahan</label>
                     </div>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-red btn-flat">Batal</a>
-            <a href="#!" class="modal-close waves-effect waves-green btn blue">Simpan Cabang</a>
+            <button class="waves-effect waves-green btn blue" id="save-add-branch-btn">Simpan Cabang</button>
         </div>
     </div>
 
     <div id="edit-branch-modal" class="modal modal-fixed-footer">
         <div class="modal-content">
             <h4>Edit Data Cabang</h4>
-            <form>
-                <div class="row">
+            <form id="edit-branch-form"> <input type="hidden" id="edit_location_id" name="location_id"> <input type="hidden" name="project_id" value="<?php echo htmlspecialchars($project_id); ?>"> <div class="row">
                     <div class="input-field col s12">
-                        <input id="edit_branch_name" type="text" class="validate" value="BranchWise Plaza Senayan" required>
+                        <input id="edit_branch_name" name="branch_name" type="text" class="validate" required>
                         <label for="edit_branch_name">Nama Cabang</label>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="input-field col s12 m6">
-                        <input id="edit_branch_address" type="text" class="validate" value="Jl. Asia Afrika No.8" required>
+                        <input id="edit_branch_address" name="address" type="text" class="validate" required>
                         <label for="edit_branch_address">Alamat</label>
                     </div>
                     <div class="input-field col s12 m6">
-                        <input id="edit_branch_city" type="text" class="validate" value="Jakarta" required>
+                        <input id="edit_branch_city" name="city" type="text" class="validate" required>
                         <label for="edit_branch_city">Kota</label>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="input-field col s12 m6">
-                        <input id="edit_branch_phone" type="tel" class="validate" value="(021) 12345678">
+                        <input id="edit_branch_phone" name="phone" type="tel" class="validate">
                         <label for="edit_branch_phone">Telepon</label>
                     </div>
                     <div class="input-field col s12 m6">
-                        <input id="edit_branch_email" type="email" class="validate" value="senayan@branchwise.com">
+                        <input id="edit_branch_email" name="email" type="email" class="validate">
                         <label for="edit_branch_email">Email</label>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="input-field col s12 m6"> 
-                        <input id="edit_branch_size" type="number" class="validate" value="350">
+                        <input id="edit_branch_size" name="size_sqm" type="number" class="validate">
                         <label for="edit_branch_size">Luas (m²)</label>
                     </div>
                     <div class="input-field col s12 m6"> 
-                        <select id="edit_branch_status" required>
-                            <option value="active" selected>Aktif</option>
-                            <option value="inactive">Nonaktif</option>
-                            <option value="renovation">Renovasi</option>
+                        <select id="edit_branch_status" name="status" required>
+                            <option value="aktif">Aktif</option>
+                            <option value="nonaktif">Nonaktif</option>
+                            <option value="renovasi">Renovasi</option>
                         </select>
                         <label>Status Cabang</label>
                     </div>
@@ -600,20 +638,22 @@
                 
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="edit_branch_gmaps_link" type="url" class="validate" value="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.576887556755!2d106.8202476147696!3d-6.17511099552431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d30d1d7b1d%3A0x7d2b1f8c0a2a5b2!2sMonumen%20Nasional!5e0!3m2!1sen!2sid!4v1678912345678!5m2!1sen!2sid"> <label for="edit_branch_gmaps_link">Link Google Maps</label>
+                        <input id="edit_branch_gmaps_link" name="gmaps_link" type="url" class="validate"> 
+                        <label for="edit_branch_gmaps_link">Link Google Maps</label>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="input-field col s12">
-                        <textarea id="edit_branch_notes" class="materialize-textarea">Terletak di pusat perbelanjaan elit dengan traffic pengunjung tinggi.</textarea>
-                        <label for="edit_branch_notes">Catatan Tambahan</label>
+                        <textarea id="edit_branch_notes" name="notes" class="materialize-textarea"></textarea>
+                        <label for="edit_branch_notes">Informasi Tambahan</label>
                     </div>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-red btn-flat">Batal</a>
-            <a href="#!" class="modal-close waves-effect waves-green btn blue">Simpan Perubahan</a>
+            <button class="waves-effect waves-green btn blue" id="save-edit-branch-btn">Simpan Perubahan</button>
         </div>
     </div>
 
@@ -638,76 +678,188 @@
                 autoClose: true
             });
 
-            // Perubahan: Implementasi fungsi untuk tombol edit tabel
-            $('.action-btn.modal-trigger[href="#edit-branch-modal"]').click(function() {
-                const branchRow = $(this).closest('tr');
+            // Perubahan: Implementasi fungsi untuk tombol view tabel
+            $('.action-btn.modal-trigger[href="#view-branch-modal"]').click(function() {
+                const locationId = $(this).data('location-id');
+                const branchName = $(this).data('branch-name');
+                const address = $(this).data('address');
+                const city = $(this).data('city');
+                const phone = $(this).data('phone');
+                const email = $(this).data('email');
+                const size = $(this).data('size');
+                const status = $(this).data('status');
+                const gmapsLink = $(this).data('gmaps-link');
+                const notes = $(this).data('notes');
+
+                // Isi data ke modal view
+                $('#view_branch_name').text(branchName);
+                $('#view_branch_address_city').text(address + ', ' + city); 
+                $('#view_branch_phone').text(phone); 
+                $('#view_branch_email').text(email);
+                $('#view_branch_size').text(size);
+                $('#view_branch_notes').text(notes); 
                 
-                // Ambil data dari baris tabel (sesuaikan index td jika diperlukan)
-                const branchName = branchRow.find('td:nth-child(2)').text(); // Nama Alternatif
-                const branchAddress = branchRow.find('td:nth-child(3)').text(); // Lokasi
-                const branchCity = branchRow.find('td:nth-child(4)').text(); // Kota
-                const branchStatus = branchRow.find('td:nth-child(5) .badge').text().toLowerCase().trim(); // Status
-                const branchSize = branchRow.find('td:nth-child(6)').text().replace(' m²', '').trim(); // Luas (m²)
-                // Perubahan: Ambil link gmaps dari data attribute tombol edit
-                const branchGmapsLink = $(this).attr('data-gmaps-link'); 
-                // Perubahan: Ambil informasi tambahan dari view modal atau hardcode untuk contoh
-                const branchNotes = "Terletak di pusat perbelanjaan elit dengan traffic pengunjung tinggi."; 
-                // Anda perlu menambahkan kolom tersembunyi di tabel atau data attribute jika ini data dinamis
+                // Set src iframe untuk peta
+                if(gmapsLink) {
+                    $('#view_branch_map_iframe').attr('src', gmapsLink);
+                } else {
+                    $('#view_branch_map_iframe').attr('src', 'about:blank'); // Kosongkan jika tidak ada link
+                }
+            });
+
+            // Perubahan: Implementasi fungsi untuk tombol edit tabel (mengisi modal edit)
+            $('.action-btn.modal-trigger[href="#edit-branch-modal"]').click(function() {
+                const locationId = $(this).data('location-id');
+                const branchName = $(this).data('branch-name');
+                const address = $(this).data('address');
+                const city = $(this).data('city');
+                const phone = $(this).data('phone');
+                const email = $(this).data('email');
+                const size = $(this).data('size');
+                const status = $(this).data('status');
+                const gmapsLink = $(this).data('gmaps-link');
+                const notes = $(this).data('notes');
 
                 // Isi formulir di modal edit
+                $('#edit_location_id').val(locationId); // Set hidden input ID
                 $('#edit_branch_name').val(branchName);
-                $('#edit_branch_address').val(branchAddress);
-                $('#edit_branch_city').val(branchCity);
-                $('#edit_branch_size').val(branchSize);
-                $('#edit_branch_status').val(branchStatus);
-                $('#edit_branch_notes').val(branchNotes); // Mengisi catatan tambahan
-                $('#edit_branch_gmaps_link').val(branchGmapsLink); // Mengisi link gmaps
+                $('#edit_branch_address').val(address);
+                $('#edit_branch_city').val(city);
+                $('#edit_branch_phone').val(phone);
+                $('#edit_branch_email').val(email);
+                $('#edit_branch_size').val(size);
+                $('#edit_branch_status').val(status);
+                $('#edit_branch_gmaps_link').val(gmapsLink); 
+                $('#edit_branch_notes').val(notes);
 
                 // Materialize specific updates untuk label dan select
                 M.updateTextFields(); // Memastikan label input Materialize naik (float)
                 $('select').formSelect(); // Re-initialize selects untuk menampilkan nilai yang benar
-
-                // Optional: Untuk modal view, jika Anda ingin memuat peta berdasarkan link gmaps saat view dibuka
-                // $('#view-branch-modal').modal({
-                //     onOpenEnd: function(modal, trigger) {
-                //         const viewGmapsLink = $(trigger).attr('data-gmaps-link');
-                //         if(viewGmapsLink) {
-                //             $('#view_branch_map_iframe').attr('src', viewGmapsLink);
-                //         }
-                //         // Mengisi data lain di modal view
-                //         $('#view_branch_name').text(branchName);
-                //         $('#view_branch_address').text(branchAddress + ', ' + branchCity); // Sesuaikan format
-                //         $('#view_branch_size').text(branchSize);
-                //         $('#view_branch_notes').text(branchNotes);
-                //         // Tambahkan pengisian data lain seperti telepon, email di sini
-                //     }
-                // });
             });
 
-            // Perubahan: Implementasi fungsi untuk tombol view tabel
-            $('.action-btn.modal-trigger[href="#view-branch-modal"]').click(function() {
-                const branchRow = $(this).closest('tr');
-                const branchName = branchRow.find('td:nth-child(2)').text(); // Nama Alternatif
-                const branchAddress = branchRow.find('td:nth-child(3)').text(); // Lokasi
-                const branchCity = branchRow.find('td:nth-child(4)').text(); // Kota
-                const branchSize = branchRow.find('td:nth-child(6)').text().replace(' m²', '').trim(); // Luas (m²)
-                const branchGmapsLink = $(this).attr('data-gmaps-link'); // Ambil dari data attribute tombol view
-
-                // Mengisi data ke modal view
-                $('#view_branch_name').text(branchName);
-                $('#view_branch_address').text(branchAddress + ', ' + branchCity); 
-                $('#view_branch_size').text(branchSize);
-                // Karena data telepon/email tidak ada di tabel, bisa hardcode atau dari sumber lain
-                $('#view_branch_phone').text('(021) 12345678'); 
-                $('#view_branch_email').text('contact@branchwise.com');
-                $('#view_branch_notes').text('Cabang utama yang terletak di pusat perbelanjaan elit dengan traffic pengunjung tinggi. Memiliki fasilitas lengkap termasuk ruang fitting dan lounge VIP.'); 
+            // Perubahan: Implementasi fungsi untuk tombol delete tabel (dengan konfirmasi dan AJAX)
+            $('.action-btn.delete-btn').click(function(e) {
+                e.preventDefault(); 
+                const locationId = $(this).data('location-id');
+                const branchName = $(this).data('branch-name');
                 
-                // Set src iframe untuk peta
-                if(branchGmapsLink) {
-                    $('#view_branch_map_iframe').attr('src', branchGmapsLink); // Mengisi iframe peta
+                if (confirm(`Apakah Anda yakin ingin menghapus lokasi "${branchName}"?`)) {
+                    $.ajax({
+                        url: 'handle_lokasi_actions.php', // File PHP untuk menangani hapus
+                        type: 'POST',
+                        data: {
+                            action: 'delete_location',
+                            location_id: locationId,
+                            project_id: <?php echo json_encode($project_id); ?> // Kirim project_id juga untuk keamanan
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                M.toast({html: `Lokasi "${branchName}" berhasil dihapus!`});
+                                location.reload(); 
+                            } else {
+                                M.toast({html: `Gagal menghapus lokasi: ${response.message}`});
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            M.toast({html: 'Terjadi kesalahan saat menghapus lokasi.'});
+                            console.error("AJAX Error:", status, error);
+                            console.log("Response Text:", xhr.responseText);
+                        }
+                    });
                 }
             });
-            // Akhir Perubahan: Implementasi fungsi untuk tombol view dan edit tabel
+
+            // Perubahan: Submit form Tambah Cabang melalui AJAX
+            $('#save-add-branch-btn').click(function(e) {
+                e.preventDefault(); 
+                
+                const form = $('#add-branch-form');
+                if (form[0].checkValidity()) { 
+                    const formData = {
+                        action: 'add_location',
+                        project_id: <?php echo json_encode($project_id); ?>, // Kirim project_id dari PHP
+                        branch_name: $('#branch_name').val(),
+                        address: $('#branch_address').val(),
+                        city: $('#branch_city').val(),
+                        phone: $('#branch_phone').val(),
+                        email: $('#branch_email').val(),
+                        size_sqm: $('#branch_size').val(),
+                        status: $('#branch_status').val(),
+                        gmaps_link: $('#branch_gmaps_link').val(),
+                        notes: $('#branch_notes').val()
+                    };
+
+                    $.ajax({
+                        url: 'handle_lokasi_actions.php', // File PHP untuk menangani aksi lokasi
+                        type: 'POST',
+                        data: formData,
+                        dataType: 'json', 
+                        success: function(response) {
+                            if (response.success) {
+                                M.toast({html: 'Cabang berhasil ditambahkan!'});
+                                $('#add-branch-modal').modal('close'); 
+                                location.reload(); 
+                            } else {
+                                M.toast({html: `Gagal menambahkan cabang: ${response.message}`});
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            M.toast({html: 'Terjadi kesalahan saat menambahkan cabang.'});
+                            console.error("AJAX Error:", status, error);
+                            console.log("Response Text:", xhr.responseText);
+                        }
+                    });
+                } else {
+                    M.toast({html: 'Mohon isi semua field yang wajib.'});
+                }
+            });
+
+            // Perubahan: Submit form Edit Cabang melalui AJAX
+            $('#save-edit-branch-btn').click(function(e) {
+                e.preventDefault(); 
+                
+                const form = $('#edit-branch-form');
+                if (form[0].checkValidity()) {
+                    const formData = {
+                        action: 'edit_location',
+                        location_id: $('#edit_location_id').val(),
+                        project_id: <?php echo json_encode($project_id); ?>, // Kirim project_id dari PHP
+                        branch_name: $('#edit_branch_name').val(),
+                        address: $('#edit_branch_address').val(),
+                        city: $('#edit_branch_city').val(),
+                        phone: $('#edit_branch_phone').val(),
+                        email: $('#edit_branch_email').val(),
+                        size_sqm: $('#edit_branch_size').val(),
+                        status: $('#edit_branch_status').val(),
+                        gmaps_link: $('#edit_branch_gmaps_link').val(),
+                        notes: $('#edit_branch_notes').val()
+                    };
+                    
+                    $.ajax({
+                        url: 'handle_lokasi_actions.php', // File PHP untuk menangani aksi lokasi
+                        type: 'POST',
+                        data: formData,
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                M.toast({html: 'Cabang berhasil diperbarui!'});
+                                $('#edit-branch-modal').modal('close');
+                                location.reload(); 
+                            } else {
+                                M.toast({html: `Gagal memperbarui cabang: ${response.message}`});
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            M.toast({html: 'Terjadi kesalahan saat memperbarui cabang.'});
+                            console.error("AJAX Error:", status, error);
+                            console.log("Response Text:", xhr.responseText);
+                        }
+                    });
+                } else {
+                    M.toast({html: 'Mohon isi semua field yang wajib.'});
+                }
+            });
         });
     </script>
 </body>

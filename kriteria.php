@@ -1,3 +1,190 @@
+<?php
+    session_start(); // Mulai session untuk mengambil data user
+    require_once 'db_connect.php'; // Sertakan file koneksi database (MySQLi version)
+
+    // Cek apakah user sudah login, jika tidak, redirect ke halaman login
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: login.php");
+        exit();
+    }
+
+    // Ambil data user dari session
+    $user_id = $_SESSION['user_id'];
+    $username = $_SESSION['username'];
+    $role = $_SESSION['role'];
+
+    // Jika role bukan 'user', redirect ke halaman yang sesuai (misal: admin.php)
+    if ($role !== 'user') { // Untuk admin, halaman manajemen akun ada di admin.php [cite: 5]
+        header("Location: admin.php"); // Atau halaman lain yang sesuai untuk admin
+        exit();
+    }
+
+    // --- PERBAIKAN: Ambil project_id dari URL (GET) dan simpan ke session ---
+    // Ini penting agar project_id tetap ada saat navigasi ke halaman kriteria
+    if (isset($_GET['project_id']) && is_numeric($_GET['project_id'])) {
+        $_SESSION['current_project_id'] = (int)$_GET['project_id'];
+    }
+    // --- AKHIR PERBAIKAN ---
+
+    // Ambil project_id dari session, jika tidak ada, redirect ke dashboard
+    // Untuk bisa mengakses halaman ini, user harus memilih salah satu proyek pada halaman dashboard [cite: 18]
+    if (!isset($_SESSION['current_project_id'])) {
+        header("Location: dashboard.php");
+        exit();
+    }
+    $project_id = $_SESSION['current_project_id']; // Gunakan project_id dari session untuk seluruh halaman ini
+
+    // Inisialisasi pesan
+    $message = '';
+    $error = '';
+
+    // Handle form submission for adding/editing criteria
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Ambil project_id dari POST data karena form disubmit kembali ke halaman ini
+        // Pastikan project_id_from_post selalu ada dan valid
+        $project_id_from_post = $_POST['project_id'] ?? null;
+        if (!$project_id_from_post || !is_numeric($project_id_from_post)) {
+            // Fallback to session project_id if POST is missing or invalid
+            $project_id_from_post = $project_id;
+        }
+        
+        if (isset($_POST['add_criteria']) || isset($_POST['edit_criteria'])) {
+            $criteria_code = $_POST['criteria_code'];
+            $criteria_name = $_POST['criteria_name'];
+            $weight_percentage = $_POST['weight_percentage'];
+            $type = $_POST['type'];
+            $value_unit = $_POST['value_unit'];
+
+            // Fetch current criteria count for validation [cite: 30]
+            $stmt_count = $conn->prepare("SELECT COUNT(*) FROM criteria WHERE project_id = ?"); // MySQLi: positional placeholder '?'
+            if ($stmt_count) {
+                $stmt_count->bind_param("i", $project_id_from_post); // MySQLi: bind_param with type string "i" for integer
+                $stmt_count->execute();
+                $stmt_count->bind_result($current_criteria_count); // Bind result to a variable
+                $stmt_count->fetch();
+                $stmt_count->close();
+            } else {
+                $error = 'Gagal menyiapkan statement count: ' . $conn->error;
+                $current_criteria_count = 0; // Set default
+            }
+
+            if (isset($_POST['add_criteria'])) {
+                // Validasi jumlah kriteria [cite: 30]
+                if ($current_criteria_count >= 5) {
+                    $_SESSION['error'] = 'Tidak bisa menambahkan lebih dari 5 kriteria.';
+                } else {
+                    // Insert new criteria [cite: 29, 33]
+                    $stmt = $conn->prepare("INSERT INTO criteria (project_id, criteria_code, criteria_name, weight_percentage, type, value_unit) VALUES (?, ?, ?, ?, ?, ?)");
+                    // MySQLi: bind_param with type string "ississ" (int, string, string, int, string, string)
+                    // Sesuaikan tipe data bind_param: project_id(i), criteria_code(s), criteria_name(s), weight_percentage(i), type(s), value_unit(s)
+                    if ($stmt) {
+                        $stmt->bind_param("ississ", $project_id_from_post, $criteria_code, $criteria_name, $weight_percentage, $type, $value_unit);
+                        if ($stmt->execute()) {
+                            $_SESSION['message'] = 'Kriteria berhasil ditambahkan!';
+                        } else {
+                            // Check for duplicate entry error number (e.g., 1062 for MySQL duplicate key)
+                            if ($conn->errno == 1062) {
+                                $_SESSION['error'] = 'Kode kriteria sudah ada untuk proyek ini. Mohon gunakan kode lain.';
+                            } else {
+                                $_SESSION['error'] = 'Gagal menambahkan kriteria: ' . $stmt->error;
+                            }
+                        }
+                        $stmt->close();
+                    } else {
+                         $_SESSION['error'] = 'Gagal menyiapkan statement tambah: ' . $conn->error;
+                    }
+                }
+            } elseif (isset($_POST['edit_criteria'])) {
+                $criteria_id = $_POST['criteria_id'];
+                // Update existing criteria [cite: 31, 33]
+                $stmt = $conn->prepare("UPDATE criteria SET criteria_code = ?, criteria_name = ?, weight_percentage = ?, type = ?, value_unit = ? WHERE id = ? AND project_id = ?");
+                // MySQLi: bind_param with type string "ssisssii"
+                // Sesuaikan tipe data bind_param: criteria_code(s), criteria_name(s), weight_percentage(i), type(s), value_unit(s), id(i), project_id(i)
+                if ($stmt) {
+                    $stmt->bind_param("ssisssii", $criteria_code, $criteria_name, $weight_percentage, $type, $value_unit, $criteria_id, $project_id_from_post);
+                    if ($stmt->execute()) {
+                        $_SESSION['message'] = 'Kriteria berhasil diperbarui!';
+                    } else {
+                        // Check for duplicate entry error number
+                        if ($conn->errno == 1062) {
+                            $_SESSION['error'] = 'Kode kriteria sudah ada untuk proyek ini. Mohon gunakan kode lain.';
+                        } else {
+                            $_SESSION['error'] = 'Gagal memperbarui kriteria: ' . $stmt->error;
+                        }
+                    }
+                    $stmt->close();
+                } else {
+                     $_SESSION['error'] = 'Gagal menyiapkan statement edit: ' . $conn->error;
+                }
+            }
+            // Redirect setelah POST, sertakan project_id di URL
+            header("Location: kriteria.php?project_id=" . htmlspecialchars($project_id_from_post));
+            exit();
+        }
+    } elseif (isset($_GET['delete_criteria'])) {
+        $criteria_id = $_GET['delete_criteria'];
+        // Ambil project_id dari GET data karena URL ini datang dari link hapus
+        $project_id_from_get = $_GET['project_id'] ?? null;
+        if (!$project_id_from_get || !is_numeric($project_id_from_get)) {
+            // Fallback to session project_id if GET is missing or invalid
+            $project_id_from_get = $project_id;
+        }
+
+        // Hapus kriteria [cite: 32, 33]
+        $stmt = $conn->prepare("DELETE FROM criteria WHERE id = ? AND project_id = ?"); // MySQLi: positional placeholders '?'
+        if ($stmt) {
+            $stmt->bind_param("ii", $criteria_id, $project_id_from_get); // MySQLi: bind_param with type string "ii"
+            if ($stmt->execute()) {
+                $_SESSION['message'] = 'Kriteria berhasil dihapus!';
+            } else {
+                $_SESSION['error'] = 'Gagal menghapus kriteria: ' . $stmt->error;
+            }
+            $stmt->close();
+        } else {
+            $_SESSION['error'] = 'Gagal menyiapkan statement delete: ' . $conn->error;
+        }
+        // Redirect setelah DELETE, sertakan project_id di URL
+        header("Location: kriteria.php?project_id=" . htmlspecialchars($project_id_from_get));
+        exit();
+    }
+
+    // Fetch criteria data for the current project [cite: 28]
+    $stmt = $conn->prepare("SELECT id, criteria_code, criteria_name, weight_percentage, type, value_unit FROM criteria WHERE project_id = ? ORDER BY criteria_code ASC");
+    if ($stmt) {
+        $stmt->bind_param("i", $project_id);
+        $stmt->execute();
+        $result = $stmt->get_result(); // Get result set for fetching
+        $criteria_data = [];
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $criteria_data[] = $row;
+            }
+        }
+        $stmt->close();
+    } else {
+        $error = 'Gagal mengambil data kriteria: ' . $conn->error;
+        $criteria_data = []; // Ensure it's an empty array if there's an error
+    }
+
+    // Koneksi ditutup setelah semua data diambil, sebelum HTML dimulai
+    $conn->close();
+
+    // Calculate total weight percentage
+    $total_weight = 0;
+    foreach ($criteria_data as $criteria) {
+        $total_weight += $criteria['weight_percentage'];
+    }
+
+    // Check for messages from previous redirect
+    if (isset($_SESSION['message'])) {
+        $message = $_SESSION['message'];
+        unset($_SESSION['message']);
+    }
+    if (isset($_SESSION['error'])) {
+        $error = $_SESSION['error'];
+        unset($_SESSION['error']);
+    }
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -88,6 +275,18 @@
             z-index: 998;
         }
         
+        /* Perubahan: Menambahkan atau menimpa gaya untuk tombol .btn Materialize */
+        .btn, .btn-large, .btn-small { /* Target semua ukuran tombol Materialize */
+            border-radius: 7px !important; /* Membuat tombol melengkung seperti kapsul */
+            padding-left: 25px; /* Menyesuaikan padding agar tombol lebih proporsional */
+            padding-right: 25px; /* Menyesuaikan padding agar tombol lebih proporsional */
+        }
+
+        /* Jika Anda ingin tombol dengan ikon tetap memiliki padding yang lebih kecil */
+        .btn .material-icons.left {
+            margin-right: 8px; /* Jarak default antara ikon dan teks */
+        }
+
         .page-title {
             font-size: 1.5rem;
             font-weight: 500;
@@ -174,6 +373,7 @@
         
         .action-btn:hover {
             background-color: rgba(0,0,0,0.05);
+            color: var(--primary-color);
         }
         
         .edit-btn:hover {
@@ -207,6 +407,10 @@
                 transform: translateX(-105%);
             }
         }
+
+        .sets{
+           margin: 13px 10px 0px 0px; 
+        }
     </style>
 </head>
 <body>
@@ -214,17 +418,17 @@
         <li>
             <div class="user-view">
                 <div class="logo">
-                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;">BranchWise</span>
+                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;"><i class="sets material-icons left">settings</i>BranchWise</span>
                 </div>
             </div>
         </li>
         <li><a href="dashboard.php"><i class="material-icons">dashboard</i>Dashboard</a></li>
-        <li><a href="lokasi.php"><i class="material-icons">location_on</i>Lokasi Cabang</a></li>
-        <li><a class="active" href="kriteria.php"><i class="material-icons">assessment</i>Kriteria & Bobot</a></li>
-        <li><a href="matriks.php"><i class="material-icons">grid_on</i>Matriks</a></li>
-        <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
+        <li><a href="lokasi.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">location_on</i>Lokasi Cabang</a></li>
+        <li><a class="active" href="kriteria.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">assessment</i>Kriteria & Bobot</a></li>
+        <li><a href="matriks.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">grid_on</i>Matriks</a></li>
+        <li><a href="hasil_perhitungan.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
         <li><div class="divider"></div></li>
-        <li><a href="index.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
+        <li><a href="logout.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
     </ul>
 
     <main>
@@ -237,10 +441,10 @@
                 <div class="col s6 right-align">
                     <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
                         <i class="material-icons left">account_circle</i>
-                        Username
+                        <?php echo htmlspecialchars($username); ?>
                     </span>
                 </div>
-                </div>
+            </div>
         </div>
 
         <div class="content-wrapper">
@@ -248,7 +452,7 @@
                 <div class="card-header">
                     <div class="row" style="margin-bottom: 0; width: 100%;"> 
                         <div class="col s12 m6"> 
-                            <h2 class="card-title">Daftar Kriteria</h2>
+                            <h2 class="card-title">Daftar Kriteria & Bobot</h2>
                         </div>
                         <div class="col s12 m6 right-align"> 
                             <a href="#add-criteria-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
@@ -267,91 +471,48 @@
                                 <th>Nama Kriteria</th>
                                 <th>Bobot</th>
                                 <th>Jenis</th>
-                                <th>Nilai Kriteria</th> <th>Aksi</th>
+                                <th>Nilai Kriteria</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>C1</td>
-                                <td>Biaya Sewa</td>
-                                <td>30%</td>
-                                <td><span class="badge badge-cost">Cost</span></td>
-                                <td>0-10</td> <td>
-                                    <button class="action-btn edit-btn" title="Edit">
-                                        <i class="material-icons">edit</i>
-                                    </button>
-                                    <button class="action-btn delete-btn" title="Hapus">
-                                        <i class="material-icons">delete</i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>C2</td>
-                                <td>Jumlah Penduduk</td>
-                                <td>25%</td>
-                                <td><span class="badge badge-benefit">Benefit</span></td>
-                                <td>0-10</td> <td>
-                                    <button class="action-btn edit-btn" title="Edit">
-                                        <i class="material-icons">edit</i>
-                                    </button>
-                                    <button class="action-btn delete-btn" title="Hapus">
-                                        <i class="material-icons">delete</i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>C3</td>
-                                <td>Aksesibilitas</td>
-                                <td>20%</td>
-                                <td><span class="badge badge-benefit">Benefit</span></td>
-                                <td>0-10</td> <td>
-                                    <button class="action-btn edit-btn" title="Edit">
-                                        <i class="material-icons">edit</i>
-                                    </button>
-                                    <button class="action-btn delete-btn" title="Hapus">
-                                        <i class="material-icons">delete</i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>C4</td>
-                                <td>Daya Beli</td>
-                                <td>15%</td>
-                                <td><span class="badge badge-benefit">Benefit</span></td>
-                                <td>0-10</td> <td>
-                                    <button class="action-btn edit-btn" title="Edit">
-                                        <i class="material-icons">edit</i>
-                                    </button>
-                                    <button class="action-btn delete-btn" title="Hapus">
-                                        <i class="material-icons">delete</i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>C5</td>
-                                <td>Pesaing</td>
-                                <td>10%</td>
-                                <td><span class="badge badge-cost">Cost</span></td>
-                                <td>0-10</td> <td>
-                                    <button class="action-btn edit-btn" title="Edit">
-                                        <i class="material-icons">edit</i>
-                                    </button>
-                                    <button class="action-btn delete-btn" title="Hapus">
-                                        <i class="material-icons">delete</i>
-                                    </button>
-                                </td>
-                            </tr>
+                            <?php if (count($criteria_data) > 0): ?>
+                                <?php $no = 1; ?>
+                                <?php foreach ($criteria_data as $criteria): ?>
+                                    <tr>
+                                        <td><?php echo $no++; ?></td>
+                                        <td><?php echo htmlspecialchars($criteria['criteria_code']); ?></td>
+                                        <td><?php echo htmlspecialchars($criteria['criteria_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($criteria['weight_percentage']); ?>%</td>
+                                        <td><span class="badge badge-<?php echo htmlspecialchars($criteria['type']); ?>"><?php echo ucfirst(htmlspecialchars($criteria['type'])); ?></span></td>
+                                        <td><?php echo htmlspecialchars($criteria['value_unit']); ?></td>
+                                        <td>
+                                            <button class="action-btn edit-btn" title="Edit"
+                                                data-id="<?php echo $criteria['id']; ?>"
+                                                data-code="<?php echo htmlspecialchars($criteria['criteria_code']); ?>"
+                                                data-name="<?php echo htmlspecialchars($criteria['criteria_name']); ?>"
+                                                data-weight="<?php echo htmlspecialchars($criteria['weight_percentage']); ?>"
+                                                data-type="<?php echo htmlspecialchars($criteria['type']); ?>"
+                                                data-value_unit="<?php echo htmlspecialchars($criteria['value_unit']); ?>">
+                                                <i class="material-icons">edit</i>
+                                            </button>
+                                            <a href="kriteria.php?delete_criteria=<?php echo $criteria['id']; ?>&project_id=<?php echo htmlspecialchars($project_id); ?>" class="action-btn delete-btn" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria <?php echo htmlspecialchars($criteria['criteria_name']); ?>?');">
+                                                <i class="material-icons">delete</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="7" class="center-align">Tidak ada kriteria yang ditemukan untuk proyek ini.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
                 
                 <div class="total-weight">
-                    Total Bobot: 100%
+                    Total Bobot: <?php echo $total_weight; ?>%
                 </div>
             </div>
         </div>
@@ -359,26 +520,27 @@
 
     <div id="add-criteria-modal" class="modal">
         <div class="modal-content">
-            <h4>Tambah Kriteria Baru</h4>
-            <form>
-                <div class="row">
+            <h4 id="modal-title">Tambah Kriteria Baru</h4>
+            <form id="criteria-form" method="POST" action="kriteria.php">
+                <input type="hidden" name="criteria_id" id="criteria_id">
+                <input type="hidden" name="project_id" value="<?php echo htmlspecialchars($project_id); ?>"> <div class="row">
                     <div class="input-field col s12 m6">
-                        <input id="criteria_code" type="text" class="validate" required>
+                        <input id="criteria_code" name="criteria_code" type="text" class="validate" required>
                         <label for="criteria_code">Kode Kriteria</label>
                     </div>
                     <div class="input-field col s12 m6">
-                        <input id="criteria_name" type="text" class="validate" required>
+                        <input id="criteria_name" name="criteria_name" type="text" class="validate" required>
                         <label for="criteria_name">Nama Kriteria</label>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="input-field col s12 m6">
-                        <input id="criteria_weight" type="number" min="1" max="100" class="validate" required>
+                        <input id="criteria_weight" name="weight_percentage" type="number" min="1" max="100" class="validate" required>
                         <label for="criteria_weight">Bobot (%)</label>
                     </div>
                     <div class="input-field col s12 m6">
-                        <select id="criteria_type" required>
+                        <select id="criteria_type" name="type" required>
                             <option value="" disabled selected>Pilih Jenis Kriteria</option>
                             <option value="benefit">Benefit</option>
                             <option value="cost">Cost</option>
@@ -389,15 +551,15 @@
                 
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="criteria_value_unit" type="text" class="validate">
+                        <input id="criteria_value_unit" name="value_unit" type="text" class="validate">
                         <label for="criteria_value_unit">Nilai Kriteria (misal: 0-10, juta jiwa, ribu)</label>
                     </div>
                 </div>
-                </form>
+            </form>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-red btn-flat">Batal</a>
-            <a href="#!" class="modal-close waves-effect waves-green btn blue">Simpan Kriteria</a>
+            <button type="submit" form="criteria-form" name="add_criteria" id="submit-btn" class="waves-effect waves-green btn blue">Simpan Kriteria</button>
         </div>
     </div>
 
@@ -409,61 +571,59 @@
             // Initialize sidenav
             $('.sidenav').sidenav();
             
-            // Perubahan: Menghapus inisialisasi dropdown karena elemennya telah dihapus dari HTML
-            // $('.dropdown-trigger').dropdown(); 
-            
             // Initialize modal
-            $('.modal').modal();
-            
-            // Initialize select
-            $('select').formSelect();
-            
-            // Delete button functionality
-            $('.delete-btn').click(function() {
-                const criteriaRow = $(this).closest('tr');
-                const criteriaName = criteriaRow.find('td:nth-child(3)').text();
-                
-                if (confirm(`Apakah Anda yakin ingin menghapus kriteria "${criteriaName}"?`)) {
-                    criteriaRow.remove();
-                    M.toast({html: `Kriteria "${criteriaName}" telah dihapus`});
-                    updateTotalWeight();
+            $('.modal').modal({
+                onOpenEnd: function(el) {
+                    // Ensure labels are correctly activated after content load
+                    M.updateTextFields();
+                    $('select').formSelect();
+                },
+                onCloseEnd: function(el) {
+                    // Reset form on modal close
+                    $('#criteria-form')[0].reset();
+                    $('#modal-title').text('Tambah Kriteria Baru');
+                    $('#submit-btn').attr('name', 'add_criteria').text('Simpan Kriteria');
+                    $('#criteria_id').val('');
+                    // Deactivate labels again
+                    M.updateTextFields();
                 }
             });
             
+            // Initialize select
+            $('select').formSelect();
+
+            // Display messages (if any)
+            <?php if ($message): ?>
+                M.toast({html: '<?php echo $message; ?>'});
+            <?php endif; ?>
+            <?php if ($error): ?>
+                M.toast({html: '<?php echo $error; ?>', classes: 'red darken-2'});
+            <?php endif; ?>
+            
             // Edit button functionality
             $('.edit-btn').click(function() {
-                const criteriaRow = $(this).closest('tr');
-                const criteriaCode = criteriaRow.find('td:nth-child(2)').text(); 
-                const criteriaName = criteriaRow.find('td:nth-child(3)').text();
-                const criteriaWeight = criteriaRow.find('td:nth-child(4)').text().replace('%', '');
-                const criteriaType = criteriaRow.find('td:nth-child(5) span').text().toLowerCase();
-                const criteriaValueUnit = criteriaRow.find('td:nth-child(6)').text(); // Perubahan: Ambil nilai kriteria
+                const criteriaId = $(this).data('id');
+                const criteriaCode = $(this).data('code');
+                const criteriaName = $(this).data('name');
+                const criteriaWeight = $(this).data('weight');
+                const criteriaType = $(this).data('type');
+                const criteriaValueUnit = $(this).data('value_unit');
 
-                // Set modal title
-                $('#add-criteria-modal h4').text(`Edit Kriteria: ${criteriaName}`);
+                $('#modal-title').text(`Edit Kriteria: ${criteriaName}`);
+                $('#submit-btn').attr('name', 'edit_criteria').text('Perbarui Kriteria');
                 
-                // Fill form with existing data
+                $('#criteria_id').val(criteriaId);
                 $('#criteria_code').val(criteriaCode);
                 $('#criteria_name').val(criteriaName);
                 $('#criteria_weight').val(criteriaWeight);
                 $('#criteria_type').val(criteriaType);
-                $('#criteria_value_unit').val(criteriaValueUnit); // Perubahan: Isi input Nilai Kriteria
+                $('#criteria_value_unit').val(criteriaValueUnit); 
 
                 $('select').formSelect();     
                 M.updateTextFields();         
                 
                 $('#add-criteria-modal').modal('open');
             });
-            
-            // Function to update total weight
-            function updateTotalWeight() {
-                let total = 0;
-                $('tbody tr').each(function() {
-                    const weight = parseInt($(this).find('td:nth-child(4)').text().replace('%', ''));
-                    total += weight;
-                });
-                $('.total-weight').text(`Total Bobot: ${total}%`);
-            }
         });
     </script>
 </body>

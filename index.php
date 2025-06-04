@@ -102,7 +102,7 @@
             from { width: 0; }
             to { width: 80px; }
         }
-        
+
         /* Navbar animation */
         nav {
             transition: background-color 0.3s, box-shadow 0.3s;
@@ -202,7 +202,7 @@
         }
 
         .social-icon {
-            position: relative; /* Tambahkan ini */
+            position: relative; 
             font-size: 20px;
             color: white;
             transition: all 0.3s ease;
@@ -220,9 +220,9 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* Geser ikon kembali setengah dari lebar/tingginya */
-            font-size: 20px; /* Pertahankan ukuran font */
-            color: white; /* Pertahankan warna */
+            transform: translate(-50%, -50%); 
+            font-size: 20px; 
+            color: white; 
         }
 
         .social-icon:hover {
@@ -270,6 +270,82 @@
         .hero-content-center {
             padding-top: 100px;
         }
+
+        /* Perubahan: Gaya tombol melengkung seperti kapsul */
+        .btn-rounded {
+            border-radius: 50px !important; /* Membuat sudut tombol sangat melengkung */
+            padding-left: 25px; /* Menyesuaikan padding agar tombol lebih proporsional */
+            padding-right: 25px; /* Menyesuaikan padding agar tombol lebih proporsional */
+        }
+        /* Akhir Perubahan: Gaya tombol melengkung */
+
+        /* Perubahan: Gaya Tombol Hero Section "Mulai" dengan panah */
+        .hero-button {
+            font-size: 1.1rem; /* Ukuran font tombol hero */
+            height: 50px; /* Tinggi tombol */
+            line-height: 50px; /* Perataan vertikal teks */
+            display: inline-flex; /* Menggunakan flexbox untuk perataan ikon */
+            align-items: center; /* Perataan vertikal item dalam flexbox */
+            justify-content: center; /* Perataan horizontal item dalam flexbox */
+            background-color: #0d47a1 !important; /* Warna biru tombol mulai */
+            color: white !important; /* Warna teks tombol mulai */
+        }
+
+        .hero-button i.material-icons {
+            margin-left: 8px; /* Jarak antara teks dan ikon panah */
+            font-size: 20px; /* Ukuran ikon panah */
+            line-height: inherit; /* Inherit line-height dari parent */
+        }
+
+        .hero-button:hover {
+            background-color: #1a56b4 !important; /* Warna hover yang sedikit lebih terang */
+        }
+        /* Akhir Perubahan: Gaya Tombol Hero Section "Mulai" */
+
+        /* Perubahan: Gaya Tombol Login di Navbar (melengkung) */
+        nav .login-btn {
+            border-radius: 50px !important; /* Membuat sudut tombol sangat melengkung */
+            padding: 0 20px; /* Menyesuaikan padding */
+            height: 36px; /* Menyesuaikan tinggi */
+            line-height: 36px; /* Menyesuaikan line-height */
+            background-color: #0d47a1 !important; /* Warna biru tombol login */
+            color: white !important; /* Warna teks tombol login */
+        }
+
+        nav .login-btn:hover {
+            background-color: #1a56b4 !important; /* Warna hover yang sedikit lebih terang */
+        }
+        /* Akhir Perubahan: Gaya Tombol Login di Navbar */
+
+        /* Perubahan: Gaya Tombol "Mulai Analisis Sekarang" di Ayo Pilih Lokasi Section */
+        .btn-white-blue-text {
+            background-color: white !important; 
+            color: #1565C0 !important; 
+            border-radius: 50px !important; /* Membuat sudut tombol sangat melengkung */
+            height: 50px; /* Tinggi tombol */
+            line-height: 50px; /* Perataan vertikal teks */
+            padding: 0 30px; /* Menyesuaikan padding */
+        }
+
+        .btn-white-blue-text:hover {
+            background-color: #e0e0e0 !important; 
+            color: #0d47a1 !important; 
+        }
+
+        #hero-background-img {
+            width: 70%; /* atau persentase lain */
+            height: auto; /* menjaga rasio aspek */
+            /* Hapus transform: rotate() jika hanya ingin mengecilkan dan menengahkan */
+        }
+
+        /* Jika Anda ingin gambar tetap di tengah setelah dikecilkan dalam container parallax */
+        .parallax {
+            display: flex;
+            justify-content: center; /* Tengah secara horizontal */
+            align-items: center;   /* Tengah secara vertikal */
+            overflow: hidden;      /* Sembunyikan bagian gambar yang keluar dari container jika gambar lebih besar */
+        }
+
     </style>
     <script>
         $(document).ready(function() {
@@ -320,7 +396,9 @@
             
             // Add animation to CTA button
             setInterval(function() {
-                $('.btn-large.blue').toggleClass('pulse');
+                // Perubahan: Mengubah selector dari '.btn-large.blue' menjadi '.hero-button'
+                // karena tombol "Mulai" sekarang memiliki kelas khusus
+                $('.hero-button').toggleClass('pulse'); 
             }, 4000);
             
             // Handle login button click
@@ -332,26 +410,23 @@
     </script>
 </head>
 <body>
-    <!-- Navbar -->
     <div class="navbar-fixed">
         <nav class="white" role="navigation">
             <div class="nav-wrapper container">
-                <a id="logo-container" href="#" class="brand-logo blue-text text-darken-4" style="font-weight: bold;">BranchWise</a>
+                <a id="logo-container" href="index.php" class="brand-logo blue-text text-darken-4" style="font-weight: bold;"><i class="sets material-icons left">settings</i>BranchWise</a>
                 <ul class="right hide-on-med-and-down">
-                    <li><a href="login.php" class="waves-effect waves-light btn blue darken-3 btn-hover-grow login-btn">Login</a></li>
+                    <li><a href="login.php" class="waves-effect waves-light btn blue darken-3 btn-hover-grow login-btn btn-rounded">Login</a></li>
                 </ul>
 
                 <ul id="nav-mobile" class="side-nav">
-                    <li><a href="login.php" class="login-btn">Login</a></li>
+                    <li><a href="login.php" class="login-btn btn-rounded">Login</a></li>
                 </ul>
                 <a href="#" data-activates="nav-mobile" class="button-collapse blue-text text-darken-4"><i class="material-icons">menu</i></a>
             </div>
         </nav>
     </div>
 
-    <!-- Main Content -->
     <main>
-        <!-- Hero Section -->
         <div id="index-banner" class="parallax-container" style="min-height: 550px;">
             <div class="section no-pad-bot">
                 <div class="container hero-content-center">
@@ -359,17 +434,18 @@
                         <div class="col s12 m8 l7"> 
                             <h1 class="header white-text text-lighten-2 hero-title">A smart decision support system to grow your retail business</h1>
                             <p class="flow-text white-text text-lighten-3 hero-subtitle">Temukan lokasi strategis untuk cabang toko Anda berikutnya dengan lebih cepat dan tepat. Sistem kami membantu menganalisis berbagai faktor penting, seperti kepadatan penduduk, kompetitor, aksesibilitas hingga potensi pasar lokal</p>
-                            <a href="login.php" id="download-button" class="btn-large waves-effect waves-light blue darken-3 hero-button btn-hover-grow pulse login-btn">Mulai <i class="material-icons right">arrow_forward</i></a>
+                            <div class="row">
+                                <a href="login.php" id="download-button" class="btn-large waves-effect waves-light blue darken-3 hero-button btn-hover-grow pulse login-btn btn-rounded">Mulai <i class="material-icons right">arrow_forward</i></a>
+                            </div>
                         </div>
                         <div class="col s12 m4 l5">
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="parallax"><img src="assets/image/building_hero.jpg" alt="Building background"></div>
-        </div>
+            <div class="parallax"><img id="hero-background-img" src="assets/image/building_hero.jpg" alt="Building background"></div>
+            </div>
 
-        <!-- Cabang Terbaik Section -->
         <div id="locations" class="container section-gap">
             <div class="fade-in-section">
                 <h3 class="center blue-text text-darken-4 section-title">Cabang dengan potensi terbaik dari semua pilihan</h3>
@@ -470,25 +546,23 @@
             </div>
         </div>
 
-        <!-- Ayo Pilih Lokasi Section -->
         <div class="blue darken-4 section-gap" style="padding: 80px 0;">
             <div class="container">
                 <div class="row">
                     <div class="col s12 m8 offset-m2 center">
                         <h2 class="white-text animate__animated animate__fadeIn">Ayo Pilih Lokasi</h2>
-                        <h4 class="white-text animate__animated animate__fadeIn animate__delay-1s">Cabang Terbaikmu!</h4>
+                        <h2 class="white-text animate__animated animate__fadeIn animate__delay-1s">Cabang Terbaikmu!</h2>
                         <p class="flow-text white-text animate__animated animate__fadeIn animate__delay-2s" style="max-width: 800px; margin: 20px auto;">
                             Ekspansi bisnis yang cerdas dimulai dari keputusan yang tepat. Temukan lokasi terbaik untuk cabang baru Anda bersama BranchWise, berdasarkan data dan analisis yang objektif.
                         </p>
                         <div class="section" style="padding-top: 20px;">
-                            <a href="login.php" class="waves-effect waves-light btn-large btn-white-blue-text btn-hover-grow animate__animated animate__pulse animate__infinite animate__slower login-btn">Mulai Analisis Sekarang</a>
+                            <a href="login.php" class="waves-effect waves-light btn-large btn-white-blue-text btn-hover-grow animate__animated animate__pulse animate__infinite animate__slower login-btn btn-rounded">Mulai Analisis Sekarang</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- FAQ Section -->
         <div id="faq" class="container section-gap">
             <div class="fade-in-section">
                 <h3 class="center blue-text text-darken-4 section-title">Frequently Asked Questions</h3>
@@ -512,55 +586,50 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="page-footer">
         <div class="container">
             <div class="row footer-content">
-                <!-- Hubungi Kami -->
                 <div class="col s12 m4">
                     <div class="footer-section">
                         <h5 class="white-text">HUBUNGI KAMI</h5>
                         <ul>
-                            <li><i class="material-icons tiny">phone</i><a class="grey-text text-lighten-3" href="#!">+62-21-888-2424</a></li>
-                            <li><i class="material-icons tiny">email</i><a class="grey-text text-lighten-3" href="#!">contact@branchwise.com</a></li>
-                            <li><i class="material-icons tiny">location_on</i><a class="grey-text text-lighten-3" href="#!">Jakarta, Indonesia</a></li>
+                            <li><i class="material-icons tiny">phone</i><a class="grey-text text-lighten-3" >+62-21-888-2424</a></li>
+                            <li><i class="material-icons tiny">email</i><a class="grey-text text-lighten-3" >contact@branchwise.com</a></li>
+                            <li><i class="material-icons tiny">location_on</i><a class="grey-text text-lighten-3" >Jakarta, Indonesia</a></li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- Menu BranchWise -->
                 <div class="col s12 m4">
                     <div class="footer-section">
                         <h5 class="white-text">BRANCHWISE</h5>
                         <ul>
-                            <li><a class="grey-text text-lighten-3" href="#!">Dashboard</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Alternatif</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Kriteria</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Bobot</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Matriks</a></li>
-                            <li><a class="grey-text text-lighten-3" href="#!">Hasil</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Dashboard</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Alternatif</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Kriteria</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Bobot</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Matriks</a></li>
+                            <li><a class="grey-text text-lighten-3" href="login.php">Hasil</a></li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- Social Media -->
                 <div class="col s12 m4">
                     <div class="footer-section">
                         <h5 class="white-text">SOCIAL MEDIA</h5>
                         <p class="grey-text text-lighten-4">Ikuti kami di media sosial untuk update terbaru</p>
                         <div class="social-icons">
-                            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                            <a class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                            <a class="social-icon"><i class="fab fa-twitter"></i></a>
+                            <a class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="social-icon"><i class="fab fa-instagram"></i></a>
+                            <a class="social-icon"><i class="fab fa-youtube"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Footer Copyright -->
         <div class="footer-copyright">
             <div class="container">
                 <div class="row">
