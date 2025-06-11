@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>BranchWise - A smart decision support system</title>
+    <link rel="shortcut icon" href="assets/image/logo.png" type="image/gif">
     <meta property="og:image" content="assets/image/laptop.jpg" />
     <meta name="description" content="BranchWise adalah sistem pendukung keputusan untuk mengoptimalkan operasional retail." />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
