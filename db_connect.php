@@ -1,15 +1,25 @@
 <?php
-$servername = "localhost"; // Sesuaikan jika host database Anda berbeda
-$username_db = "root";    // Sesuaikan dengan username database Anda (default XAMPP biasanya 'root')
-$password_db = "";        // Sesuaikan dengan password database Anda (default XAMPP biasanya kosong)
-$dbname = "db_branchwise"; // Nama database yang sudah Anda buat
+// Kredensial dari Supabase "Direct connection"
+$host = 'aws-0-ap-southeast-1.pooler.supabase.com';
+$port = '5432';
+$dbname = 'postgres';
+$user = 'postgres.vhcghphnmdncvmbenqxa';
+$password = 'databasespkwpm';
 
-// Buat koneksi ke database
-$conn = new mysqli($servername, $username_db, $password_db, $dbname);
+// Data Source Name (DSN) untuk PostgreSQL
+$dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
 
-// Periksa koneksi
-if ($conn->connect_error) {
-    die("Koneksi database gagal: " . $conn->connect_error);
+// Opsi koneksi PDO
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    // Buat instance PDO baru
+    $pdo = new PDO($dsn, $user, $password, $options);
+} catch (PDOException $e) {
+    die("Koneksi database gagal: " . $e->getMessage());
 }
-// echo "Koneksi berhasil!"; // Baris ini bisa Anda hapus setelah memastikan koneksi berhasil
 ?>

@@ -1,189 +1,121 @@
 <?php
-    session_start(); // Mulai session untuk mengambil data user
-    require_once 'db_connect.php'; // Sertakan file koneksi database (MySQLi version)
+session_start();
+require_once 'db_connect.php'; // Menggunakan koneksi PDO ($pdo)
 
-    // Cek apakah user sudah login, jika tidak, redirect ke halaman login
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: login.php");
-        exit();
-    }
+// Cek login dan role (tidak ada perubahan)
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+$user_id = $_SESSION['user_id'];
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
+if ($role !== 'user') {
+    header("Location: admin.php");
+    exit();
+}
 
-    // Ambil data user dari session
-    $user_id = $_SESSION['user_id'];
-    $username = $_SESSION['username'];
-    $role = $_SESSION['role'];
+// Manajemen project_id (tidak ada perubahan)
+if (isset($_GET['project_id']) && is_numeric($_GET['project_id'])) {
+    $_SESSION['current_project_id'] = (int)$_GET['project_id'];
+}
+if (!isset($_SESSION['current_project_id'])) {
+    header("Location: dashboard.php");
+    exit();
+}
+$project_id = $_SESSION['current_project_id'];
 
-    // Jika role bukan 'user', redirect ke halaman yang sesuai (misal: admin.php)
-    if ($role !== 'user') { // Untuk admin, halaman manajemen akun ada di admin.php [cite: 5]
-        header("Location: admin.php"); // Atau halaman lain yang sesuai untuk admin
-        exit();
-    }
+$message = '';
+$error = '';
 
-    // --- PERBAIKAN: Ambil project_id dari URL (GET) dan simpan ke session ---
-    // Ini penting agar project_id tetap ada saat navigasi ke halaman kriteria
-    if (isset($_GET['project_id']) && is_numeric($_GET['project_id'])) {
-        $_SESSION['current_project_id'] = (int)$_GET['project_id'];
-    }
-    // --- AKHIR PERBAIKAN ---
+// --- PERUBAHAN: Handle form submission menggunakan PDO ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $project_id_from_post = $_POST['project_id'] ?? $project_id;
+    
+    if (isset($_POST['add_criteria']) || isset($_POST['edit_criteria'])) {
+        $criteria_code = $_POST['criteria_code'];
+        $criteria_name = $_POST['criteria_name'];
+        $weight_percentage = $_POST['weight_percentage'];
+        $type = $_POST['type'];
+        $value_unit = $_POST['value_unit'];
 
-    // Ambil project_id dari session, jika tidak ada, redirect ke dashboard
-    // Untuk bisa mengakses halaman ini, user harus memilih salah satu proyek pada halaman dashboard [cite: 18]
-    if (!isset($_SESSION['current_project_id'])) {
-        header("Location: dashboard.php");
-        exit();
-    }
-    $project_id = $_SESSION['current_project_id']; // Gunakan project_id dari session untuk seluruh halaman ini
-
-    // Inisialisasi pesan
-    $message = '';
-    $error = '';
-
-    // Handle form submission for adding/editing criteria
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Ambil project_id dari POST data karena form disubmit kembali ke halaman ini
-        // Pastikan project_id_from_post selalu ada dan valid
-        $project_id_from_post = $_POST['project_id'] ?? null;
-        if (!$project_id_from_post || !is_numeric($project_id_from_post)) {
-            // Fallback to session project_id if POST is missing or invalid
-            $project_id_from_post = $project_id;
-        }
-        
-        if (isset($_POST['add_criteria']) || isset($_POST['edit_criteria'])) {
-            $criteria_code = $_POST['criteria_code'];
-            $criteria_name = $_POST['criteria_name'];
-            $weight_percentage = $_POST['weight_percentage'];
-            $type = $_POST['type'];
-            $value_unit = $_POST['value_unit'];
-
-            // Fetch current criteria count for validation [cite: 30]
-            $stmt_count = $conn->prepare("SELECT COUNT(*) FROM criteria WHERE project_id = ?"); // MySQLi: positional placeholder '?'
-            if ($stmt_count) {
-                $stmt_count->bind_param("i", $project_id_from_post); // MySQLi: bind_param with type string "i" for integer
-                $stmt_count->execute();
-                $stmt_count->bind_result($current_criteria_count); // Bind result to a variable
-                $stmt_count->fetch();
-                $stmt_count->close();
-            } else {
-                $error = 'Gagal menyiapkan statement count: ' . $conn->error;
-                $current_criteria_count = 0; // Set default
-            }
-
+        try {
             if (isset($_POST['add_criteria'])) {
-                // Validasi jumlah kriteria [cite: 30]
+                // Validasi jumlah kriteria
+                $stmt_count = $pdo->prepare("SELECT COUNT(*) FROM criteria WHERE project_id = ?");
+                $stmt_count->execute([$project_id_from_post]);
+                $current_criteria_count = $stmt_count->fetchColumn();
+
                 if ($current_criteria_count >= 5) {
                     $_SESSION['error'] = 'Tidak bisa menambahkan lebih dari 5 kriteria.';
                 } else {
-                    // Insert new criteria [cite: 29, 33]
-                    $stmt = $conn->prepare("INSERT INTO criteria (project_id, criteria_code, criteria_name, weight_percentage, type, value_unit) VALUES (?, ?, ?, ?, ?, ?)");
-                    // MySQLi: bind_param with type string "ississ" (int, string, string, int, string, string)
-                    // Sesuaikan tipe data bind_param: project_id(i), criteria_code(s), criteria_name(s), weight_percentage(i), type(s), value_unit(s)
-                    if ($stmt) {
-                        $stmt->bind_param("ississ", $project_id_from_post, $criteria_code, $criteria_name, $weight_percentage, $type, $value_unit);
-                        if ($stmt->execute()) {
-                            $_SESSION['message'] = 'Kriteria berhasil ditambahkan!';
-                        } else {
-                            // Check for duplicate entry error number (e.g., 1062 for MySQL duplicate key)
-                            if ($conn->errno == 1062) {
-                                $_SESSION['error'] = 'Kode kriteria sudah ada untuk proyek ini. Mohon gunakan kode lain.';
-                            } else {
-                                $_SESSION['error'] = 'Gagal menambahkan kriteria: ' . $stmt->error;
-                            }
-                        }
-                        $stmt->close();
-                    } else {
-                         $_SESSION['error'] = 'Gagal menyiapkan statement tambah: ' . $conn->error;
-                    }
+                    // Insert kriteria baru
+                    $sql = "INSERT INTO criteria (project_id, criteria_code, criteria_name, weight_percentage, type, value_unit) VALUES (?, ?, ?, ?, ?, ?)";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([$project_id_from_post, $criteria_code, $criteria_name, $weight_percentage, $type, $value_unit]);
+                    $_SESSION['message'] = 'Kriteria berhasil ditambahkan!';
                 }
             } elseif (isset($_POST['edit_criteria'])) {
+                // Update kriteria
                 $criteria_id = $_POST['criteria_id'];
-                // Update existing criteria [cite: 31, 33]
-                $stmt = $conn->prepare("UPDATE criteria SET criteria_code = ?, criteria_name = ?, weight_percentage = ?, type = ?, value_unit = ? WHERE id = ? AND project_id = ?");
-                // MySQLi: bind_param with type string "ssisssii"
-                // Sesuaikan tipe data bind_param: criteria_code(s), criteria_name(s), weight_percentage(i), type(s), value_unit(s), id(i), project_id(i)
-                if ($stmt) {
-                    $stmt->bind_param("ssisssii", $criteria_code, $criteria_name, $weight_percentage, $type, $value_unit, $criteria_id, $project_id_from_post);
-                    if ($stmt->execute()) {
-                        $_SESSION['message'] = 'Kriteria berhasil diperbarui!';
-                    } else {
-                        // Check for duplicate entry error number
-                        if ($conn->errno == 1062) {
-                            $_SESSION['error'] = 'Kode kriteria sudah ada untuk proyek ini. Mohon gunakan kode lain.';
-                        } else {
-                            $_SESSION['error'] = 'Gagal memperbarui kriteria: ' . $stmt->error;
-                        }
-                    }
-                    $stmt->close();
-                } else {
-                     $_SESSION['error'] = 'Gagal menyiapkan statement edit: ' . $conn->error;
-                }
+                $sql = "UPDATE criteria SET criteria_code = ?, criteria_name = ?, weight_percentage = ?, type = ?, value_unit = ? WHERE id = ? AND project_id = ?";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$criteria_code, $criteria_name, $weight_percentage, $type, $value_unit, $criteria_id, $project_id_from_post]);
+                $_SESSION['message'] = 'Kriteria berhasil diperbarui!';
             }
-            // Redirect setelah POST, sertakan project_id di URL
-            header("Location: kriteria.php?project_id=" . htmlspecialchars($project_id_from_post));
-            exit();
-        }
-    } elseif (isset($_GET['delete_criteria'])) {
-        $criteria_id = $_GET['delete_criteria'];
-        // Ambil project_id dari GET data karena URL ini datang dari link hapus
-        $project_id_from_get = $_GET['project_id'] ?? null;
-        if (!$project_id_from_get || !is_numeric($project_id_from_get)) {
-            // Fallback to session project_id if GET is missing or invalid
-            $project_id_from_get = $project_id;
-        }
-
-        // Hapus kriteria [cite: 32, 33]
-        $stmt = $conn->prepare("DELETE FROM criteria WHERE id = ? AND project_id = ?"); // MySQLi: positional placeholders '?'
-        if ($stmt) {
-            $stmt->bind_param("ii", $criteria_id, $project_id_from_get); // MySQLi: bind_param with type string "ii"
-            if ($stmt->execute()) {
-                $_SESSION['message'] = 'Kriteria berhasil dihapus!';
+        } catch (PDOException $e) {
+            // Tangani error, terutama untuk duplikat 'criteria_code'
+            if ($e->getCode() == '23505') { // Kode error PostgreSQL untuk 'unique violation'
+                $_SESSION['error'] = 'Kode kriteria sudah ada untuk proyek ini. Mohon gunakan kode lain.';
             } else {
-                $_SESSION['error'] = 'Gagal menghapus kriteria: ' . $stmt->error;
+                $_SESSION['error'] = 'Gagal memproses data: ' . $e->getMessage();
             }
-            $stmt->close();
-        } else {
-            $_SESSION['error'] = 'Gagal menyiapkan statement delete: ' . $conn->error;
         }
-        // Redirect setelah DELETE, sertakan project_id di URL
-        header("Location: kriteria.php?project_id=" . htmlspecialchars($project_id_from_get));
+        header("Location: kriteria.php?project_id=" . htmlspecialchars($project_id_from_post));
         exit();
     }
-
-    // Fetch criteria data for the current project [cite: 28]
-    $stmt = $conn->prepare("SELECT id, criteria_code, criteria_name, weight_percentage, type, value_unit FROM criteria WHERE project_id = ? ORDER BY criteria_code ASC");
-    if ($stmt) {
-        $stmt->bind_param("i", $project_id);
-        $stmt->execute();
-        $result = $stmt->get_result(); // Get result set for fetching
-        $criteria_data = [];
-        if ($result && $result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $criteria_data[] = $row;
-            }
-        }
-        $stmt->close();
-    } else {
-        $error = 'Gagal mengambil data kriteria: ' . $conn->error;
-        $criteria_data = []; // Ensure it's an empty array if there's an error
+} elseif (isset($_GET['delete_criteria'])) {
+    // --- PERUBAHAN: Handle delete menggunakan PDO ---
+    $criteria_id_to_delete = $_GET['delete_criteria'];
+    $project_id_from_get = $_GET['project_id'] ?? $project_id;
+    
+    try {
+        $sql = "DELETE FROM criteria WHERE id = ? AND project_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$criteria_id_to_delete, $project_id_from_get]);
+        $_SESSION['message'] = 'Kriteria berhasil dihapus!';
+    } catch (PDOException $e) {
+        $_SESSION['error'] = 'Gagal menghapus kriteria: ' . $e->getMessage();
     }
+    header("Location: kriteria.php?project_id=" . htmlspecialchars($project_id_from_get));
+    exit();
+}
 
-    // Koneksi ditutup setelah semua data diambil, sebelum HTML dimulai
-    $conn->close();
+// --- PERUBAHAN: Fetch data kriteria menggunakan PDO ---
+$criteria_data = [];
+try {
+    $stmt = $pdo->prepare("SELECT id, criteria_code, criteria_name, weight_percentage, type, value_unit FROM criteria WHERE project_id = ? ORDER BY criteria_code ASC");
+    $stmt->execute([$project_id]);
+    $criteria_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $error = 'Gagal mengambil data kriteria: ' . $e->getMessage();
+}
 
-    // Calculate total weight percentage
-    $total_weight = 0;
-    foreach ($criteria_data as $criteria) {
-        $total_weight += $criteria['weight_percentage'];
-    }
+// Kalkulasi total bobot (tidak ada perubahan)
+$total_weight = 0;
+foreach ($criteria_data as $criteria) {
+    $total_weight += $criteria['weight_percentage'];
+}
 
-    // Check for messages from previous redirect
-    if (isset($_SESSION['message'])) {
-        $message = $_SESSION['message'];
-        unset($_SESSION['message']);
-    }
-    if (isset($_SESSION['error'])) {
-        $error = $_SESSION['error'];
-        unset($_SESSION['error']);
-    }
+// Cek pesan dari redirect (tidak ada perubahan)
+if (isset($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    unset($_SESSION['message']);
+}
+if (isset($_SESSION['error'])) {
+    $error = $_SESSION['error'];
+    unset($_SESSION['error']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -468,12 +400,12 @@
             </div>
         </li>
         <li><a href="dashboard.php"><i class="material-icons">dashboard</i><span class="link-text">Dashboard</span></a></li>
-        <li><a href="lokasi.php"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
-        <li><a class="active" href="kriteria.php"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
-        <li><a href="matriks.php"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
-        <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
+        <li><a href="lokasi.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
+        <li><a class="active" href="kriteria.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
+        <li><a href="matriks.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
+        <li><a href="hasil_perhitungan.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
         <li><div class="divider"></div></li>
-        <li><a href="index.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
+        <li><a href="logout.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
     </ul>
 
     <main>

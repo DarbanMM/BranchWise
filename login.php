@@ -1,63 +1,52 @@
 <?php
 session_start(); // Perubahan: [1] Memulai sesi PHP di awal script. Penting untuk manajemen login.
 
-// Perubahan: [2] Sertakan file koneksi database Anda
+// Sertakan file koneksi PDO yang baru
 include 'db_connect.php'; 
 
-$login_error = ""; // Variabel untuk menyimpan pesan kesalahan login
+$login_error = ""; 
 
-// Perubahan: [3] Tangani submit form ketika metode adalah POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username']; // Ambil username dari form
-    $password = $_POST['password']; // Ambil password dari form
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    // Validasi dasar: pastikan username dan password tidak kosong
     if (empty($username) || empty($password)) {
         $login_error = "Username dan password harus diisi.";
     } else {
-        // Perubahan: [4] Gunakan prepared statement untuk keamanan (mencegah SQL Injection)
-        // Perhatian: Sesuai penjelasan aplikasi, password TIDAK di-hash di database.
-        // Ini SANGAT TIDAK direkomendasikan untuk aplikasi produksi karena risiko keamanan.
-        $stmt = $conn->prepare("SELECT id, full_name, username, password, role, status FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username); // 's' berarti parameter adalah string
-        $stmt->execute();
-        $result = $stmt->get_result();
+        // Gunakan prepared statement dengan PDO
+        // Variabel koneksi sekarang adalah $pdo, bukan $conn
+        $stmt = $pdo->prepare("SELECT id, full_name, username, password, role, status FROM users WHERE username = ?");
+        $stmt->execute([$username]); // Parameter dilewatkan sebagai array ke execute()
+        $user = $stmt->fetch(); // fetch() untuk satu baris, fetchAll() untuk banyak baris
 
-        if ($result->num_rows == 1) {
-            $user = $result->fetch_assoc();
-
-            // Verifikasi password (perbandingan langsung karena tidak di-hash)
-            if ($password === $user['password']) { //
-                // Perubahan: [5] Periksa status akun
-                if ($user['status'] == 'active') { //
-                    // Login berhasil, set variabel sesi
+        if ($user) { // Jika user ditemukan
+            if ($password === $user['password']) {
+                if ($user['status'] == 'active') {
+                    // Set session
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['full_name'] = $user['full_name'];
                     $_SESSION['role'] = $user['role'];
 
-                    // Perubahan: [6] Redirect pengguna berdasarkan role-nya
-                    if ($user['role'] == 'admin') { //
-                        header("Location: admin.php"); // Redirect ke halaman admin [cite: 5]
-                        exit(); // Penting untuk menghentikan eksekusi script setelah redirect
-                    } else if ($user['role'] == 'user') { //
-                        header("Location: dashboard.php"); // Redirect ke halaman dashboard [cite: 12]
-                        exit(); // Penting untuk menghentikan eksekusi script setelah redirect
+                    // Redirect berdasarkan role
+                    if ($user['role'] == 'admin') {
+                        header("Location: admin.php");
+                        exit();
+                    } else if ($user['role'] == 'user') {
+                        header("Location: dashboard.php");
+                        exit();
                     }
                 } else {
-                    $login_error = "Akun Anda tidak aktif. Silakan hubungi administrator."; // Akun nonaktif [cite: 10]
+                    $login_error = "Akun Anda tidak aktif. Silakan hubungi administrator.";
                 }
             } else {
-                $login_error = "Username atau password salah."; // Password tidak cocok
+                $login_error = "Username atau password salah.";
             }
         } else {
-            $login_error = "Username atau password salah."; // Username tidak ditemukan
+            $login_error = "Username atau password salah.";
         }
-        $stmt->close(); // Tutup prepared statement
     }
 }
-
-$conn->close(); // Tutup koneksi database setelah selesai digunakan
 ?>
 <!DOCTYPE html>
 <html lang="en">

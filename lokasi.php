@@ -1,71 +1,67 @@
 <?php
-session_start(); // Perubahan: [1] Memulai sesi PHP
+session_start();
+include 'db_connect.php'; // Menggunakan koneksi PDO
 
-// Perubahan: [2] Sertakan file koneksi database
-include 'db_connect.php';
-
-// Perubahan: [3] Autentikasi dan Otorisasi
+// Autentikasi dan Otorisasi (tidak ada perubahan)
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
-    header("Location: login.php"); // Redirect jika belum login
+    header("Location: login.php");
     exit();
 }
 if ($_SESSION['role'] === 'admin') {
-    header("Location: admin.php"); // Redirect admin ke halaman admin
+    header("Location: admin.php");
     exit();
 }
 
-// Perubahan: [4] Pastikan project_id diterima dari URL (setelah user memilih proyek di dashboard)
-$project_id = $_GET['project_id'] ?? null;
+// --- LOGIKA BARU UNTUK PROJECT ID ---
+// 1. Prioritaskan project_id dari URL untuk memperbarui session
+if (isset($_GET['project_id']) && is_numeric($_GET['project_id'])) {
+    $_SESSION['current_project_id'] = (int)$_GET['project_id'];
+}
 
-if (!$project_id || !is_numeric($project_id)) {
-    // Jika project_id tidak ada atau tidak valid, redirect kembali ke dashboard
+// 2. Jika tidak ada project_id di session sama sekali, redirect ke dashboard
+if (!isset($_SESSION['current_project_id'])) {
     header("Location: dashboard.php");
     exit();
 }
 
-// Perubahan: [5] Periksa apakah project_id ini milik user yang sedang login
-// Atau jika admin, mereka punya akses ke semua project
+// 3. Gunakan project_id dari session untuk semua operasi di halaman ini
+$project_id = $_SESSION['current_project_id'];
+// --- AKHIR LOGIKA BARU ---
+
 $current_user_id = $_SESSION['user_id'];
-$project_name_display = "Proyek Tidak Ditemukan"; // Default
-
-$stmt_check_project = $conn->prepare("SELECT project_name, user_id FROM projects WHERE id = ?");
-$stmt_check_project->bind_param("i", $project_id);
-$stmt_check_project->execute();
-$result_check_project = $stmt_check_project->get_result();
-
-if ($result_check_project->num_rows == 0) {
-    header("Location: dashboard.php"); // Proyek tidak ditemukan
-    exit();
-}
-
-$project_info = $result_check_project->fetch_assoc();
-$project_owner_id = $project_info['user_id'];
-$project_name_display = htmlspecialchars($project_info['project_name']);
-$stmt_check_project->close();
-
-if ($_SESSION['role'] !== 'admin' && $project_owner_id !== $current_user_id) {
-    header("Location: dashboard.php"); // Redirect jika bukan pemilik dan bukan admin
-    exit();
-}
-
-
 $current_username = $_SESSION['username'];
-
-// Perubahan: [6] Ambil data lokasi untuk project_id ini
+$project_name_display = "Proyek Tidak Ditemukan";
 $locations_data = [];
-$stmt_locations = $conn->prepare("SELECT id, branch_name, address, city, phone, email, status, size_sqm, gmaps_link, notes FROM locations WHERE project_id = ? ORDER BY id ASC");
-$stmt_locations->bind_param("i", $project_id);
-$stmt_locations->execute();
-$result_locations = $stmt_locations->get_result();
 
-if ($result_locations->num_rows > 0) {
-    while($row = $result_locations->fetch_assoc()) {
-        $locations_data[] = $row;
+try {
+    // --- Periksa kepemilikan proyek menggunakan PDO ---
+    $stmt_check_project = $pdo->prepare("SELECT project_name, user_id FROM projects WHERE id = ?");
+    $stmt_check_project->execute([$project_id]);
+    $project_info = $stmt_check_project->fetch();
+
+    if (!$project_info) {
+        unset($_SESSION['current_project_id']); // Hapus ID proyek yang tidak valid dari session
+        header("Location: dashboard.php");
+        exit();
     }
-}
-$stmt_locations->close();
 
-$conn->close(); // Tutup koneksi setelah ambil data
+    $project_owner_id = $project_info['user_id'];
+    $project_name_display = htmlspecialchars($project_info['project_name']);
+
+    if ($_SESSION['role'] !== 'admin' && $project_owner_id !== $current_user_id) {
+        header("Location: dashboard.php");
+        exit();
+    }
+
+    // --- Ambil data lokasi untuk project_id ini menggunakan PDO ---
+    $stmt_locations = $pdo->prepare("SELECT id, branch_name, address, city, phone, email, status, size_sqm, gmaps_link, notes FROM locations WHERE project_id = ? ORDER BY id ASC");
+    $stmt_locations->execute([$project_id]);
+    $locations_data = $stmt_locations->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    // Tangani error jika terjadi masalah dengan database
+    // die("Gagal mengambil data: " . $e->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -421,12 +417,12 @@ $conn->close(); // Tutup koneksi setelah ambil data
             </div>
         </li>
         <li><a href="dashboard.php"><i class="material-icons">dashboard</i><span class="link-text">Dashboard</span></a></li>
-        <li><a class="active" href="lokasi.php"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
-        <li><a href="kriteria.php"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
-        <li><a href="matriks.php"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
-        <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
+        <li><a class="active" href="lokasi.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
+        <li><a href="kriteria.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
+        <li><a href="matriks.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
+        <li><a href="hasil_perhitungan.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
         <li><div class="divider"></div></li>
-        <li><a href="index.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
+        <li><a href="logout.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
     </ul>
 
     <main>

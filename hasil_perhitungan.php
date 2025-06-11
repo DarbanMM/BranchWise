@@ -1,233 +1,212 @@
 <?php
-    session_start(); // Mulai session untuk mengambil data user
-    require_once 'db_connect.php'; // Sertakan file koneksi database (menyediakan $conn)
+session_start(); // Mulai session untuk mengambil data user
+require_once 'db_connect.php'; // Sertakan file koneksi database PDO ($pdo)
 
-    // Cek apakah user sudah login, jika tidak, redirect ke halaman login
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: login.php");
-        exit();
-    }
+// Cek apakah user sudah login, jika tidak, redirect ke halaman login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
 
-    // Ambil data user dari session
-    $user_id = $_SESSION['user_id'];
-    $username = $_SESSION['username'];
-    $role = $_SESSION['role'];
+// Ambil data user dari session
+$user_id = $_SESSION['user_id'];
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
 
-    // Jika role bukan 'user', redirect ke halaman yang sesuai (misal: admin.php)
-    if ($role !== 'user') {
-        header("Location: admin.php"); // Atau halaman lain yang sesuai untuk admin
-        exit();
-    }
+// Jika role bukan 'user', redirect ke halaman yang sesuai (misal: admin.php)
+if ($role !== 'user') {
+    header("Location: admin.php"); // Atau halaman lain yang sesuai untuk admin
+    exit();
+}
 
-    // Ambil project_id dari session, jika tidak ada, redirect ke dashboard
-    if (!isset($_SESSION['current_project_id'])) {
-        header("Location: dashboard.php");
-        exit();
-    }
-    $project_id = $_SESSION['current_project_id'];
+// Ambil project_id dari session, jika tidak ada, redirect ke dashboard
+if (!isset($_SESSION['current_project_id'])) {
+    header("Location: dashboard.php");
+    exit();
+}
+$project_id = $_SESSION['current_project_id'];
 
-    // Inisialisasi pesan
-    $message = '';
-    $error = '';
-    $locations = [];
-    $criteria_list = [];
-    $matrix_decision = [];
+// Inisialisasi pesan dan variabel data
+$message = '';
+$error = '';
+$locations = [];
+$criteria_list = [];
+$matrix_decision = [];
 
-    // Fetch locations for the current project menggunakan MySQLi
-    $stmt_locations = $conn->prepare("SELECT id, branch_name FROM locations WHERE project_id = ? ORDER BY branch_name ASC");
-    if ($stmt_locations) {
-        $stmt_locations->bind_param("i", $project_id);
-        $stmt_locations->execute();
-        $result_locations = $stmt_locations->get_result();
-        while ($row = $result_locations->fetch_assoc()) {
-            $locations[] = $row;
-        }
-        $stmt_locations->close();
-    } else {
-        $error = "Gagal menyiapkan statement untuk mengambil lokasi: " . $conn->error;
-    }
+// --- PERUBAHAN: Mengambil semua data menggunakan PDO ---
+try {
+    // Fetch locations
+    $stmt_locations = $pdo->prepare("SELECT id, branch_name FROM locations WHERE project_id = ? ORDER BY branch_name ASC");
+    $stmt_locations->execute([$project_id]);
+    $locations = $stmt_locations->fetchAll(PDO::FETCH_ASSOC);
 
+    // Fetch criteria
+    $stmt_criteria = $pdo->prepare("SELECT id, criteria_code, criteria_name, weight_percentage, type FROM criteria WHERE project_id = ? ORDER BY criteria_code ASC");
+    $stmt_criteria->execute([$project_id]);
+    $criteria_list = $stmt_criteria->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fetch criteria for the current project menggunakan MySQLi
-    if (empty($error)) {
-        $stmt_criteria = $conn->prepare("SELECT id, criteria_code, criteria_name, weight_percentage, type FROM criteria WHERE project_id = ? ORDER BY criteria_code ASC");
-        if ($stmt_criteria) {
-            $stmt_criteria->bind_param("i", $project_id);
-            $stmt_criteria->execute();
-            $result_criteria = $stmt_criteria->get_result();
-            while ($row = $result_criteria->fetch_assoc()) {
-                $criteria_list[] = $row;
-            }
-            $stmt_criteria->close();
-        } else {
-            $error = "Gagal menyiapkan statement untuk mengambil kriteria: " . $conn->error;
-        }
-    }
-
-    // Fetch existing matrix data menggunakan MySQLi
-    if (empty($error)) {
-        $stmt_matrix_data = $conn->prepare("SELECT location_id, criteria_id, value FROM matrix_data WHERE project_id = ?");
-        if ($stmt_matrix_data) {
-            $stmt_matrix_data->bind_param("i", $project_id);
-            $stmt_matrix_data->execute();
-            $result_matrix_data = $stmt_matrix_data->get_result();
-            while ($row = $result_matrix_data->fetch_assoc()) {
-                if (!isset($matrix_decision[$row['location_id']])) {
-                    $matrix_decision[$row['location_id']] = [];
-                }
-                $matrix_decision[$row['location_id']][$row['criteria_id']] = (float)$row['value'];
-            }
-            $stmt_matrix_data->close();
-        } else {
-            $error = "Gagal menyiapkan statement untuk mengambil data matriks: " . $conn->error;
-        }
-    }
+    // Fetch existing matrix data
+    $stmt_matrix_data = $pdo->prepare("SELECT location_id, criteria_id, value FROM matrix_data WHERE project_id = ?");
+    $stmt_matrix_data->execute([$project_id]);
+    $result_matrix_data = $stmt_matrix_data->fetchAll(PDO::FETCH_ASSOC);
     
-    // --- Validasi Data Minimum ---
-    if (empty($error)) {
-        if (count($criteria_list) < 3) {
-            $error = "Untuk melakukan perhitungan, Anda perlu minimal 3 kriteria. Saat ini ada " . count($criteria_list) . " kriteria.";
-        } elseif (count($locations) === 0) {
-            $error = "Tidak ada lokasi cabang yang terdaftar untuk proyek ini.";
-        } elseif (empty($matrix_decision) && count($locations) > 0 && count($criteria_list) > 0) {
-             $error = "Data matriks keputusan kosong atau belum diisi. Harap lengkapi di halaman Matriks.";
-        } else {
-            if (count($locations) > 0 && count($criteria_list) > 0) {
-                $all_matrix_filled = true;
-                foreach ($locations as $location) {
-                    foreach ($criteria_list as $criteria) {
-                        if (!isset($matrix_decision[$location['id']][$criteria['id']])) {
-                            $all_matrix_filled = false;
-                            break 2; 
-                        }
+    // Mengubah format array agar mudah diakses
+    foreach ($result_matrix_data as $row) {
+        if (!isset($matrix_decision[$row['location_id']])) {
+            $matrix_decision[$row['location_id']] = [];
+        }
+        // Pastikan value adalah float
+        $matrix_decision[$row['location_id']][$row['criteria_id']] = (float)$row['value'];
+    }
+
+} catch (PDOException $e) {
+    $error = "Gagal mengambil data dari database: " . $e->getMessage();
+}
+
+// --- Validasi Data Minimum (Tidak ada perubahan di sini) ---
+if (empty($error)) {
+    if (count($criteria_list) < 3) {
+        $error = "Untuk melakukan perhitungan, Anda perlu minimal 3 kriteria. Saat ini ada " . count($criteria_list) . " kriteria.";
+    } elseif (count($locations) === 0) {
+        $error = "Tidak ada lokasi cabang yang terdaftar untuk proyek ini.";
+    } elseif (empty($matrix_decision) && count($locations) > 0 && count($criteria_list) > 0) {
+         $error = "Data matriks keputusan kosong atau belum diisi. Harap lengkapi di halaman Matriks.";
+    } else {
+        if (count($locations) > 0 && count($criteria_list) > 0) {
+            $all_matrix_filled = true;
+            foreach ($locations as $location) {
+                foreach ($criteria_list as $criteria) {
+                    if (!isset($matrix_decision[$location['id']][$criteria['id']])) {
+                        $all_matrix_filled = false;
+                        break 2; 
                     }
                 }
-                if (!$all_matrix_filled) {
-                    $error = "Data matriks keputusan belum lengkap untuk semua alternatif dan kriteria. Harap lengkapi semua nilai di halaman Matriks.";
-                }
+            }
+            if (!$all_matrix_filled) {
+                $error = "Data matriks keputusan belum lengkap untuk semua alternatif dan kriteria. Harap lengkapi semua nilai di halaman Matriks.";
             }
         }
     }
+}
 
-    // --- Perhitungan Weighted Product Model (WPM) ---
-    $calculation_results = [];
-    $sum_si = 0;
-    $ranking_data = [];
+// --- Perhitungan Weighted Product Model (WPM) (Tidak ada perubahan di sini) ---
+$calculation_results = [];
+$sum_si = 0;
+$ranking_data = [];
 
-    if (empty($error) && !empty($locations) && !empty($criteria_list)) {
-        $total_weight_sum = 0;
-        foreach ($criteria_list as $criteria) {
-            $total_weight_sum += (float)$criteria['weight_percentage'];
+if (empty($error) && !empty($locations) && !empty($criteria_list)) {
+    $total_weight_sum = 0;
+    foreach ($criteria_list as $criteria) {
+        $total_weight_sum += (float)$criteria['weight_percentage'];
+    }
+
+    if ($total_weight_sum !== 100.0 && count($criteria_list) >= 3) {
+         $error = "Total bobot kriteria harus 100%. Saat ini total bobot adalah " . $total_weight_sum . "%. Harap perbarui di halaman Kriteria & Bobot.";
+    } else {
+        $normalized_weights = [];
+        if ($total_weight_sum > 0) {
+            foreach ($criteria_list as $criteria) {
+                $normalized_weights[$criteria['id']] = (float)$criteria['weight_percentage'] / $total_weight_sum;
+            }
+        } elseif (count($criteria_list) > 0) {
+             $error = "Total bobot kriteria adalah 0. Tidak dapat melakukan normalisasi bobot.";
         }
 
-        if ($total_weight_sum !== 100.0 && count($criteria_list) >= 3) {
-             $error = "Total bobot kriteria harus 100%. Saat ini total bobot adalah " . $total_weight_sum . "%. Harap perbarui di halaman Kriteria & Bobot.";
-        } else {
-            $normalized_weights = [];
-            if ($total_weight_sum > 0) {
+        if (empty($error)) {
+            foreach ($locations as $location) {
+                $location_id = $location['id'];
+                $si_value = 1.0; 
+
                 foreach ($criteria_list as $criteria) {
-                    $normalized_weights[$criteria['id']] = (float)$criteria['weight_percentage'] / $total_weight_sum;
+                    $criteria_id = $criteria['id'];
+                    $value = isset($matrix_decision[$location_id][$criteria_id]) ? (float)$matrix_decision[$location_id][$criteria_id] : 0;
+                    $weight = isset($normalized_weights[$criteria_id]) ? (float)$normalized_weights[$criteria_id] : 0;
+
+                    if ($value <= 0 && $criteria['type'] === 'cost' && $weight > 0) {
+                         $error = "Nilai kriteria '" . htmlspecialchars($criteria['criteria_name']) . "' untuk lokasi '" . htmlspecialchars($location['branch_name']) . "' adalah " . $value . ", yang tidak valid untuk perhitungan kriteria Cost. Harap perbaiki di halaman Matriks.";
+                        break 2; 
+                    }
+                     if ($value < 0 && $weight != 0) { 
+                        $error = "Nilai kriteria '".htmlspecialchars($criteria['criteria_name'])."' untuk lokasi '".htmlspecialchars($location['branch_name'])."' adalah negatif (".$value."), yang dapat menyebabkan masalah perhitungan. Harap perbaiki di halaman Matriks.";
+                        break 2;
+                    }
+                     if ($value == 0 && $weight < 0) { 
+                        $error = "Nilai kriteria '".htmlspecialchars($criteria['criteria_name'])."' untuk lokasi '".htmlspecialchars($location['branch_name'])."' adalah 0 dan bobotnya negatif, menyebabkan nilai tak hingga. Harap perbaiki di halaman Matriks.";
+                        break 2;
+                    }
+
+                    if ($value > 0) { 
+                        if ($criteria['type'] === 'cost') {
+                            $si_value *= pow($value, -$weight);
+                        } else {
+                            $si_value *= pow($value, $weight);
+                        }
+                    } elseif ($value == 0 && $weight == 0) { 
+                         $si_value *= 1;
+                    } elseif ($value == 0 && $weight > 0) { 
+                         $si_value *= 0;
+                    }
                 }
-            } elseif (count($criteria_list) > 0) {
-                 $error = "Total bobot kriteria adalah 0. Tidak dapat melakukan normalisasi bobot.";
+                if (!empty($error)) break; 
+
+                $calculation_results[$location_id]['Si'] = $si_value;
+                $sum_si += $si_value; 
             }
 
             if (empty($error)) {
-                foreach ($locations as $location) {
-                    $location_id = $location['id'];
-                    $si_value = 1.0; 
-
-                    foreach ($criteria_list as $criteria) {
-                        $criteria_id = $criteria['id'];
-                        $value = isset($matrix_decision[$location_id][$criteria_id]) ? (float)$matrix_decision[$location_id][$criteria_id] : 0;
-                        $weight = isset($normalized_weights[$criteria_id]) ? (float)$normalized_weights[$criteria_id] : 0;
-
-                        if ($value <= 0 && $criteria['type'] === 'cost' && $weight > 0) {
-                             $error = "Nilai kriteria '" . htmlspecialchars($criteria['criteria_name']) . "' untuk lokasi '" . htmlspecialchars($location['branch_name']) . "' adalah " . $value . ", yang tidak valid untuk perhitungan kriteria Cost. Harap perbaiki di halaman Matriks.";
-                            break 2; 
-                        }
-                         if ($value < 0 && $weight != 0) { 
-                            $error = "Nilai kriteria '".htmlspecialchars($criteria['criteria_name'])."' untuk lokasi '".htmlspecialchars($location['branch_name'])."' adalah negatif (".$value."), yang dapat menyebabkan masalah perhitungan. Harap perbaiki di halaman Matriks.";
-                            break 2;
-                        }
-                         if ($value == 0 && $weight < 0) { 
-                            $error = "Nilai kriteria '".htmlspecialchars($criteria['criteria_name'])."' untuk lokasi '".htmlspecialchars($location['branch_name'])."' adalah 0 dan bobotnya negatif, menyebabkan nilai tak hingga. Harap perbaiki di halaman Matriks.";
-                            break 2;
-                        }
-
-                        if ($value > 0) { 
-                            if ($criteria['type'] === 'cost') {
-                                $si_value *= pow($value, -$weight);
-                            } else {
-                                $si_value *= pow($value, $weight);
-                            }
-                        } elseif ($value == 0 && $weight == 0) { 
-                             $si_value *= 1;
-                        } elseif ($value == 0 && $weight > 0) { 
-                             $si_value *= 0;
-                        }
+                if ($sum_si > 0) {
+                    foreach ($locations as $location) {
+                        $location_id = $location['id'];
+                        $si_for_location = isset($calculation_results[$location_id]['Si']) ? (float)$calculation_results[$location_id]['Si'] : 0;
+                        $vi_value = $si_for_location / $sum_si;
+                        $calculation_results[$location_id]['Vi'] = $vi_value;
+                        $ranking_data[] = [
+                            'location_id' => $location_id,
+                            'branch_name' => $location['branch_name'],
+                            'Vi' => $vi_value,
+                            'Si' => $si_for_location
+                        ];
                     }
-                    if (!empty($error)) break; 
-
-                    $calculation_results[$location_id]['Si'] = $si_value;
-                    $sum_si += $si_value; 
+                } else if (count($locations) > 0) { 
+                    foreach ($locations as $location) {
+                        $location_id = $location['id'];
+                        $calculation_results[$location_id]['Vi'] = 0;
+                        $ranking_data[] = [
+                            'location_id' => $location_id,
+                            'branch_name' => $location['branch_name'],
+                            'Vi' => 0,
+                            'Si' => isset($calculation_results[$location_id]['Si']) ? (float)$calculation_results[$location_id]['Si'] : 0
+                        ];
+                    }
+                     $message = "Total Vektor S (ΣSi) adalah nol. Semua alternatif memiliki nilai preferensi (Vi) nol.";
                 }
 
-                if (empty($error)) {
-                    if ($sum_si > 0) {
-                        foreach ($locations as $location) {
-                            $location_id = $location['id'];
-                            $si_for_location = isset($calculation_results[$location_id]['Si']) ? (float)$calculation_results[$location_id]['Si'] : 0;
-                            $vi_value = $si_for_location / $sum_si;
-                            $calculation_results[$location_id]['Vi'] = $vi_value;
-                            $ranking_data[] = [
-                                'location_id' => $location_id,
-                                'branch_name' => $location['branch_name'],
-                                'Vi' => $vi_value,
-                                'Si' => $si_for_location
-                            ];
-                        }
-                    } else if (count($locations) > 0) { 
-                        foreach ($locations as $location) {
-                            $location_id = $location['id'];
-                            $calculation_results[$location_id]['Vi'] = 0;
-                            $ranking_data[] = [
-                                'location_id' => $location_id,
-                                'branch_name' => $location['branch_name'],
-                                'Vi' => 0,
-                                'Si' => isset($calculation_results[$location_id]['Si']) ? (float)$calculation_results[$location_id]['Si'] : 0
-                            ];
-                        }
-                         $message = "Total Vektor S (ΣSi) adalah nol. Semua alternatif memiliki nilai preferensi (Vi) nol.";
-                    }
+                usort($ranking_data, function($a, $b) {
+                    return $b['Vi'] <=> $a['Vi']; 
+                });
 
-                    usort($ranking_data, function($a, $b) {
-                        return $b['Vi'] <=> $a['Vi']; 
-                    });
-
-                    foreach ($ranking_data as $rank => $item) {
-                        if (isset($calculation_results[$item['location_id']])) {
-                             $calculation_results[$item['location_id']]['ranking'] = $rank + 1;
-                        }
-                        $ranking_data[$rank]['ranking'] = $rank + 1;
+                foreach ($ranking_data as $rank => $item) {
+                    if (isset($calculation_results[$item['location_id']])) {
+                         $calculation_results[$item['location_id']]['ranking'] = $rank + 1;
                     }
+                    $ranking_data[$rank]['ranking'] = $rank + 1;
                 }
             }
         }
     }
+}
 
-    if (isset($_SESSION['message'])) {
-        $message = $_SESSION['message']; 
-        unset($_SESSION['message']);
-    }
-    if (isset($_SESSION['error'])) {
-        $error = $_SESSION['error']; 
-        unset($_SESSION['error']);
-    }
+// Cek pesan dari redirect (tidak ada perubahan)
+if (isset($_SESSION['message'])) {
+    $message = $_SESSION['message']; 
+    unset($_SESSION['message']);
+}
+if (isset($_SESSION['error'])) {
+    $error = $_SESSION['error']; 
+    unset($_SESSION['error']);
+}
 
-    if (isset($conn) && $conn instanceof mysqli) {
-        $conn->close();
-    }
+// Koneksi PDO ditutup otomatis
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -558,12 +537,12 @@
             </div>
         </li>
         <li><a href="dashboard.php"><i class="material-icons">dashboard</i><span class="link-text">Dashboard</span></a></li>
-        <li><a href="lokasi.php"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
-        <li><a href="kriteria.php"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
-        <li><a href="matriks.php"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
-        <li><a class="active" href="hasil_perhitungan.php"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
+        <li><a href="lokasi.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
+        <li><a href="kriteria.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
+        <li><a href="matriks.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
+        <li><a class="active" href="hasil_perhitungan.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
         <li><div class="divider"></div></li>
-        <li><a href="index.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
+        <li><a href="logout.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
     </ul>
 
     <main>

@@ -1,16 +1,19 @@
 <?php
-session_start(); // Perubahan: [1] Memulai sesi PHP
+session_start(); // Memulai sesi PHP
 
-// Perubahan: [2] Sertakan file koneksi database
+// --- SOLUSI: Hapus project_id dari session saat kembali ke dashboard ---
+unset($_SESSION['current_project_id']);
+
+// Sertakan file koneksi database PDO yang baru
 include 'db_connect.php';
 
-// Perubahan: [3] Autentikasi dan Otorisasi (hanya user biasa yang bisa akses dashboard)
+// Autentikasi dan Otorisasi (Tidak ada perubahan di sini)
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
-    header("Location: login.php"); // Redirect jika belum login
+    header("Location: login.php");
     exit();
 }
 if ($_SESSION['role'] === 'admin') {
-    header("Location: admin.php"); // Redirect admin ke halaman admin
+    header("Location: admin.php");
     exit();
 }
 
@@ -18,24 +21,27 @@ $current_user_id = $_SESSION['user_id'];
 $current_username = $_SESSION['username'];
 $current_full_name = $_SESSION['full_name'];
 
-// Perubahan: [4] Ambil data proyek dari database untuk ditampilkan di grid
+// --- PERUBAHAN: Mengambil data proyek menggunakan PDO ---
 $projects_data = [];
-// Ambil proyek hanya untuk user yang sedang login
-$sql = "SELECT id, project_name, description, priority, status, deadline, assignee FROM projects WHERE user_id = ? ORDER BY id DESC";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $current_user_id); // 'i' untuk integer user_id
-$stmt->execute();
-$result = $stmt->get_result();
+try {
+    // Query SQL ini kompatibel dengan PostgreSQL, menggunakan placeholder '?'
+    $sql = "SELECT id, project_name, description, priority, status, deadline, assignee FROM projects WHERE user_id = ? ORDER BY id DESC";
+    
+    // Siapkan statement
+    $stmt = $pdo->prepare($sql);
+    
+    // Eksekusi statement dengan melewatkan user_id ke dalam array
+    $stmt->execute([$current_user_id]);
+    
+    // Ambil semua data proyek ke dalam array $projects_data
+    $projects_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $projects_data[] = $row;
-    }
+} catch (PDOException $e) {
+    // Menangani error jika query gagal
+    // die("Error: Tidak dapat mengambil data proyek. " . $e->getMessage());
+    $projects_data = []; // Pastikan array kosong jika gagal
 }
-$stmt->close(); // Tutup statement
-
-// Koneksi ditutup setelah semua data diambil, sebelum HTML dimulai
-$conn->close(); 
+// Koneksi PDO akan ditutup secara otomatis
 ?>
 <!DOCTYPE html>
 <html lang="id">

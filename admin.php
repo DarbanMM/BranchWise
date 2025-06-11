@@ -1,16 +1,15 @@
 <?php
-session_start(); // Perubahan: [1] Memulai sesi PHP
+session_start(); // Memulai sesi PHP
 
-// Perubahan: [2] Sertakan file koneksi database
+// Sertakan file koneksi database PDO yang baru
 include 'db_connect.php';
 
-// Perubahan: [3] Autentikasi dan Otorisasi
+// Autentikasi dan Otorisasi (Tidak ada perubahan di sini)
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    // Jika tidak login atau bukan admin, redirect ke halaman login/dashboard
     if (isset($_SESSION['role']) && $_SESSION['role'] === 'user') {
-        header("Location: dashboard.php"); // Redirect user biasa ke dashboard
+        header("Location: dashboard.php");
     } else {
-        header("Location: login.php"); // Redirect non-login ke halaman login
+        header("Location: login.php");
     }
     exit();
 }
@@ -18,21 +17,26 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 $current_username = $_SESSION['username'];
 $current_full_name = $_SESSION['full_name'];
 
-// Perubahan: [4] Ambil data user dari database untuk ditampilkan di tabel
+// --- PERUBAHAN: Mengambil data user menggunakan PDO ---
 $users_data = [];
-// Perhatian: Tidak mengambil password di sini untuk keamanan.
-// Password hanya akan ditangani saat tambah/edit.
-$sql = "SELECT id, full_name, username, role, status FROM users ORDER BY id ASC";
-$result = $conn->query($sql);
+try {
+    // Query SQL ini kompatibel dengan PostgreSQL
+    $sql = "SELECT id, full_name, username, role, status FROM users ORDER BY id ASC";
+    
+    // Eksekusi query menggunakan PDO
+    $stmt = $pdo->query($sql);
+    
+    // Ambil semua data sekaligus ke dalam array $users_data
+    $users_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if ($result) { // Pastikan query berhasil
-    while($row = $result->fetch_assoc()) {
-        $users_data[] = $row;
-    }
+} catch (PDOException $e) {
+    // Menangani error jika query gagal. Untuk production, sebaiknya log error ini.
+    // die("Error: Tidak dapat mengambil data pengguna. " . $e->getMessage());
+    $users_data = []; // Pastikan array tetap kosong jika gagal
 }
-// Koneksi ditutup setelah semua data diambil, sebelum HTML dimulai
-$conn->close(); 
+// Koneksi PDO akan ditutup secara otomatis di akhir skrip. Tidak perlu $pdo->close() atau sejenisnya.
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>

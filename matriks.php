@@ -1,159 +1,129 @@
 <?php
-    session_start(); // Mulai session untuk mengambil data user
-    // require_once 'db_connect.php'; // Sertakan file koneksi database LAMA
-    // GANTIKAN DENGAN YANG DI BAWAH INI JIKA db_connect.php MENGHASILKAN $conn
-    require_once 'db_connect.php'; // Pastikan ini menghasilkan variabel $conn (MySQLi)
+session_start();
+require_once 'db_connect.php'; // Menggunakan koneksi PDO ($pdo)
 
-    // Cek apakah user sudah login, jika tidak, redirect ke halaman login
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: login.php");
-        exit();
-    }
+// Cek login dan role (tidak ada perubahan)
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+$user_id = $_SESSION['user_id'];
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
+if ($role !== 'user') {
+    header("Location: admin.php");
+    exit();
+}
 
-    // Ambil data user dari session
-    $user_id = $_SESSION['user_id'];
-    $username = $_SESSION['username'];
-    $role = $_SESSION['role'];
+// Ambil project_id dari session (tidak ada perubahan)
+if (!isset($_SESSION['current_project_id'])) {
+    header("Location: dashboard.php");
+    exit();
+}
+$project_id = $_SESSION['current_project_id'];
 
-    // Jika role bukan 'user', redirect ke halaman yang sesuai (misal: admin.php)
-    if ($role !== 'user') {
-        header("Location: admin.php");
-        exit();
-    }
+$message = '';
+$error = '';
 
-    // Ambil project_id dari session, jika tidak ada, redirect ke dashboard
-    if (!isset($_SESSION['current_project_id'])) {
-        header("Location: dashboard.php");
-        exit();
-    }
-    $project_id = $_SESSION['current_project_id'];
-
-    // Inisialisasi pesan
-    $message = '';
-    $error = '';
-
-    // Handle form submission for updating matrix data
+try {
+    // --- PERUBAHAN 1: Handle form submission dengan PDO ---
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_matrix'])) {
         $data_matrix = $_POST['matrix_data'];
-        $all_successful = true;
+        
+        // Memulai transaksi database
+        $pdo->beginTransaction();
+
+        // Query untuk PostgreSQL (UPSERT)
+        $sql = "INSERT INTO matrix_data (project_id, location_id, criteria_id, value) 
+                VALUES (?, ?, ?, ?) 
+                ON CONFLICT (project_id, location_id, criteria_id) 
+                DO UPDATE SET value = EXCLUDED.value";
+        $stmt = $pdo->prepare($sql);
 
         foreach ($data_matrix as $location_id => $criteria_values) {
             foreach ($criteria_values as $criteria_id => $value) {
                 $value = (float)$value;
                 if ($value < 0) $value = 0;
-
-                // Update or Insert matrix_data menggunakan MySQLi
-                $stmt = $conn->prepare("INSERT INTO matrix_data (project_id, location_id, criteria_id, value) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE value = ?");
-                if ($stmt) {
-                    // Parameter types: i = integer, d = double
-                    // project_id, location_id, criteria_id, value_for_insert, value_for_update
-                    $stmt->bind_param("iiidd", $project_id, $location_id, $criteria_id, $value, $value);
-                    if (!$stmt->execute()) {
-                        $_SESSION['error'] = 'Gagal memperbarui matriks keputusan: ' . $stmt->error;
-                        $all_successful = false;
-                        break 2; // Hentikan loop jika ada error
-                    }
-                    $stmt->close();
-                } else {
-                    $_SESSION['error'] = 'Gagal menyiapkan statement matriks: ' . $conn->error;
-                    $all_successful = false;
-                    break 2; // Hentikan loop jika ada error
-                }
+                
+                // Eksekusi statement untuk setiap baris data
+                $stmt->execute([$project_id, $location_id, $criteria_id, $value]);
             }
         }
-
-        if ($all_successful) {
-            $_SESSION['message'] = 'Matriks keputusan berhasil diperbarui!';
-        }
-        header("Location: matriks.php?project_id=" . htmlspecialchars($project_id)); // Tambahkan project_id untuk konsistensi
+        
+        // Jika semua berhasil, commit transaksi
+        $pdo->commit();
+        $_SESSION['message'] = 'Matriks keputusan berhasil diperbarui!';
+        
+        header("Location: matriks.php?project_id=" . htmlspecialchars($project_id));
         exit();
     }
 
-    // Fetch locations for the current project menggunakan MySQLi
-    $locations = [];
-    $stmt_locations = $conn->prepare("SELECT id, branch_name FROM locations WHERE project_id = ? ORDER BY branch_name ASC");
-    if ($stmt_locations) {
-        $stmt_locations->bind_param("i", $project_id);
-        $stmt_locations->execute();
-        $result_locations = $stmt_locations->get_result();
-        while ($row = $result_locations->fetch_assoc()) {
-            $locations[] = $row;
-        }
-        $stmt_locations->close();
-    } else {
-        $error = 'Gagal mengambil data lokasi: ' . $conn->error;
-    }
+    // --- PERUBAHAN 2: Fetch data dengan PDO ---
 
+    // Fetch locations
+    $stmt_locations = $pdo->prepare("SELECT id, branch_name FROM locations WHERE project_id = ? ORDER BY branch_name ASC");
+    $stmt_locations->execute([$project_id]);
+    $locations = $stmt_locations->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fetch criteria for the current project menggunakan MySQLi
-    $criteria_list = [];
-    // Modifikasi kueri untuk menyertakan value_unit
-    $stmt_criteria = $conn->prepare("SELECT id, criteria_code, criteria_name, type, weight_percentage, value_unit FROM criteria WHERE project_id = ? ORDER BY criteria_code ASC");
-    if ($stmt_criteria) {
-        $stmt_criteria->bind_param("i", $project_id);
-        $stmt_criteria->execute();
-        $result_criteria = $stmt_criteria->get_result();
-        while ($row = $result_criteria->fetch_assoc()) {
-            $criteria_list[] = $row;
-        }
-        $stmt_criteria->close();
-    } else {
-        $error = 'Gagal mengambil data kriteria: ' . $conn->error; //
-    }
+    // Fetch criteria
+    $stmt_criteria = $pdo->prepare("SELECT id, criteria_code, criteria_name, type, weight_percentage, value_unit FROM criteria WHERE project_id = ? ORDER BY criteria_code ASC");
+    $stmt_criteria->execute([$project_id]);
+    $criteria_list = $stmt_criteria->fetchAll(PDO::FETCH_ASSOC);
 
-
-    // Fetch existing matrix data menggunakan MySQLi
+    // Fetch existing matrix data
     $matrix_decision = [];
-    $stmt_matrix_data = $conn->prepare("SELECT location_id, criteria_id, value FROM matrix_data WHERE project_id = ?");
-    if ($stmt_matrix_data) {
-        $stmt_matrix_data->bind_param("i", $project_id);
-        $stmt_matrix_data->execute();
-        $result_matrix_data = $stmt_matrix_data->get_result();
-        while ($row = $result_matrix_data->fetch_assoc()) {
-            // Pastikan location_id dan criteria_id ada sebagai kunci array sebelum mengisi nilai
-            if (!isset($matrix_decision[$row['location_id']])) {
-                $matrix_decision[$row['location_id']] = [];
-            }
-            $matrix_decision[$row['location_id']][$row['criteria_id']] = $row['value'];
+    $stmt_matrix_data = $pdo->prepare("SELECT location_id, criteria_id, value FROM matrix_data WHERE project_id = ?");
+    $stmt_matrix_data->execute([$project_id]);
+    $result_matrix_data = $stmt_matrix_data->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Mengubah format array agar mudah diakses di tabel
+    foreach ($result_matrix_data as $row) {
+        if (!isset($matrix_decision[$row['location_id']])) {
+            $matrix_decision[$row['location_id']] = [];
         }
-        $stmt_matrix_data->close();
-    } else {
-        $error = 'Gagal mengambil data matriks keputusan: ' . $conn->error;
+        $matrix_decision[$row['location_id']][$row['criteria_id']] = $row['value'];
     }
 
+} catch (PDOException $e) {
+    // Jika terjadi error saat transaksi, batalkan (rollback)
+    if (isset($pdo) && $pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    // Set pesan error
+    $_SESSION['error'] = 'Terjadi kesalahan pada database: ' . $e->getMessage();
+    header("Location: matriks.php?project_id=" . htmlspecialchars($project_id));
+    exit();
+}
 
-    // --- Perhitungan Matriks Terkonversi (Normalized Matrix) ---
-    $matrix_normalized = [];
-    if (!empty($locations) && !empty($criteria_list)) {
-        foreach ($locations as $location) {
-            $location_id = $location['id'];
-            foreach ($criteria_list as $criteria) {
-                $criteria_id = $criteria['id'];
-                // Pastikan kunci ada sebelum mengakses untuk menghindari warning
-                $value = isset($matrix_decision[$location_id][$criteria_id]) ? (float)$matrix_decision[$location_id][$criteria_id] : 0;
+// --- PERUBAHAN 3: Logika perhitungan tetap sama ---
+$matrix_normalized = [];
+if (!empty($locations) && !empty($criteria_list)) {
+    foreach ($locations as $location) {
+        $location_id = $location['id'];
+        foreach ($criteria_list as $criteria) {
+            $criteria_id = $criteria['id'];
+            $value = isset($matrix_decision[$location_id][$criteria_id]) ? (float)$matrix_decision[$location_id][$criteria_id] : 0;
 
-                if ($criteria['type'] === 'cost') {
-                    $matrix_normalized[$location_id][$criteria_id] = ($value != 0) ? (1 / $value) : 0;
-                } else {
-                    $matrix_normalized[$location_id][$criteria_id] = $value;
-                }
+            if ($criteria['type'] === 'cost') {
+                $matrix_normalized[$location_id][$criteria_id] = ($value != 0) ? (1 / $value) : 0;
+            } else {
+                $matrix_normalized[$location_id][$criteria_id] = $value;
             }
         }
     }
+}
 
-    // Check for messages from previous redirect
-    if (isset($_SESSION['message'])) {
-        $message = $_SESSION['message'];
-        unset($_SESSION['message']);
-    }
-    if (isset($_SESSION['error'])) {
-        $error = $_SESSION['error'];
-        unset($_SESSION['error']);
-    }
+// Check for messages from previous redirect
+if (isset($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    unset($_SESSION['message']);
+}
+if (isset($_SESSION['error'])) {
+    $error = $_SESSION['error'];
+    unset($_SESSION['error']);
+}
 
-    // Sebaiknya tutup koneksi di akhir script jika semua operasi database selesai
-    // $conn->close(); // Baris ini bisa ditambahkan jika diperlukan, atau biarkan PHP menutupnya otomatis di akhir script.
-    // Namun, karena Anda menggunakan redirect, pastikan semua operasi DB selesai sebelum redirect.
+// Tidak perlu menutup koneksi PDO
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -444,12 +414,12 @@
             </div>
         </li>
         <li><a href="dashboard.php"><i class="material-icons">dashboard</i><span class="link-text">Dashboard</span></a></li>
-        <li><a href="lokasi.php"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
-        <li><a href="kriteria.php"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
-        <li><a class="active" href="matriks.php"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
-        <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
+        <li><a href="lokasi.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
+        <li><a href="kriteria.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
+        <li><a class="active" href="matriks.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
+        <li><a href="hasil_perhitungan.php?project_id=<?php echo $project_id; ?>"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
         <li><div class="divider"></div></li>
-        <li><a href="index.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
+        <li><a href="logout.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
     </ul>
 
     <main>
