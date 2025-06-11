@@ -100,6 +100,7 @@ $conn->close(); // Tutup koneksi setelah ambil data
         main {
             flex: 1 0 auto;
             margin-left: 250px;
+            transition: margin-left 0.3s ease-in-out; /* Tambahkan animasi transisi */
         }
         
         /* Sidebar Styles */
@@ -109,6 +110,43 @@ $conn->close(); // Tutup koneksi setelah ambil data
             position: fixed;
             height: 100vh;
             z-index: 999;
+            transition: width 0.3s ease-in-out; /* Tambahkan animasi transisi */
+        }
+
+        /* Kelas baru untuk main content saat sidebar kecil */
+        main.expanded {
+            margin-left: 70px; /* Jarak baru saat sidebar kecil (sesuaikan jika perlu) */
+        }
+
+        /* Kelas baru untuk sidebar saat kecil */
+        .sidenav.minimized {
+            width: 70px; /* Lebar baru sidebar (sesuaikan jika perlu) */
+        }
+
+        /* Menyembunyikan teks & menyesuaikan ikon saat sidebar kecil */
+        .sidenav.minimized .link-text {
+            display: none;
+        }
+        
+        .sidenav.minimized .logo .link-text {
+            display: none;
+            
+        }
+        
+        .sidenav.minimized li > a {
+            justify-content: center;
+            padding: 0 0 0 20px;
+        }
+        
+        .sidenav.minimized li > a > i {
+            margin: 0 !important;
+        }
+        .sidenav.minimized .logo {
+            text-align: center;
+        }
+        
+        .sidenav.minimized .logo .material-icons {
+            margin: 13px 0 0 -13px !important;
         }
         
         .sidenav .user-view {
@@ -364,133 +402,142 @@ $conn->close(); // Tutup koneksi setelah ambil data
         .sets{
            margin: 13px 10px 0px 0px; 
         }
+
+        /* Mengatur agar logo bisa diklik (TETAP SAMA) */
+        .sidenav .logo {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <ul id="slide-out" class="sidenav sidenav-fixed">
         <li>
             <div class="user-view">
-                <div class="logo">
-                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;"><i class="sets material-icons left">settings</i>BranchWise</span>
+                <div class="logo" style="cursor: pointer;"> 
+                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;">
+                        <i class="sets material-icons left">settings</i>
+                        <span class="link-text">BranchWise</span> </span>
                 </div>
             </div>
         </li>
-        <li><a href="dashboard.php"><i class="material-icons">dashboard</i>Dashboard</a></li>
-        <li><a class="active" href="lokasi.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">location_on</i>Lokasi Cabang</a></li>
-        <li><a href="kriteria.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">assessment</i>Kriteria & Bobot</a></li>
-        <li><a href="matriks.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">grid_on</i>Matriks</a></li>
-        <li><a href="hasil_perhitungan.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
+        <li><a href="dashboard.php"><i class="material-icons">dashboard</i><span class="link-text">Dashboard</span></a></li>
+        <li><a class="active" href="lokasi.php"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
+        <li><a href="kriteria.php"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
+        <li><a href="matriks.php"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
+        <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
         <li><div class="divider"></div></li>
-        <li><a href="logout.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
+        <li><a href="index.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
     </ul>
 
     <main>
-        <div class="header">
-            <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
-                <div class="col s6">
-                    <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
-                    <h1 class="page-title">Lokasi Cabang: <?php echo $project_name_display; ?></h1>
-                </div>
-                <div class="col s6 right-align">
-                    <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
-                        <i class="material-icons left">account_circle</i>
-                        <?php echo htmlspecialchars($current_username); ?>
-                    </span>
-                </div>
-                </div>
-        </div>
+        <div class="main-content">
+            <div class="header">
+                <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
+                    <div class="col s6">
+                        <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
+                        <h1 class="page-title">Lokasi Cabang: <?php echo $project_name_display; ?></h1>
+                    </div>
+                    <div class="col s6 right-align">
+                        <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
+                            <i class="material-icons left">account_circle</i>
+                            <?php echo htmlspecialchars($current_username); ?>
+                        </span>
+                    </div>
+                    </div>
+            </div>
 
-        <div class="content-wrapper">
-            <div class="row">
-                <div class="col s12">
-                    <div class="card white">
-                        <div class="card-header"> 
-                            <div class="row" style="margin-bottom: 0; width: 100%;">
-                                <div class="col s12 m6">
-                                    <h2 class="card-title">Daftar Cabang Retail</h2> 
-                                </div>
-                                <div class="col s12 m6 right-align">
-                                    <a href="#add-branch-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
-                                        <i class="material-icons left">add_location</i>Tambah Cabang
-                                    </a>
+            <div class="content-wrapper">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="card white">
+                            <div class="card-header"> 
+                                <div class="row" style="margin-bottom: 0; width: 100%;">
+                                    <div class="col s12 m6">
+                                        <h2 class="card-title">Daftar Cabang Retail</h2> 
+                                    </div>
+                                    <div class="col s12 m6 right-align">
+                                        <a href="#add-branch-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
+                                            <i class="material-icons left">add_location</i>Tambah Cabang
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="table-responsive"> 
-                            <table class="responsive-table highlight">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Alternatif</th>
-                                        <th>Lokasi</th>
-                                        <th>Kota</th>
-                                        <th>Status</th>
-                                        <th>Luas (m²)</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (!empty($locations_data)): ?>
-                                        <?php $no = 1; foreach ($locations_data as $location): ?>
+                            
+                            <div class="table-responsive"> 
+                                <table class="responsive-table highlight">
+                                    <thead>
                                         <tr>
-                                            <td><?php echo $no++; ?></td>
-                                            <td><?php echo htmlspecialchars($location['branch_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($location['address']); ?></td>
-                                            <td><?php echo htmlspecialchars($location['city']); ?></td>
-                                            <td><span class="badge <?php echo ($location['status'] == 'aktif') ? 'active' : 'inactive'; ?>"><?php echo htmlspecialchars(ucfirst($location['status'])); ?></span></td>
-                                            <td><?php echo htmlspecialchars($location['size_sqm']); ?></td>
-                                            <td>
-                                                <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" 
-                                                   data-location-id="<?php echo $location['id']; ?>"
-                                                   data-branch-name="<?php echo htmlspecialchars($location['branch_name']); ?>"
-                                                   data-address="<?php echo htmlspecialchars($location['address']); ?>"
-                                                   data-city="<?php echo htmlspecialchars($location['city']); ?>"
-                                                   data-phone="<?php echo htmlspecialchars($location['phone']); ?>"
-                                                   data-email="<?php echo htmlspecialchars($location['email']); ?>"
-                                                   data-size="<?php echo htmlspecialchars($location['size_sqm']); ?>"
-                                                   data-status="<?php echo htmlspecialchars($location['status']); ?>"
-                                                   data-gmaps-link="<?php echo htmlspecialchars($location['gmaps_link']); ?>"
-                                                   data-notes="<?php echo htmlspecialchars($location['notes']); ?>">
-                                                    <i class="material-icons">visibility</i>
-                                                </a>
-                                                <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" 
-                                                   data-location-id="<?php echo $location['id']; ?>"
-                                                   data-branch-name="<?php echo htmlspecialchars($location['branch_name']); ?>"
-                                                   data-address="<?php echo htmlspecialchars($location['address']); ?>"
-                                                   data-city="<?php echo htmlspecialchars($location['city']); ?>"
-                                                   data-phone="<?php echo htmlspecialchars($location['phone']); ?>"
-                                                   data-email="<?php echo htmlspecialchars($location['email']); ?>"
-                                                   data-size="<?php echo htmlspecialchars($location['size_sqm']); ?>"
-                                                   data-status="<?php echo htmlspecialchars($location['status']); ?>"
-                                                   data-gmaps-link="<?php echo htmlspecialchars($location['gmaps_link']); ?>"
-                                                   data-notes="<?php echo htmlspecialchars($location['notes']); ?>">
-                                                    <i class="material-icons">edit</i>
-                                                </a>
-                                                <a href="#!" class="btn-flat action-btn delete-btn"
-                                                   data-location-id="<?php echo $location['id']; ?>"
-                                                   data-branch-name="<?php echo htmlspecialchars($location['branch_name']); ?>">
-                                                    <i class="material-icons">delete</i>
-                                                </a>
-                                            </td>
+                                            <th>No</th>
+                                            <th>Alternatif</th>
+                                            <th>Lokasi</th>
+                                            <th>Kota</th>
+                                            <th>Status</th>
+                                            <th>Luas (m²)</th>
+                                            <th>Aksi</th>
                                         </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <tr>
-                                            <td colspan="7" class="center-align">Belum ada lokasi cabang ditambahkan untuk proyek ini.</td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (!empty($locations_data)): ?>
+                                            <?php $no = 1; foreach ($locations_data as $location): ?>
+                                            <tr>
+                                                <td><?php echo $no++; ?></td>
+                                                <td><?php echo htmlspecialchars($location['branch_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($location['address']); ?></td>
+                                                <td><?php echo htmlspecialchars($location['city']); ?></td>
+                                                <td><span class="badge <?php echo ($location['status'] == 'aktif') ? 'active' : 'inactive'; ?>"><?php echo htmlspecialchars(ucfirst($location['status'])); ?></span></td>
+                                                <td><?php echo htmlspecialchars($location['size_sqm']); ?></td>
+                                                <td>
+                                                    <a href="#view-branch-modal" class="btn-flat action-btn modal-trigger" 
+                                                    data-location-id="<?php echo $location['id']; ?>"
+                                                    data-branch-name="<?php echo htmlspecialchars($location['branch_name']); ?>"
+                                                    data-address="<?php echo htmlspecialchars($location['address']); ?>"
+                                                    data-city="<?php echo htmlspecialchars($location['city']); ?>"
+                                                    data-phone="<?php echo htmlspecialchars($location['phone']); ?>"
+                                                    data-email="<?php echo htmlspecialchars($location['email']); ?>"
+                                                    data-size="<?php echo htmlspecialchars($location['size_sqm']); ?>"
+                                                    data-status="<?php echo htmlspecialchars($location['status']); ?>"
+                                                    data-gmaps-link="<?php echo htmlspecialchars($location['gmaps_link']); ?>"
+                                                    data-notes="<?php echo htmlspecialchars($location['notes']); ?>">
+                                                        <i class="material-icons">visibility</i>
+                                                    </a>
+                                                    <a href="#edit-branch-modal" class="btn-flat action-btn modal-trigger" 
+                                                    data-location-id="<?php echo $location['id']; ?>"
+                                                    data-branch-name="<?php echo htmlspecialchars($location['branch_name']); ?>"
+                                                    data-address="<?php echo htmlspecialchars($location['address']); ?>"
+                                                    data-city="<?php echo htmlspecialchars($location['city']); ?>"
+                                                    data-phone="<?php echo htmlspecialchars($location['phone']); ?>"
+                                                    data-email="<?php echo htmlspecialchars($location['email']); ?>"
+                                                    data-size="<?php echo htmlspecialchars($location['size_sqm']); ?>"
+                                                    data-status="<?php echo htmlspecialchars($location['status']); ?>"
+                                                    data-gmaps-link="<?php echo htmlspecialchars($location['gmaps_link']); ?>"
+                                                    data-notes="<?php echo htmlspecialchars($location['notes']); ?>">
+                                                        <i class="material-icons">edit</i>
+                                                    </a>
+                                                    <a href="#!" class="btn-flat action-btn delete-btn"
+                                                    data-location-id="<?php echo $location['id']; ?>"
+                                                    data-branch-name="<?php echo htmlspecialchars($location['branch_name']); ?>">
+                                                        <i class="material-icons">delete</i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="7" class="center-align">Belum ada lokasi cabang ditambahkan untuk proyek ini.</td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                        <div class="row" style="padding: 24px; margin-bottom: 0;"> 
-                            <div class="col s12 center-align">
-                                <ul class="pagination">
-                                    <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                                    <li class="active"><a href="#!">1</a></li>
-                                    <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-                                </ul>
+                            <div class="row" style="padding: 24px; margin-bottom: 0;"> 
+                                <div class="col s12 center-align">
+                                    <ul class="pagination">
+                                        <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                                        <li class="active"><a href="#!">1</a></li>
+                                        <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -859,6 +906,24 @@ $conn->close(); // Tutup koneksi setelah ambil data
                 } else {
                     M.toast({html: 'Mohon isi semua field yang wajib.'});
                 }
+            });
+        });
+
+        $(document).ready(function(){
+
+            // Inisialisasi komponen Materialize yang sudah ada
+            $('.sidenav').sidenav();
+            // ... inisialisasi lain seperti modal, dll. jika ada ...
+
+            
+            // --- JAVASCRIPT KUSTOM BARU DIMULAI DI SINI ---
+            $('.logo').on('click', function(e) {
+                e.preventDefault();
+
+                // Cukup toggle kelas, CSS akan menangani sisanya
+                $('#slide-out').toggleClass('minimized');
+                $('main').toggleClass('expanded');
+                $('.header').toggleClass('expanded');
             });
         });
     </script>

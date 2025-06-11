@@ -220,6 +220,7 @@
         main {
             flex: 1 0 auto;
             margin-left: 250px;
+            transition: margin-left 0.3s ease-in-out; /* Tambahkan animasi transisi */
         }
         
         /* Sidebar Styles */
@@ -229,8 +230,45 @@
             position: fixed;
             height: 100vh;
             z-index: 999;
+            transition: width 0.3s ease-in-out; /* Tambahkan animasi transisi */
         }
         
+        /* Kelas baru untuk main content saat sidebar kecil */
+        main.expanded {
+            margin-left: 70px; /* Jarak baru saat sidebar kecil (sesuaikan jika perlu) */
+        }
+
+        /* Kelas baru untuk sidebar saat kecil */
+        .sidenav.minimized {
+            width: 70px; /* Lebar baru sidebar (sesuaikan jika perlu) */
+        }
+
+        /* Menyembunyikan teks & menyesuaikan ikon saat sidebar kecil */
+        .sidenav.minimized .link-text {
+            display: none;
+        }
+        
+        .sidenav.minimized .logo .link-text {
+            display: none;
+            
+        }
+        
+        .sidenav.minimized li > a {
+            justify-content: center;
+            padding: 0 0 0 20px;
+        }
+        
+        .sidenav.minimized li > a > i {
+            margin: 0 !important;
+        }
+        .sidenav.minimized .logo {
+            text-align: center;
+        }
+        
+        .sidenav.minimized .logo .material-icons {
+            margin: 13px 0 0 -13px !important;
+        }
+
         .sidenav .user-view {
             padding: 32px 32px 16px;
         }
@@ -411,111 +449,121 @@
         .sets{
            margin: 13px 10px 0px 0px; 
         }
+
+        /* Mengatur agar logo bisa diklik (TETAP SAMA) */
+        .sidenav .logo {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <ul id="slide-out" class="sidenav sidenav-fixed">
         <li>
             <div class="user-view">
-                <div class="logo">
-                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;"><i class="sets material-icons left">settings</i>BranchWise</span>
+                <div class="logo" style="cursor: pointer;"> 
+                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;">
+                        <i class="sets material-icons left">settings</i>
+                        <span class="link-text">BranchWise</span> </span>
                 </div>
             </div>
         </li>
-        <li><a href="dashboard.php"><i class="material-icons">dashboard</i>Dashboard</a></li>
-        <li><a href="lokasi.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">location_on</i>Lokasi Cabang</a></li>
-        <li><a class="active" href="kriteria.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">assessment</i>Kriteria & Bobot</a></li>
-        <li><a href="matriks.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">grid_on</i>Matriks</a></li>
-        <li><a href="hasil_perhitungan.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
+        <li><a href="dashboard.php"><i class="material-icons">dashboard</i><span class="link-text">Dashboard</span></a></li>
+        <li><a href="lokasi.php"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
+        <li><a class="active" href="kriteria.php"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
+        <li><a href="matriks.php"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
+        <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
         <li><div class="divider"></div></li>
-        <li><a href="logout.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
+        <li><a href="index.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
     </ul>
 
     <main>
-        <div class="header">
-            <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
-                <div class="col s6">
-                    <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
-                    <h1 class="page-title">Kriteria & Bobot</h1>
-                </div>
-                <div class="col s6 right-align">
-                    <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
-                        <i class="material-icons left">account_circle</i>
-                        <?php echo htmlspecialchars($username); ?>
-                    </span>
+        <div class="main-content">
+            <div class="header">
+                <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
+                    <div class="col s6">
+                        <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
+                        <h1 class="page-title">Kriteria & Bobot</h1>
+                    </div>
+                    <div class="col s6 right-align">
+                        <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
+                            <i class="material-icons left">account_circle</i>
+                            <?php echo htmlspecialchars($username); ?>
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="content-wrapper">
-            <div class="card">
-                <div class="card-header">
-                    <div class="row" style="margin-bottom: 0; width: 100%;"> 
-                        <div class="col s12 m6"> 
-                            <h2 class="card-title">Daftar Kriteria & Bobot</h2>
-                        </div>
-                        <div class="col s12 m6 right-align"> 
-                            <a href="#add-criteria-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
-                                <i class="material-icons left">add</i>Tambah Kriteria
-                            </a>
-                        </div>
-                    </div> 
-                </div>
-                
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Kode</th>
-                                <th>Nama Kriteria</th>
-                                <th>Bobot</th>
-                                <th>Jenis</th>
-                                <th>Nilai Kriteria</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (count($criteria_data) > 0): ?>
-                                <?php $no = 1; ?>
-                                <?php foreach ($criteria_data as $criteria): ?>
-                                    <tr>
-                                        <td><?php echo $no++; ?></td>
-                                        <td><?php echo htmlspecialchars($criteria['criteria_code']); ?></td>
-                                        <td><?php echo htmlspecialchars($criteria['criteria_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($criteria['weight_percentage']); ?>%</td>
-                                        <td><span class="badge badge-<?php echo htmlspecialchars($criteria['type']); ?>"><?php echo ucfirst(htmlspecialchars($criteria['type'])); ?></span></td>
-                                        <td><?php echo htmlspecialchars($criteria['value_unit']); ?></td>
-                                        <td>
-                                            <button class="action-btn edit-btn" title="Edit"
-                                                data-id="<?php echo $criteria['id']; ?>"
-                                                data-code="<?php echo htmlspecialchars($criteria['criteria_code']); ?>"
-                                                data-name="<?php echo htmlspecialchars($criteria['criteria_name']); ?>"
-                                                data-weight="<?php echo htmlspecialchars($criteria['weight_percentage']); ?>"
-                                                data-type="<?php echo htmlspecialchars($criteria['type']); ?>"
-                                                data-value_unit="<?php echo htmlspecialchars($criteria['value_unit']); ?>">
-                                                <i class="material-icons">edit</i>
-                                            </button>
-                                            <a href="kriteria.php?delete_criteria=<?php echo $criteria['id']; ?>&project_id=<?php echo htmlspecialchars($project_id); ?>" class="action-btn delete-btn" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria <?php echo htmlspecialchars($criteria['criteria_name']); ?>?');">
-                                                <i class="material-icons">delete</i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
+            <div class="content-wrapper">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row" style="margin-bottom: 0; width: 100%;"> 
+                            <div class="col s12 m6"> 
+                                <h2 class="card-title">Daftar Kriteria & Bobot</h2>
+                            </div>
+                            <div class="col s12 m6 right-align"> 
+                                <a href="#add-criteria-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
+                                    <i class="material-icons left">add</i>Tambah Kriteria
+                                </a>
+                            </div>
+                        </div> 
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
                                 <tr>
-                                    <td colspan="7" class="center-align">Tidak ada kriteria yang ditemukan untuk proyek ini.</td>
+                                    <th>No</th>
+                                    <th>Kode</th>
+                                    <th>Nama Kriteria</th>
+                                    <th>Bobot</th>
+                                    <th>Jenis</th>
+                                    <th>Nilai Kriteria</th>
+                                    <th>Aksi</th>
                                 </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="total-weight">
-                    Total Bobot: <?php echo $total_weight; ?>%
+                            </thead>
+                            <tbody>
+                                <?php if (count($criteria_data) > 0): ?>
+                                    <?php $no = 1; ?>
+                                    <?php foreach ($criteria_data as $criteria): ?>
+                                        <tr>
+                                            <td><?php echo $no++; ?></td>
+                                            <td><?php echo htmlspecialchars($criteria['criteria_code']); ?></td>
+                                            <td><?php echo htmlspecialchars($criteria['criteria_name']); ?></td>
+                                            <td><?php echo htmlspecialchars($criteria['weight_percentage']); ?>%</td>
+                                            <td><span class="badge badge-<?php echo htmlspecialchars($criteria['type']); ?>"><?php echo ucfirst(htmlspecialchars($criteria['type'])); ?></span></td>
+                                            <td><?php echo htmlspecialchars($criteria['value_unit']); ?></td>
+                                            <td>
+                                                <button class="action-btn edit-btn" title="Edit"
+                                                    data-id="<?php echo $criteria['id']; ?>"
+                                                    data-code="<?php echo htmlspecialchars($criteria['criteria_code']); ?>"
+                                                    data-name="<?php echo htmlspecialchars($criteria['criteria_name']); ?>"
+                                                    data-weight="<?php echo htmlspecialchars($criteria['weight_percentage']); ?>"
+                                                    data-type="<?php echo htmlspecialchars($criteria['type']); ?>"
+                                                    data-value_unit="<?php echo htmlspecialchars($criteria['value_unit']); ?>">
+                                                    <i class="material-icons">edit</i>
+                                                </button>
+                                                <a href="kriteria.php?delete_criteria=<?php echo $criteria['id']; ?>&project_id=<?php echo htmlspecialchars($project_id); ?>" class="action-btn delete-btn" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria <?php echo htmlspecialchars($criteria['criteria_name']); ?>?');">
+                                                    <i class="material-icons">delete</i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="7" class="center-align">Tidak ada kriteria yang ditemukan untuk proyek ini.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="total-weight">
+                        Total Bobot: <?php echo $total_weight; ?>%
+                    </div>
                 </div>
             </div>
         </div>
+        
     </main>
 
     <div id="add-criteria-modal" class="modal">
@@ -623,6 +671,24 @@
                 M.updateTextFields();         
                 
                 $('#add-criteria-modal').modal('open');
+            });
+        });
+
+        $(document).ready(function(){
+
+            // Inisialisasi komponen Materialize yang sudah ada
+            $('.sidenav').sidenav();
+            // ... inisialisasi lain seperti modal, dll. jika ada ...
+
+            
+            // --- JAVASCRIPT KUSTOM BARU DIMULAI DI SINI ---
+            $('.logo').on('click', function(e) {
+                e.preventDefault();
+
+                // Cukup toggle kelas, CSS akan menangani sisanya
+                $('#slide-out').toggleClass('minimized');
+                $('main').toggleClass('expanded');
+                $('.header').toggleClass('expanded');
             });
         });
     </script>

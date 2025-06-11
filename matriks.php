@@ -190,6 +190,7 @@
         main {
             flex: 1 0 auto;
             margin-left: 250px;
+            transition: margin-left 0.3s ease-in-out; /* Tambahkan animasi transisi */
         }
         
         /* Sidebar Styles */
@@ -199,6 +200,43 @@
             position: fixed;
             height: 100vh;
             z-index: 999;
+            transition: width 0.3s ease-in-out; /* Tambahkan animasi transisi */
+        }
+
+        /* Kelas baru untuk main content saat sidebar kecil */
+        main.expanded {
+            margin-left: 70px; /* Jarak baru saat sidebar kecil (sesuaikan jika perlu) */
+        }
+
+        /* Kelas baru untuk sidebar saat kecil */
+        .sidenav.minimized {
+            width: 70px; /* Lebar baru sidebar (sesuaikan jika perlu) */
+        }
+
+        /* Menyembunyikan teks & menyesuaikan ikon saat sidebar kecil */
+        .sidenav.minimized .link-text {
+            display: none;
+        }
+        
+        .sidenav.minimized .logo .link-text {
+            display: none;
+            
+        }
+        
+        .sidenav.minimized li > a {
+            justify-content: center;
+            padding: 0 0 0 20px;
+        }
+        
+        .sidenav.minimized li > a > i {
+            margin: 0 !important;
+        }
+        .sidenav.minimized .logo {
+            text-align: center;
+        }
+        
+        .sidenav.minimized .logo .material-icons {
+            margin: 13px 0 0 -13px !important;
         }
         
         .sidenav .user-view {
@@ -387,52 +425,112 @@
         .sets{
            margin: 13px 10px 0px 0px; 
         }
+
+        /* Mengatur agar logo bisa diklik (TETAP SAMA) */
+        .sidenav .logo {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <ul id="slide-out" class="sidenav sidenav-fixed">
         <li>
             <div class="user-view">
-                <div class="logo">
-                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;"><i class="sets material-icons left">settings</i>BranchWise</span>
+                <div class="logo" style="cursor: pointer;"> 
+                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;">
+                        <i class="sets material-icons left">settings</i>
+                        <span class="link-text">BranchWise</span> </span>
                 </div>
             </div>
         </li>
-        <li><a href="dashboard.php"><i class="material-icons">dashboard</i>Dashboard</a></li>
-        <li><a href="lokasi.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">location_on</i>Lokasi Cabang</a></li>
-        <li><a href="kriteria.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">assessment</i>Kriteria & Bobot</a></li>
-        <li><a class="active" href="matriks.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">grid_on</i>Matriks</a></li>
-        <li><a href="hasil_perhitungan.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
+        <li><a href="dashboard.php"><i class="material-icons">dashboard</i><span class="link-text">Dashboard</span></a></li>
+        <li><a href="lokasi.php"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
+        <li><a href="kriteria.php"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
+        <li><a class="active" href="matriks.php"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
+        <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
         <li><div class="divider"></div></li>
-        <li><a href="logout.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
+        <li><a href="index.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
     </ul>
 
     <main>
-        <div class="header">
-            <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
-                <div class="col s6">
-                    <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
-                    <h1 class="page-title">Matriks Keputusan</h1>
-                </div>
-                <div class="col s6 right-align">
-                     <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
-                        <i class="material-icons left">account_circle</i>
-                        <?php echo htmlspecialchars($username); ?>
-                    </span>
+        <div class="main-content">
+            <div class="header">
+                <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
+                    <div class="col s6">
+                        <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
+                        <h1 class="page-title">Matriks Keputusan</h1>
+                    </div>
+                    <div class="col s6 right-align">
+                        <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
+                            <i class="material-icons left">account_circle</i>
+                            <?php echo htmlspecialchars($username); ?>
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="content-wrapper">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Matriks Keputusan</h2>
-                    <button type="submit" form="matrix-form" name="update_matrix" class="btn waves-effect waves-light blue darken-2">
-                        <i class="material-icons left">save</i>Simpan Matriks </button>
+            <div class="content-wrapper">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Matriks Keputusan</h2>
+                        <button type="submit" form="matrix-form" name="update_matrix" class="btn waves-effect waves-light blue darken-2">
+                            <i class="material-icons left">save</i>Simpan Matriks </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <form id="matrix-form" method="POST" action="matriks.php?project_id=<?php echo htmlspecialchars($project_id); ?>"> <table>
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" style="text-align:center;">No</th>
+                                        <th rowspan="2">Alternatif (Lokasi)</th>
+                                        <th colspan="<?php echo count($criteria_list); ?>" class="criteria-header">Kriteria</th>
+                                    </tr>
+                                    <tr>
+                                        <?php foreach ($criteria_list as $criteria): ?>
+                                            <th class="criteria-subheader">
+                                                <?php echo htmlspecialchars($criteria['criteria_code']); ?>
+                                                <br>
+                                                (<?php echo htmlspecialchars($criteria['value_unit']); ?>)
+                                            </th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (!empty($locations) && !empty($criteria_list)): ?>
+                                        <?php $no = 1; ?>
+                                        <?php foreach ($locations as $location): ?>
+                                            <tr>
+                                                <td style="text-align:center;"><?php echo $no++; ?></td>
+                                                <td class="alternatif-cell"><?php echo htmlspecialchars($location['branch_name']); ?></td>
+                                                <?php foreach ($criteria_list as $criteria): ?>
+                                                    <td class="value-cell">
+                                                        <input type="number" step="any" name="matrix_data[<?php echo $location['id']; ?>][<?php echo $criteria['id']; ?>]" 
+                                                            value="<?php echo isset($matrix_decision[$location['id']][$criteria['id']]) ? htmlspecialchars($matrix_decision[$location['id']][$criteria['id']]) : ''; ?>" 
+                                                            required style="width: 80px; text-align: center; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                                                    </td>
+                                                <?php endforeach; ?>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="<?php echo 2 + count($criteria_list); ?>" class="center-align">
+                                                Silakan tambahkan lokasi dan kriteria terlebih dahulu untuk proyek ini.
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
                 </div>
                 
-                <div class="table-responsive">
-                    <form id="matrix-form" method="POST" action="matriks.php?project_id=<?php echo htmlspecialchars($project_id); ?>"> <table>
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Matriks Terkonversi (Cost menjadi Benefit)</h2>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
                             <thead>
                                 <tr>
                                     <th rowspan="2" style="text-align:center;">No</th>
@@ -441,16 +539,12 @@
                                 </tr>
                                 <tr>
                                     <?php foreach ($criteria_list as $criteria): ?>
-                                        <th class="criteria-subheader">
-                                            <?php echo htmlspecialchars($criteria['criteria_code']); ?>
-                                            <br>
-                                            (<?php echo htmlspecialchars($criteria['value_unit']); ?>)
-                                        </th>
+                                        <th class="criteria-subheader"><?php echo htmlspecialchars($criteria['criteria_code']); ?><br>(Terkonversi)</th>
                                     <?php endforeach; ?>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (!empty($locations) && !empty($criteria_list)): ?>
+                                <?php if (!empty($locations) && !empty($criteria_list) && !empty($matrix_normalized)): ?>
                                     <?php $no = 1; ?>
                                     <?php foreach ($locations as $location): ?>
                                         <tr>
@@ -458,9 +552,11 @@
                                             <td class="alternatif-cell"><?php echo htmlspecialchars($location['branch_name']); ?></td>
                                             <?php foreach ($criteria_list as $criteria): ?>
                                                 <td class="value-cell">
-                                                    <input type="number" step="any" name="matrix_data[<?php echo $location['id']; ?>][<?php echo $criteria['id']; ?>]" 
-                                                           value="<?php echo isset($matrix_decision[$location['id']][$criteria['id']]) ? htmlspecialchars($matrix_decision[$location['id']][$criteria['id']]) : ''; ?>" 
-                                                           required style="width: 80px; text-align: center; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                                                    <?php 
+                                                        $display_value = isset($matrix_normalized[$location['id']][$criteria['id']]) ? 
+                                                                        number_format((float)$matrix_normalized[$location['id']][$criteria['id']], 4, '.', '') : 'N/A'; // Format angka
+                                                        echo htmlspecialchars($display_value);
+                                                    ?>
                                                 </td>
                                             <?php endforeach; ?>
                                         </tr>
@@ -468,62 +564,13 @@
                                 <?php else: ?>
                                     <tr>
                                         <td colspan="<?php echo 2 + count($criteria_list); ?>" class="center-align">
-                                            Silakan tambahkan lokasi dan kriteria terlebih dahulu untuk proyek ini.
+                                            Tidak ada data matriks terkonversi. Silakan input matriks keputusan di atas dan simpan.
                                         </td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
-                    </form>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Matriks Terkonversi (Cost menjadi Benefit)</h2>
-                </div>
-                
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th rowspan="2" style="text-align:center;">No</th>
-                                <th rowspan="2">Alternatif (Lokasi)</th>
-                                <th colspan="<?php echo count($criteria_list); ?>" class="criteria-header">Kriteria</th>
-                            </tr>
-                            <tr>
-                                <?php foreach ($criteria_list as $criteria): ?>
-                                     <th class="criteria-subheader"><?php echo htmlspecialchars($criteria['criteria_code']); ?><br>(Terkonversi)</th>
-                                <?php endforeach; ?>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (!empty($locations) && !empty($criteria_list) && !empty($matrix_normalized)): ?>
-                                <?php $no = 1; ?>
-                                <?php foreach ($locations as $location): ?>
-                                    <tr>
-                                        <td style="text-align:center;"><?php echo $no++; ?></td>
-                                        <td class="alternatif-cell"><?php echo htmlspecialchars($location['branch_name']); ?></td>
-                                        <?php foreach ($criteria_list as $criteria): ?>
-                                            <td class="value-cell">
-                                                <?php 
-                                                    $display_value = isset($matrix_normalized[$location['id']][$criteria['id']]) ? 
-                                                                     number_format((float)$matrix_normalized[$location['id']][$criteria['id']], 4, '.', '') : 'N/A'; // Format angka
-                                                    echo htmlspecialchars($display_value);
-                                                ?>
-                                            </td>
-                                        <?php endforeach; ?>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                     <td colspan="<?php echo 2 + count($criteria_list); ?>" class="center-align">
-                                        Tidak ada data matriks terkonversi. Silakan input matriks keputusan di atas dan simpan.
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -545,6 +592,24 @@
             <?php if ($error): ?>
                 M.toast({html: '<?php echo addslashes($error); ?>', classes: 'red darken-2'});
             <?php endif; ?>
+        });
+
+        $(document).ready(function(){
+
+            // Inisialisasi komponen Materialize yang sudah ada
+            $('.sidenav').sidenav();
+            // ... inisialisasi lain seperti modal, dll. jika ada ...
+
+            
+            // --- JAVASCRIPT KUSTOM BARU DIMULAI DI SINI ---
+            $('.logo').on('click', function(e) {
+                e.preventDefault();
+
+                // Cukup toggle kelas, CSS akan menangani sisanya
+                $('#slide-out').toggleClass('minimized');
+                $('main').toggleClass('expanded');
+                $('.header').toggleClass('expanded');
+            });
         });
     </script>
 </body>

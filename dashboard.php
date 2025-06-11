@@ -71,7 +71,8 @@ $conn->close();
         
         main {
             flex: 1 0 auto;
-            margin-left: 250px;
+            margin-left: 250px; /* Jarak awal (sudah benar) */
+            transition: margin-left 0.3s ease-in-out; /* Tambahkan animasi transisi */
         }
         
         /* Sidebar Styles */
@@ -81,8 +82,45 @@ $conn->close();
             position: fixed;
             height: 100vh;
             z-index: 999;
+            transition: width 0.3s ease-in-out; /* Tambahkan animasi transisi */
         }
         
+        /* Kelas baru untuk main content saat sidebar kecil */
+        main.expanded {
+            margin-left: 70px; /* Jarak baru saat sidebar kecil (sesuaikan jika perlu) */
+        }
+
+        /* Kelas baru untuk sidebar saat kecil */
+        .sidenav.minimized {
+            width: 70px; /* Lebar baru sidebar (sesuaikan jika perlu) */
+        }
+
+        /* Menyembunyikan teks & menyesuaikan ikon saat sidebar kecil */
+        .sidenav.minimized .link-text {
+            display: none;
+        }
+        
+        .sidenav.minimized .logo .link-text {
+            display: none;
+            
+        }
+        
+        .sidenav.minimized li > a {
+            justify-content: center;
+            padding: 0 0 0 20px;
+        }
+        
+        .sidenav.minimized li > a > i {
+            margin: 0 !important;
+        }
+        .sidenav.minimized .logo {
+            text-align: center;
+        }
+        
+        .sidenav.minimized .logo .material-icons {
+            margin: 13px 0 0 -13px !important;
+        }
+
         .sidenav .user-view {
             padding: 32px 32px 16px;
         }
@@ -296,124 +334,134 @@ $conn->close();
         .sets{
            margin: 13px 10px 0px 0px; 
         }
+
+
+        /* Mengatur agar logo bisa diklik (TETAP SAMA) */
+        .sidenav .logo {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <ul id="slide-out" class="sidenav sidenav-fixed">
         <li>
             <div class="user-view">
-                <div class="logo">
-                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;"><i class="sets material-icons left">settings</i>BranchWise</span>
+                <div class="logo" style="cursor: pointer;"> 
+                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;">
+                        <i class="sets material-icons left">settings</i>
+                        <span class="link-text">BranchWise</span> </span>
                 </div>
             </div>
         </li>
-        <li><a class="active" href="dashboard.php"><i class="material-icons">dashboard</i>Dashboard</a></li>
-        <li><a href="lokasi.php"><i class="material-icons">location_on</i>Lokasi Cabang</a></li>
-        <li><a href="kriteria.php"><i class="material-icons">assessment</i>Kriteria & Bobot</a></li>
-        <li><a href="matriks.php"><i class="material-icons">grid_on</i>Matriks</a></li>
-        <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
+        <li><a class="active" href="dashboard.php"><i class="material-icons">dashboard</i><span class="link-text">Dashboard</span></a></li>
+        <li><a href="lokasi.php"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
+        <li><a href="kriteria.php"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
+        <li><a href="matriks.php"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
+        <li><a href="hasil_perhitungan.php"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
         <li><div class="divider"></div></li>
-        <li><a href="index.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
+        <li><a href="index.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
     </ul>
 
     <main>
-        <div class="header">
-            <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
-                <div class="col s6">
-                    <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
-                    <h1 class="page-title">Dashboard Proyek</h1>
-                </div>
-                <div class="col s6 right-align">
-                    <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
-                        <i class="material-icons left">account_circle</i>
-                        <?php echo htmlspecialchars($current_username); ?>
-                    </span>
-                </div>
-                </div>
-        </div>
+        <div class="main-content">
+            <div class="header">
+                <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
+                    <div class="col s6">
+                        <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
+                        <h1 class="page-title">Dashboard Proyek</h1>
+                    </div>
+                    <div class="col s6 right-align">
+                        <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
+                            <i class="material-icons left">account_circle</i>
+                            <?php echo htmlspecialchars($current_username); ?>
+                        </span>
+                    </div>
+                    </div>
+            </div>
 
-        <div class="add-task-btn">
-            <a href="#add-task-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
-                <i class="material-icons left">add</i>Tambah Proyek Baru
-            </a>
-        </div>
+            <div class="add-task-btn">
+                <a href="#add-task-modal" class="btn waves-effect waves-light blue darken-2 modal-trigger">
+                    <i class="material-icons left">add</i>Tambah Proyek Baru
+                </a>
+            </div>
 
-        <div class="task-grid">
-            <?php if (!empty($projects_data)): ?>
-                <?php foreach ($projects_data as $project): 
-                    // Tentukan kelas prioritas untuk styling
-                    $priority_class = '';
-                    if ($project['priority'] == 'tinggi') $priority_class = 'priority-high';
-                    else if ($project['priority'] == 'sedang') $priority_class = 'priority-medium';
-                    else if ($project['priority'] == 'rendah') $priority_class = 'priority-low';
+            <div class="task-grid">
+                <?php if (!empty($projects_data)): ?>
+                    <?php foreach ($projects_data as $project): 
+                        // Tentukan kelas prioritas untuk styling
+                        $priority_class = '';
+                        if ($project['priority'] == 'tinggi') $priority_class = 'priority-high';
+                        else if ($project['priority'] == 'sedang') $priority_class = 'priority-medium';
+                        else if ($project['priority'] == 'rendah') $priority_class = 'priority-low';
 
-                    // Tentukan kelas status untuk styling
-                    $status_class = '';
-                    if ($project['status'] == 'belum dimulai') $status_class = 'status-todo';
-                    else if ($project['status'] == 'dalam pengerjaan') $status_class = 'status-progress';
-                    else if ($project['status'] == 'selesai') $status_class = 'status-completed';
-                ?>
-                <div class="task-card" data-project-id="<?php echo $project['id']; ?>">
-                    <div class="task-header">
-                        <h2 class="task-title" data-task-title="<?php echo htmlspecialchars($project['project_name']); ?>">
-                            <a href="lokasi.php?project_id=<?php echo $project['id']; ?>" style="color: inherit; text-decoration: none;">
-                                <?php echo htmlspecialchars($project['project_name']); ?>
-                            </a>
-                        </h2>
-                        <div class="task-actions">
-                            <button class="action-btn edit-btn modal-trigger" href="#edit-task-modal" title="Edit"
-                                data-project-id="<?php echo $project['id']; ?>"
-                                data-project-name="<?php echo htmlspecialchars($project['project_name']); ?>"
-                                data-description="<?php echo htmlspecialchars($project['description']); ?>"
-                                data-priority="<?php echo htmlspecialchars($project['priority']); ?>"
-                                data-deadline="<?php echo htmlspecialchars($project['deadline']); ?>"
-                                data-assignee="<?php echo htmlspecialchars($project['assignee']); ?>"
-                                data-status="<?php echo htmlspecialchars($project['status']); ?>">
-                                <i class="material-icons">edit</i>
-                            </button>
-                            <button class="action-btn delete-btn" title="Hapus"
-                                data-project-id="<?php echo $project['id']; ?>"
-                                data-project-name="<?php echo htmlspecialchars($project['project_name']); ?>">
-                                <i class="material-icons">delete</i>
-                            </button>
+                        // Tentukan kelas status untuk styling
+                        $status_class = '';
+                        if ($project['status'] == 'belum dimulai') $status_class = 'status-todo';
+                        else if ($project['status'] == 'dalam pengerjaan') $status_class = 'status-progress';
+                        else if ($project['status'] == 'selesai') $status_class = 'status-completed';
+                    ?>
+                    <div class="task-card" data-project-id="<?php echo $project['id']; ?>">
+                        <div class="task-header">
+                            <h2 class="task-title" data-task-title="<?php echo htmlspecialchars($project['project_name']); ?>">
+                                <a href="lokasi.php?project_id=<?php echo $project['id']; ?>" style="color: inherit; text-decoration: none;">
+                                    <?php echo htmlspecialchars($project['project_name']); ?>
+                                </a>
+                            </h2>
+                            <div class="task-actions">
+                                <button class="action-btn edit-btn modal-trigger" href="#edit-task-modal" title="Edit"
+                                    data-project-id="<?php echo $project['id']; ?>"
+                                    data-project-name="<?php echo htmlspecialchars($project['project_name']); ?>"
+                                    data-description="<?php echo htmlspecialchars($project['description']); ?>"
+                                    data-priority="<?php echo htmlspecialchars($project['priority']); ?>"
+                                    data-deadline="<?php echo htmlspecialchars($project['deadline']); ?>"
+                                    data-assignee="<?php echo htmlspecialchars($project['assignee']); ?>"
+                                    data-status="<?php echo htmlspecialchars($project['status']); ?>">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                                <button class="action-btn delete-btn" title="Hapus"
+                                    data-project-id="<?php echo $project['id']; ?>"
+                                    data-project-name="<?php echo htmlspecialchars($project['project_name']); ?>">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="task-info">
+                            <div class="info-row">
+                                <span class="info-label">Prioritas:</span>
+                                <span class="info-value <?php echo $priority_class; ?>" data-task-priority="<?php echo htmlspecialchars($project['priority']); ?>">
+                                    <?php echo htmlspecialchars(ucfirst($project['priority'])); ?>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Deadline:</span>
+                                <span class="info-value" data-task-deadline="<?php echo htmlspecialchars($project['deadline']); ?>">
+                                    <?php echo htmlspecialchars($project['deadline'] ? date('d F Y', strtotime($project['deadline'])) : 'N/A'); ?>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Penanggung Jawab:</span>
+                                <span class="info-value" data-task-assignee="<?php echo htmlspecialchars($project['assignee']); ?>">
+                                    <?php echo htmlspecialchars($project['assignee']); ?>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <span class="status-badge <?php echo $status_class; ?>" data-task-status="<?php echo htmlspecialchars($project['status']); ?>">
+                            <?php echo htmlspecialchars(ucfirst($project['status'])); ?>
+                        </span>
+                        
+                        <div class="task-description" data-task-description="<?php echo htmlspecialchars($project['description']); ?>">
+                            <?php echo htmlspecialchars($project['description']); ?>
                         </div>
                     </div>
-                    
-                    <div class="task-info">
-                        <div class="info-row">
-                            <span class="info-label">Prioritas:</span>
-                            <span class="info-value <?php echo $priority_class; ?>" data-task-priority="<?php echo htmlspecialchars($project['priority']); ?>">
-                                <?php echo htmlspecialchars(ucfirst($project['priority'])); ?>
-                            </span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Deadline:</span>
-                            <span class="info-value" data-task-deadline="<?php echo htmlspecialchars($project['deadline']); ?>">
-                                <?php echo htmlspecialchars($project['deadline'] ? date('d F Y', strtotime($project['deadline'])) : 'N/A'); ?>
-                            </span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Penanggung Jawab:</span>
-                            <span class="info-value" data-task-assignee="<?php echo htmlspecialchars($project['assignee']); ?>">
-                                <?php echo htmlspecialchars($project['assignee']); ?>
-                            </span>
-                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col s12 center-align" style="grid-column: 1 / -1;">
+                        <p class="grey-text">Anda belum memiliki proyek. Klik "Tambah Proyek Baru" untuk memulai.</p>
                     </div>
-                    
-                    <span class="status-badge <?php echo $status_class; ?>" data-task-status="<?php echo htmlspecialchars($project['status']); ?>">
-                        <?php echo htmlspecialchars(ucfirst($project['status'])); ?>
-                    </span>
-                    
-                    <div class="task-description" data-task-description="<?php echo htmlspecialchars($project['description']); ?>">
-                        <?php echo htmlspecialchars($project['description']); ?>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div class="col s12 center-align" style="grid-column: 1 / -1;">
-                    <p class="grey-text">Anda belum memiliki proyek. Klik "Tambah Proyek Baru" untuk memulai.</p>
-                </div>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
         </div>
     </main>
 
@@ -710,6 +758,24 @@ $conn->close();
                 } else {
                     M.toast({html: 'Mohon isi semua field yang wajib.'});
                 }
+            });
+        });
+
+        $(document).ready(function(){
+
+            // Inisialisasi komponen Materialize yang sudah ada
+            $('.sidenav').sidenav();
+            // ... inisialisasi lain seperti modal, dll. jika ada ...
+
+            
+            // --- JAVASCRIPT KUSTOM BARU DIMULAI DI SINI ---
+            $('.logo').on('click', function(e) {
+                e.preventDefault();
+
+                // Cukup toggle kelas, CSS akan menangani sisanya
+                $('#slide-out').toggleClass('minimized');
+                $('main').toggleClass('expanded');
+                $('.header').toggleClass('expanded');
             });
         });
     </script>

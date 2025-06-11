@@ -258,7 +258,8 @@
         }
         main {
             flex: 1 0 auto;
-            margin-left: 250px; 
+            margin-left: 250px;
+            transition: margin-left 0.3s ease-in-out; /* Tambahkan animasi transisi */
         }
         .sidenav {
             width: 250px; 
@@ -266,7 +267,45 @@
             position: fixed;
             height: 100vh;
             z-index: 999;
+            transition: width 0.3s ease-in-out; /* Tambahkan animasi transisi */
         }
+
+        /* Kelas baru untuk main content saat sidebar kecil */
+        main.expanded {
+            margin-left: 70px; /* Jarak baru saat sidebar kecil (sesuaikan jika perlu) */
+        }
+
+        /* Kelas baru untuk sidebar saat kecil */
+        .sidenav.minimized {
+            width: 70px; /* Lebar baru sidebar (sesuaikan jika perlu) */
+        }
+
+        /* Menyembunyikan teks & menyesuaikan ikon saat sidebar kecil */
+        .sidenav.minimized .link-text {
+            display: none;
+        }
+        
+        .sidenav.minimized .logo .link-text {
+            display: none;
+            
+        }
+        
+        .sidenav.minimized li > a {
+            justify-content: center;
+            padding: 0 0 0 20px;
+        }
+        
+        .sidenav.minimized li > a > i {
+            margin: 0 !important;
+        }
+        .sidenav.minimized .logo {
+            text-align: center;
+        }
+        
+        .sidenav.minimized .logo .material-icons {
+            margin: 13px 0 0 -13px !important;
+        }
+
         .sidenav .user-view {
             padding: 32px 32px 16px;
         }
@@ -500,169 +539,179 @@
         .sets{
            margin: 13px 10px 0px 0px; 
         }
+
+        /* Mengatur agar logo bisa diklik (TETAP SAMA) */
+        .sidenav .logo {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <ul id="slide-out" class="sidenav sidenav-fixed">
         <li>
             <div class="user-view">
-                <div class="logo">
-                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;"><i class="sets material-icons left">settings</i>BranchWise</span>
+                <div class="logo" style="cursor: pointer;"> 
+                    <span class="blue-text text-darken-2" style="font-size: 1.5rem; font-weight: 600;">
+                        <i class="sets material-icons left">settings</i>
+                        <span class="link-text">BranchWise</span> </span>
                 </div>
             </div>
         </li>
-        <li><a href="dashboard.php"><i class="material-icons">dashboard</i>Dashboard</a></li>
-        <li><a href="lokasi.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">location_on</i>Lokasi Cabang</a></li>
-        <li><a href="kriteria.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">assessment</i>Kriteria & Bobot</a></li>
-        <li><a href="matriks.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">grid_on</i>Matriks</a></li>
-        <li><a class="active" href="hasil_perhitungan.php?project_id=<?php echo htmlspecialchars($project_id); ?>"><i class="material-icons">calculate</i>Hasil Perhitungan</a></li>
+        <li><a href="dashboard.php"><i class="material-icons">dashboard</i><span class="link-text">Dashboard</span></a></li>
+        <li><a href="lokasi.php"><i class="material-icons">location_on</i><span class="link-text">Lokasi Cabang</span></a></li>
+        <li><a href="kriteria.php"><i class="material-icons">assessment</i><span class="link-text">Kriteria & Bobot</span></a></li>
+        <li><a href="matriks.php"><i class="material-icons">grid_on</i><span class="link-text">Matriks</span></a></li>
+        <li><a class="active" href="hasil_perhitungan.php"><i class="material-icons">calculate</i><span class="link-text">Hasil Perhitungan</span></a></li>
         <li><div class="divider"></div></li>
-        <li><a href="logout.php"><i class="material-icons">exit_to_app</i>Keluar</a></li>
+        <li><a href="index.php"><i class="material-icons">exit_to_app</i><span class="link-text">Keluar</span></a></li>
     </ul>
 
     <main>
-        <div class="header">
-            <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
-                <div class="col s8 m9 l10"> 
-                    <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
-                    <h1 class="page-title">Hasil Perhitungan WPM</h1>
+        <div class="main-content">
+            <div class="header">
+                <div class="row valign-wrapper" style="margin-bottom: 0; width: 100%;">
+                    <div class="col s8 m9 l10"> 
+                        <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
+                        <h1 class="page-title">Hasil Perhitungan WPM</h1>
+                    </div>
+                    <div class="col s4 m3 l2 right-align"> 
+                        <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
+                            <i class="material-icons left" style="margin-right:4px;">account_circle</i>
+                            <?php echo htmlspecialchars($username); ?>
+                        </span>
+                    </div>
                 </div>
-                <div class="col s4 m3 l2 right-align"> 
-                    <span style="color: #444; font-weight: 500; display: inline-flex; align-items: center;">
-                        <i class="material-icons left" style="margin-right:4px;">account_circle</i>
-                        <?php echo htmlspecialchars($username); ?>
-                    </span>
+            </div>
+
+            <div class="content-wrapper">
+                <?php if (!empty($message) && empty($error)): ?> 
+                    <div class="card-panel green lighten-4 green-text text-darken-3" style="padding: 15px; margin-bottom:20px; border-radius: 8px;">
+                        <?php echo htmlspecialchars($message); ?>
+                    </div>
+                <?php endif; ?>
+                
+                <div class="printable-area">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Perhitungan Weighted Product Model (WPM)</h2>
+                            <a href="#!" id="export-pdf-btn-js" class="btn waves-effect waves-light blue darken-2">
+                                <i class="material-icons left">print</i>Cetak Laporan
+                            </a>
+                        </div>
+                        
+                        <?php if (!empty($error)): ?>
+                            <div class="error-message-card">
+                                <i class="material-icons" style="font-size: 3rem; margin-bottom: 10px;">error_outline</i>
+                                <h5>Terjadi Masalah</h5>
+                                <p><?php echo htmlspecialchars($error); ?></p>
+                                <p>Silakan periksa kembali data Anda di halaman Kriteria, Lokasi, atau Matriks.</p>
+                            </div>
+                        <?php elseif (empty($locations) || empty($criteria_list)): ?>
+                            <div class="error-message-card" style="background-color: #fff9c4; color: #795548; border-color: #fff176;">
+                                <i class="material-icons" style="font-size: 3rem; margin-bottom: 10px;">info_outline</i>
+                                <h5>Data Belum Lengkap</h5>
+                                <p>Belum ada lokasi cabang atau kriteria yang terdaftar untuk proyek ini. Tidak ada data untuk dihitung.</p>
+                                <p>Silakan tambahkan data di halaman Lokasi Cabang dan Kriteria & Bobot.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">No</th>
+                                            <th rowspan="2">Alternatif</th>
+                                            <th colspan="<?php echo count($criteria_list); ?>" class="criteria-header">Matriks Keputusan (Terkonversi Jika Cost)</th>
+                                            <th rowspan="2" class="criteria-header" title="Vektor S (Si)">S<sub>i</sub></th>
+                                            <th rowspan="2" class="criteria-header" title="Nilai Preferensi (Vi)">V<sub>i</sub></th>
+                                            <th rowspan="2" class="criteria-header">Rank</th>
+                                        </tr>
+                                        <tr>
+                                            <?php foreach ($criteria_list as $criteria): ?>
+                                                <th class="criteria-subheader" title="<?php echo htmlspecialchars($criteria['criteria_name']) . ' (' . ucfirst($criteria['type']) . ')'; ?>">
+                                                    <?php echo htmlspecialchars($criteria['criteria_code']); ?>
+                                                </th>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (!empty($ranking_data)): ?>
+                                            <?php $no_table = 1; ?>
+                                            <?php foreach ($ranking_data as $data_row): ?>
+                                                <?php
+                                                    $current_location_id = $data_row['location_id'];
+                                                    $current_rank = $data_row['ranking']; 
+                                                    $is_best_rank = ($current_rank == 1);
+                                                ?>
+                                                <tr class="<?php echo $is_best_rank ? 'highlight-row' : ''; ?>">
+                                                    <td><?php echo $no_table++; ?></td>
+                                                    <td class="alternatif-cell"><?php echo htmlspecialchars($data_row['branch_name']); ?></td>
+                                                    <?php
+                                                        $matrix_display_row = [];
+                                                        foreach ($criteria_list as $criteria) {
+                                                            $criteria_id_loop = $criteria['id']; 
+                                                            $value_matrix = isset($matrix_decision[$current_location_id][$criteria_id_loop]) ? (float)$matrix_decision[$current_location_id][$criteria_id_loop] : 0;
+                                                            if ($criteria['type'] === 'cost') {
+                                                                $matrix_display_row[$criteria_id_loop] = ($value_matrix != 0) ? (1 / $value_matrix) : 0; 
+                                                            } else {
+                                                                $matrix_display_row[$criteria_id_loop] = $value_matrix;
+                                                            }
+                                                        }
+                                                    ?>
+                                                    <?php foreach ($criteria_list as $criteria): ?>
+                                                        <td class="value-cell"><?php echo htmlspecialchars(number_format((float)$matrix_display_row[$criteria['id']], 4, '.', '')); ?></td>
+                                                    <?php endforeach; ?>
+                                                    <td class="result-cell"><?php echo htmlspecialchars(number_format((float)$data_row['Si'], 6, '.', '')); ?></td>
+                                                    <td class="result-cell"><?php echo htmlspecialchars(number_format((float)$data_row['Vi'], 6, '.', '')); ?></td>
+                                                    <td class="ranking-cell"><?php echo htmlspecialchars($current_rank); ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="<?php echo 5 + count($criteria_list); ?>" class="center-align" style="padding: 20px;">
+                                                    Tidak ada data peringkat yang dapat ditampilkan. Ini mungkin karena data input belum lengkap atau ada masalah dalam perhitungan.
+                                                </td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <?php if (empty($error) && !empty($ranking_data)): ?>
+                    <div class="card"> <div class="card-header">
+                            <h2 class="card-title">Kesimpulan & Rekomendasi</h2>
+                        </div>
+                        <div class="card-content" style="padding: 20px;">
+                            <div class="row">
+                                <div class="col s12 m6">
+                                    <div class="card-panel blue lighten-5" style="border-left: 5px solid var(--primary-color);">
+                                        <h5 style="margin-top: 0; color: var(--primary-dark);">Hasil Akhir Ranking:</h5>
+                                        <ol style="padding-left: 20px;">
+                                            <?php foreach ($ranking_data as $data_row_rank): ?>
+                                                <li style="<?php if($data_row_rank['ranking'] == 1) echo 'font-weight: bold; color: var(--primary-dark);'; ?>">
+                                                    <?php echo htmlspecialchars($data_row_rank['branch_name']); ?>
+                                                    (V<sub>i</sub> = <?php echo htmlspecialchars(number_format((float)$data_row_rank['Vi'], 6, '.', '')); ?>)
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ol>
+                                    </div>
+                                </div>
+                                <div class="col s12 m6">
+                                    <div class="card-panel teal lighten-5" style="border-left: 5px solid var(--secondary-color);">
+                                        <h5 style="margin-top: 0; color: #004d40;">Rekomendasi:</h5>
+                                        <?php $best_alternative_data = $ranking_data[0]; ?>
+                                        <p>Berdasarkan perhitungan Weighted Product Model (WPM), <strong><?php echo htmlspecialchars($best_alternative_data['branch_name']); ?></strong> merupakan alternatif terbaik dengan nilai preferensi tertinggi (V<sub>i</sub> = <?php echo htmlspecialchars(number_format((float)$best_alternative_data['Vi'], 6, '.', '')); ?>).</p>
+                                        <p>Keputusan akhir sebaiknya juga mempertimbangkan faktor-faktor kualitatif lain yang mungkin tidak tercakup dalam model perhitungan ini.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
-
-        <div class="content-wrapper">
-             <?php if (!empty($message) && empty($error)): ?> 
-                <div class="card-panel green lighten-4 green-text text-darken-3" style="padding: 15px; margin-bottom:20px; border-radius: 8px;">
-                    <?php echo htmlspecialchars($message); ?>
-                </div>
-            <?php endif; ?>
-            
-            <div class="printable-area">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Perhitungan Weighted Product Model (WPM)</h2>
-                        <a href="#!" id="export-pdf-btn-js" class="btn waves-effect waves-light blue darken-2">
-                            <i class="material-icons left">print</i>Cetak Laporan
-                        </a>
-                    </div>
-                    
-                    <?php if (!empty($error)): ?>
-                        <div class="error-message-card">
-                            <i class="material-icons" style="font-size: 3rem; margin-bottom: 10px;">error_outline</i>
-                            <h5>Terjadi Masalah</h5>
-                            <p><?php echo htmlspecialchars($error); ?></p>
-                            <p>Silakan periksa kembali data Anda di halaman Kriteria, Lokasi, atau Matriks.</p>
-                        </div>
-                    <?php elseif (empty($locations) || empty($criteria_list)): ?>
-                         <div class="error-message-card" style="background-color: #fff9c4; color: #795548; border-color: #fff176;">
-                            <i class="material-icons" style="font-size: 3rem; margin-bottom: 10px;">info_outline</i>
-                            <h5>Data Belum Lengkap</h5>
-                            <p>Belum ada lokasi cabang atau kriteria yang terdaftar untuk proyek ini. Tidak ada data untuk dihitung.</p>
-                            <p>Silakan tambahkan data di halaman Lokasi Cabang dan Kriteria & Bobot.</p>
-                        </div>
-                    <?php else: ?>
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th rowspan="2">No</th>
-                                        <th rowspan="2">Alternatif</th>
-                                        <th colspan="<?php echo count($criteria_list); ?>" class="criteria-header">Matriks Keputusan (Terkonversi Jika Cost)</th>
-                                        <th rowspan="2" class="criteria-header" title="Vektor S (Si)">S<sub>i</sub></th>
-                                        <th rowspan="2" class="criteria-header" title="Nilai Preferensi (Vi)">V<sub>i</sub></th>
-                                        <th rowspan="2" class="criteria-header">Rank</th>
-                                    </tr>
-                                    <tr>
-                                        <?php foreach ($criteria_list as $criteria): ?>
-                                            <th class="criteria-subheader" title="<?php echo htmlspecialchars($criteria['criteria_name']) . ' (' . ucfirst($criteria['type']) . ')'; ?>">
-                                                <?php echo htmlspecialchars($criteria['criteria_code']); ?>
-                                            </th>
-                                        <?php endforeach; ?>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (!empty($ranking_data)): ?>
-                                        <?php $no_table = 1; ?>
-                                        <?php foreach ($ranking_data as $data_row): ?>
-                                            <?php
-                                                $current_location_id = $data_row['location_id'];
-                                                $current_rank = $data_row['ranking']; 
-                                                $is_best_rank = ($current_rank == 1);
-                                            ?>
-                                            <tr class="<?php echo $is_best_rank ? 'highlight-row' : ''; ?>">
-                                                <td><?php echo $no_table++; ?></td>
-                                                <td class="alternatif-cell"><?php echo htmlspecialchars($data_row['branch_name']); ?></td>
-                                                <?php
-                                                    $matrix_display_row = [];
-                                                    foreach ($criteria_list as $criteria) {
-                                                        $criteria_id_loop = $criteria['id']; 
-                                                        $value_matrix = isset($matrix_decision[$current_location_id][$criteria_id_loop]) ? (float)$matrix_decision[$current_location_id][$criteria_id_loop] : 0;
-                                                        if ($criteria['type'] === 'cost') {
-                                                            $matrix_display_row[$criteria_id_loop] = ($value_matrix != 0) ? (1 / $value_matrix) : 0; 
-                                                        } else {
-                                                            $matrix_display_row[$criteria_id_loop] = $value_matrix;
-                                                        }
-                                                    }
-                                                ?>
-                                                <?php foreach ($criteria_list as $criteria): ?>
-                                                    <td class="value-cell"><?php echo htmlspecialchars(number_format((float)$matrix_display_row[$criteria['id']], 4, '.', '')); ?></td>
-                                                <?php endforeach; ?>
-                                                <td class="result-cell"><?php echo htmlspecialchars(number_format((float)$data_row['Si'], 6, '.', '')); ?></td>
-                                                <td class="result-cell"><?php echo htmlspecialchars(number_format((float)$data_row['Vi'], 6, '.', '')); ?></td>
-                                                <td class="ranking-cell"><?php echo htmlspecialchars($current_rank); ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <tr>
-                                            <td colspan="<?php echo 5 + count($criteria_list); ?>" class="center-align" style="padding: 20px;">
-                                                Tidak ada data peringkat yang dapat ditampilkan. Ini mungkin karena data input belum lengkap atau ada masalah dalam perhitungan.
-                                            </td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php endif; ?>
-                </div>
-                
-                <?php if (empty($error) && !empty($ranking_data)): ?>
-                <div class="card"> <div class="card-header">
-                        <h2 class="card-title">Kesimpulan & Rekomendasi</h2>
-                    </div>
-                    <div class="card-content" style="padding: 20px;">
-                        <div class="row">
-                            <div class="col s12 m6">
-                                <div class="card-panel blue lighten-5" style="border-left: 5px solid var(--primary-color);">
-                                    <h5 style="margin-top: 0; color: var(--primary-dark);">Hasil Akhir Ranking:</h5>
-                                    <ol style="padding-left: 20px;">
-                                        <?php foreach ($ranking_data as $data_row_rank): ?>
-                                            <li style="<?php if($data_row_rank['ranking'] == 1) echo 'font-weight: bold; color: var(--primary-dark);'; ?>">
-                                                <?php echo htmlspecialchars($data_row_rank['branch_name']); ?>
-                                                (V<sub>i</sub> = <?php echo htmlspecialchars(number_format((float)$data_row_rank['Vi'], 6, '.', '')); ?>)
-                                            </li>
-                                        <?php endforeach; ?>
-                                    </ol>
-                                </div>
-                            </div>
-                            <div class="col s12 m6">
-                                <div class="card-panel teal lighten-5" style="border-left: 5px solid var(--secondary-color);">
-                                    <h5 style="margin-top: 0; color: #004d40;">Rekomendasi:</h5>
-                                    <?php $best_alternative_data = $ranking_data[0]; ?>
-                                    <p>Berdasarkan perhitungan Weighted Product Model (WPM), <strong><?php echo htmlspecialchars($best_alternative_data['branch_name']); ?></strong> merupakan alternatif terbaik dengan nilai preferensi tertinggi (V<sub>i</sub> = <?php echo htmlspecialchars(number_format((float)$best_alternative_data['Vi'], 6, '.', '')); ?>).</p>
-                                    <p>Keputusan akhir sebaiknya juga mempertimbangkan faktor-faktor kualitatif lain yang mungkin tidak tercakup dalam model perhitungan ini.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
-            </div> </div>
     </main>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -683,6 +732,24 @@
             $('#export-pdf-btn-js').on('click', function(e) {
                 e.preventDefault(); 
                 window.print(); // Memicu dialog cetak browser
+            });
+        });
+
+        $(document).ready(function(){
+
+            // Inisialisasi komponen Materialize yang sudah ada
+            $('.sidenav').sidenav();
+            // ... inisialisasi lain seperti modal, dll. jika ada ...
+
+            
+            // --- JAVASCRIPT KUSTOM BARU DIMULAI DI SINI ---
+            $('.logo').on('click', function(e) {
+                e.preventDefault();
+
+                // Cukup toggle kelas, CSS akan menangani sisanya
+                $('#slide-out').toggleClass('minimized');
+                $('main').toggleClass('expanded');
+                $('.header').toggleClass('expanded');
             });
         });
     </script>
